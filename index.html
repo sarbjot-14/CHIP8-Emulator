@@ -5,13 +5,22 @@
   <title>CHIP-8 Emulator</title>
   <script src="Images.js"></script>
   <script src="emulator.js"></script>
+  <script src="main.js"></script>
+
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Emulator</h1>
-  <div id="screen">
-    <div id="pixels">
+  <div id="wrapper">
+    <h1>Emulator</h1>
+    <div id="topMenu">
+      <input type="color" value="#99ff99" id="primaryColour">
+      <input type="color" value="#ccffcc" id="secondaryColour">
+      <button id="refresh">Refresh</button>
+    </div>
+    <div id="screen">
+      <div id="pixels">
 
+      </div>
     </div>
   </div>
 </body>
