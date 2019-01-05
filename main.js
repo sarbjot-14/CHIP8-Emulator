@@ -2,7 +2,13 @@ let chip;
 window.onload = function(){
   generatePixels();
   chip = new emulator();
-  document.getElementById("refresh").onclick = function(){chip.updateScreen();}
+  document.getElementById("resetColours").onclick = function(){
+    document.getElementById("primaryColour").value = "#99ff99";
+    document.getElementById("secondaryColour").value = "#ccffcc";
+    chip.updateScreen();
+  }
+  document.getElementById("primaryColour").onchange = function(){ chip.updateScreen(); }
+  document.getElementById("secondaryColour").onchange = function(){ chip.updateScreen(); }
 }
 
 function generatePixels(){
