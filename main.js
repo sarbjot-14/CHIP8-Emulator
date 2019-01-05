@@ -1,6 +1,7 @@
+let chip;
 window.onload = function(){
   generatePixels();
-  let chip = new emulator();
+  chip = new emulator();
   document.getElementById("refresh").onclick = function(){chip.updateScreen();}
 }
 
