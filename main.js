@@ -3,8 +3,8 @@ window.onload = function(){
   generatePixels();
   chip = new emulator();
   document.getElementById("resetColours").onclick = function(){
-    document.getElementById("primaryColour").value = "#99ff99";
-    document.getElementById("secondaryColour").value = "#ccffcc";
+    document.getElementById("primaryColour").value = "#ffffff";
+    document.getElementById("secondaryColour").value = "#000000";
     chip.updateScreen();
   }
   document.getElementById("primaryColour").onchange = function(){ chip.updateScreen(); }

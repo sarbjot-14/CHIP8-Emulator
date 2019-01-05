@@ -14,8 +14,8 @@
   <div id="wrapper">
     <h1>CHIP-8 EMULATOR</h1>
     <div id="topMenu">
-      <input type="color" value="#99ff99" id="primaryColour">
-      <input type="color" value="#ccffcc" id="secondaryColour">
+      <input type="color" value="#ffffff" id="primaryColour">
+      <input type="color" value="#000000" id="secondaryColour">
       <button id="resetColours">Reset</button>
     </div>
     <div id="screen">
@@ -27,6 +27,11 @@
       <textarea name="name" rows="15" cols="50" placeholder="CHIP-8 Code Box"></textarea>
       <div id="bottomMenu">
         <button>Run</button>
+        <div id="lineSteps">
+          <button title="Step Back"><</button>
+          <button title="Pause">| |</button>
+          <button title="Step Forward">></button>
+        </div>
       </div>
     </div>
   </div>
