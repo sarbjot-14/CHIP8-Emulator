@@ -75,3 +75,8 @@ textarea {
   flex-direction: row;
   justify-content: space-between;
 }
+#programSelect{
+  background-color: #454954;
+  border: 0;
+  color: white;
+}
