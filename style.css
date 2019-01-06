@@ -80,3 +80,6 @@ textarea {
   border: 0;
   color: white;
 }
+#programSelect:hover {
+  cursor: pointer;
+}
