@@ -23,9 +23,25 @@
 
       </div>
     </div>
-    <div id="textBox">
+    <div id="inputBox">
       <div id="controlsBox">
-        <textarea rows="15" cols="50" placeholder="CHIP-8 Code Box"></textarea>
+        <div id="codeBox">
+          <textarea rows="15" cols="50" placeholder="CHIP-8 Code Box"></textarea>
+          <div id="bottomMenu">
+            <div>
+              <button>Run</button>
+              <select id="programSelect" title="Select Program">
+                <option>Game 1</option>
+                <option>Game 2</option>
+              </select>
+            </div>
+            <div id="lineSteps">
+              <button title="Step Back"><</button>
+              <button title="Pause">| |</button>
+              <button title="Step Forward">></button>
+            </div>
+          </div>
+        </div>
         <div id="keyboardInputs">
           <div class="kbInputRow">
             <button class="kbInput">1</button>
@@ -53,20 +69,7 @@
           </div>
         </div>
       </div>
-      <div id="bottomMenu">
-        <div>
-          <button>Run</button>
-          <select id="programSelect" title="Select Program">
-            <option>Game 1</option>
-            <option>Game 2</option>
-          </select>
-        </div>
-        <div id="lineSteps">
-          <button title="Step Back"><</button>
-          <button title="Pause">| |</button>
-          <button title="Step Forward">></button>
-        </div>
-      </div>
+
     </div>
   </div>
 </body>
