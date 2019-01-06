@@ -1,7 +1,14 @@
 let chip;
+
 window.onload = function(){
-  generatePixels();
+  init();
+
   chip = new emulator();
+  chip.start();
+}
+
+function init(){
+  generatePixels();
   document.getElementById("resetColours").onclick = function(){
     document.getElementById("primaryColour").value = "#ffffff";
     document.getElementById("secondaryColour").value = "#000000";
