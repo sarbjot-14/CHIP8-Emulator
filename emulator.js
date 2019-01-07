@@ -9,7 +9,7 @@ class emulator{
   }
 
 
-  //Updates the screen given a binary array and a starting point (Both are optional)
+  //Updates the screen given a binary array and a starting index
   updateScreen(pix = this.pixels, start = 0){
     this.pixels = pix;
     for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
@@ -19,7 +19,7 @@ class emulator{
       let pixelDom = document.getElementById("pixels").childNodes;
       pixelDom = pixelDom[rowNum+1].childNodes;
       pixelDom = pixelDom[colNum];
-      //pixelDom is now the pixel's DOM element
+      //pixelDom is the pixel's DOM element
       if(pix[i]){
         pixelDom.style.backgroundColor = document.getElementById("primaryColour").value;
       }else{
@@ -28,7 +28,7 @@ class emulator{
     }
   }
 
-  separatePixels(pixString){
+  separatePixels(pixString){ //converts binary string into an int array
     let result = [];
     for(let i=0;i<pixString.length;i++){
       result.push(parseInt(pixString[i],2));
