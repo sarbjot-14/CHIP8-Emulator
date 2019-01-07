@@ -1,4 +1,3 @@
-
 class visualizer{
   constructor(){
 
@@ -9,10 +8,10 @@ class visualizer{
     document.getElementById("resetColours").onclick = function(){
       document.getElementById("primaryColour").value = "#ffffff";
       document.getElementById("secondaryColour").value = "#000000";
-      chip.chipEmulator.updateScreen();
+      chip.updateScreen();
     }
-    document.getElementById("primaryColour").onchange = function(){ chip.chipEmulator.updateScreen(); }
-    document.getElementById("secondaryColour").onchange = function(){ chip.chipEmulator.updateScreen(); }
+    document.getElementById("primaryColour").onchange = function(){ chip.updateScreen(); }
+    document.getElementById("secondaryColour").onchange = function(){ chip.updateScreen(); }
   }
 
   generatePixels(){

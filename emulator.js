@@ -1,10 +1,11 @@
-
 class emulator{
   constructor(){
     this.pixels = this.separatePixels(title);
+    this.vis = new visualizer();
   }
 
   start(){
+    this.vis.init();
     this.updateScreen();
   }
 
@@ -38,3 +39,4 @@ class emulator{
   }
 
 }
+let chip = new emulator();
