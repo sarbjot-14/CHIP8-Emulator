@@ -13,8 +13,8 @@ class emulator{
   updateScreen(pix = this.pixels, start = 0){
     this.pixels = pix;
     for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
-      let rowNum = Math.floor(i/64);
-      let colNum = i%64;
+      let rowNum = Math.floor( (i+start)/64);
+      let colNum = (i+start)%64;
 
       let pixelDom = document.getElementById("pixels").childNodes;
       pixelDom = pixelDom[rowNum+1].childNodes;
