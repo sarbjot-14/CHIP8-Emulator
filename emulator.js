@@ -11,8 +11,9 @@ class emulator{
 
   //Updates the screen given a binary array and a starting index
   updateScreen(pix = this.pixels, start = 0){
-    this.pixels = pix;
     for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
+      this.pixels[(i+start)] = pix[i];
+
       let rowNum = Math.floor( (i+start)/64);
       let colNum = (i+start)%64;
 
