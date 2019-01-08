@@ -5,6 +5,6 @@ Group project for CMPT-276 at SFU.
 Group Members :  
 Josh Hait,
 Kia Mirsalehi,
-sarbjot singh,
+Sarbjot Singh,
 Josh Tran,
 Adam Zubek-Nizol
