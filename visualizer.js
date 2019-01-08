@@ -29,4 +29,19 @@ class visualizer{
     }
   }
 
+  setPixel(index, value){
+    let rowNum = Math.floor( (index)/64);
+    let colNum = (index)%64;
+
+    let pixelDom = document.getElementById("pixels").childNodes;
+    pixelDom = pixelDom[rowNum+1].childNodes;
+    pixelDom = pixelDom[colNum];
+    //pixelDom is the pixel's DOM element
+    if(value){
+      pixelDom.style.backgroundColor = document.getElementById("primaryColour").value;
+    }else{
+      pixelDom.style.backgroundColor = document.getElementById("secondaryColour").value;
+    }
+  }
+
 }

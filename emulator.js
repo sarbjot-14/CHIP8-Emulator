@@ -14,19 +14,7 @@ class emulator{
   updateScreen(pix = this.pixels, start = 0){
     for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
       this.pixels[(i+start)] = pix[i];
-
-      let rowNum = Math.floor( (i+start)/64);
-      let colNum = (i+start)%64;
-
-      let pixelDom = document.getElementById("pixels").childNodes;
-      pixelDom = pixelDom[rowNum+1].childNodes;
-      pixelDom = pixelDom[colNum];
-      //pixelDom is the pixel's DOM element
-      if(pix[i]){
-        pixelDom.style.backgroundColor = document.getElementById("primaryColour").value;
-      }else{
-        pixelDom.style.backgroundColor = document.getElementById("secondaryColour").value;
-      }
+      this.vis.setPixel((i+start), pix[i]);
     }
   }
 
