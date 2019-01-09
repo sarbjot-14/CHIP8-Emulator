@@ -2,6 +2,12 @@ class emulator{
   constructor(){
     this.pixels = this.separatePixels(title);
     this.vis = new visualizer();
+    this.registersV = new Array(16); //16 1byte registers Vx
+    this.registerI = []; //16bit register that holds addresses
+    this.registerDelay = []; //8bit register. Decrements at a rate of 60Hz if non-zero
+    this.registerSoundTimer = []; //8bit register. Decrements at a rate of 60Hz if non-zero
+    this.programCounter = []; //stores program currently executing
+    this.stackPointer = []; //used to point to the uppermost area of the stack
   }
 
   start(){
