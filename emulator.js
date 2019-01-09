@@ -25,8 +25,8 @@ class emulator{
 
           case "0E0":// 00E0 - CLS - Clear the display
           case "0e0":
+          //when the undo stack is implemented. add to it here
             this.updateScreen(new Array(64*32));
-            //when the undo stack is implemented. add to it here
             break;
         }
         break;
