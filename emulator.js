@@ -11,10 +11,22 @@ class emulator{
 
 
   //Updates the screen given a binary array and a starting index
-  updateScreen(pix = this.pixels, start = 0){
-    for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
-      this.pixels[(i+start)] = pix[i]; //update pixel in internal screen state
-      this.vis.setPixel((i+start), pix[i]); //update pixel in visualizer
+  updateScreen(pix, start = 0, options = {}){
+    if(!pix){ //if no pixels are provided, refresh the entire screen
+      pix = this.pixels;
+      options = {fill:true};
+    }
+    if (options.fill == true) {
+      for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
+        this.pixels[(i+start)] = pix[i]; //update pixel in internal screen state
+        this.vis.setPixel((i+start), pix[i]); //update pixel in visualizer
+      }
+    }else{
+      let rowNum = start % 64;
+      for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
+        this.pixels[(i+start)%64 + rowNum*64] = pix[i]; //update pixel in internal screen state
+        this.vis.setPixel((i+start)%64 + rowNum*64, pix[i]); //update pixel in visualizer
+      }
     }
   }
 
@@ -26,7 +38,7 @@ class emulator{
           case "0E0":// 00E0 - CLS - Clear the display
           case "0e0":
           //when the undo stack is implemented. add to it here
-            this.updateScreen(new Array(64*32));
+            this.updateScreen(new Array(64*32), 0, {fill: true});
             break;
         }
         break;
