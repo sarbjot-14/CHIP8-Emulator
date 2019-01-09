@@ -28,7 +28,7 @@ class emulator{
         this.vis.setPixel((i+start), pix[i]); //update pixel in visualizer
       }
     }else{ //traditional Chip method
-      let rowNum = start % 64;
+      let rowNum = Math.floor( (start)/64);;
       for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
         this.pixels[(i+start)%64 + rowNum*64] = pix[i]; //update pixel in internal screen state
         this.vis.setPixel((i+start)%64 + rowNum*64, pix[i]); //update pixel in visualizer
@@ -94,7 +94,7 @@ class emulator{
         let y = parseInt(ins[2], 16);
         let size = parseInt(ins[3], 16);
 
-        //check registers x and y then draw stuff and deal with undo stack
+        //check registers x and y then draw stuff
 
         break;
 
