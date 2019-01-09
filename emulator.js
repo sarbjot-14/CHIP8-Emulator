@@ -16,12 +16,12 @@ class emulator{
       pix = this.pixels;
       options = {fill:true};
     }
-    if (options.fill == true) {
+    if (options.fill == true) { //fill mode is the method that continues on the next row
       for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
         this.pixels[(i+start)] = pix[i]; //update pixel in internal screen state
         this.vis.setPixel((i+start), pix[i]); //update pixel in visualizer
       }
-    }else{
+    }else{ //traditional Chip method
       let rowNum = start % 64;
       for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
         this.pixels[(i+start)%64 + rowNum*64] = pix[i]; //update pixel in internal screen state
@@ -83,7 +83,13 @@ class emulator{
         break;
 
       case "d":
-      case "D":
+      case "D": //Dxyn
+        let x = parseInt(ins[1], 16); //x and y are registers that hold the coord values
+        let y = parseInt(ins[2], 16);
+        let size = parseInt(ins[3], 16);
+
+        //check registers x and y then draw stuff and deal with undo stack
+
         break;
 
       case "e":
