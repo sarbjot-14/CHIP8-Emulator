@@ -8,6 +8,8 @@ class emulator{
     this.registerSoundTimer = []; //8bit register. Decrements at a rate of 60Hz if non-zero
     this.programCounter = []; //stores program currently executing
     this.stackPointer = []; //used to point to the uppermost area of the stack
+    this.stack = new Array(16); //16 16bit values
+    this.undoStack = []; //stack used for undoing instructions. each value is in the form [instruction, {data}]
   }
 
   start(){
