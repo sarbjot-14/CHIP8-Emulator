@@ -2,14 +2,15 @@ class emulator{
   constructor(){
     this.pixels = this.separatePixels(title);
     this.vis = new visualizer();
-    this.registersV = new Array(16); //16 1byte registers Vx
-    this.registerI = []; //16bit register that holds addresses
+    this.registersV = new Array(16); //16 1byte registers Vx, each is from 00-FF
+    this.registerI; //16bit register that holds addresses (00-FF)
     this.registerDelay = []; //8bit register. Decrements at a rate of 60Hz if non-zero
     this.registerSoundTimer = []; //8bit register. Decrements at a rate of 60Hz if non-zero
     this.programCounter = []; //stores program currently executing
     this.stackPointer = []; //used to point to the uppermost area of the stack
     this.stack = new Array(16); //16 16bit values
     this.undoStack = []; //stack used for undoing instructions. each value is in the form [instruction, {data}]
+    this.memory = new Array(4096); //array of 4096 bytes. Bytes are fom 00-FF
   }
 
   start(){
@@ -92,11 +93,15 @@ class emulator{
 
       case "d":
       case "D": //Dxyn
-        let x = parseInt(ins[1], 16); //x and y are registers that hold the coord values
-        let y = parseInt(ins[2], 16);
+        let x = parseInt(this.registersV[parseInt(ins[1], 16)],16);
+        let y = parseInt(this.registersV[parseInt(ins[2], 16)],16);
         let size = parseInt(ins[3], 16);
 
-        //check registers x and y then draw stuff
+        let pixelStart = parseInt(this.registerI,16);
+        for(let i=0; i<size; i++){
+          let pixelByte = this.hexToBin(this.memory[pixelStart+i]);
+          this.updateScreen(pixelByte,64*(y+i)+x);
+        }
 
         break;
 
@@ -109,6 +114,14 @@ class emulator{
         break;
 
     }
+  }
+
+  byteFromMem(address){//returns a byte from memory ad a given address (int 0-255)
+    return this.memory[address];
+  }
+
+  hexToBin(hex){
+    return this.separatePixels(parseInt(hex,16).toString(2));
   }
 
   separatePixels(pixString){ //converts binary string into an int array
