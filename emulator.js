@@ -11,6 +11,7 @@ class emulator{
     this.stack = new Array(16); //16 16bit values
     this.undoStack = []; //stack used for undoing instructions. each value is in the form [instruction, {data}]
     this.memory = new Array(4096); //array of 4096 bytes. Bytes are fom 00-FF
+    this.VF; //binary register not used by any program. (instruction flag)
   }
 
   start(){
@@ -31,12 +32,23 @@ class emulator{
         this.vis.setPixel((i+start), pix[i]); //update pixel in visualizer
       }
     }else{ //traditional Chip method
+      let vfFlag = 0;
       let rowNum = Math.floor( (start)/64);;
       for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
-        this.pixels[(i+start)%64 + rowNum*64] = pix[i]; //update pixel in internal screen state
-        this.vis.setPixel((i+start)%64 + rowNum*64, pix[i]); //update pixel in visualizer
+        if(this.pixels[(i+start)%64 + rowNum*64] == pix[i]){
+          if(pix[i]==1){
+            vfFlag = 1;
+          }
+          this.pixels[(i+start)%64 + rowNum*64] = 0;//update pixel in internal screen state
+          this.vis.setPixel((i+start)%64 + rowNum*64, 0); //update pixel in visualizer
+        }else{
+          this.pixels[(i+start)%64 + rowNum*64] = 1; //update pixel in internal screen state
+          this.vis.setPixel((i+start)%64 + rowNum*64, 1); //update pixel in visualizer
+        }
       }
+      return vfFlag;
     }
+
   }
 
   executeInstruction(ins){ //ins is a 4-character string with each character beteen 0-1 or a-f/A-F
@@ -93,15 +105,18 @@ class emulator{
 
       case "d":
       case "D": //Dxyn
-      //NOTE: XOR not implemented
         let x = parseInt(this.registersV[parseInt(ins[1], 16)],16);
         let y = parseInt(this.registersV[parseInt(ins[2], 16)],16);
         let size = parseInt(ins[3], 16);
 
         let pixelStart = parseInt(this.registerI,16);
+
+        this.VF = 0;
         for(let i=0; i<size; i++){
           let pixelByte = this.hexToBin(this.memory[pixelStart+i]);
-          this.updateScreen(pixelByte,64*(y+i)+x);
+          if(this.updateScreen(pixelByte,64*(y+i)+x)){
+            this.VF = 1;
+          }
         }
 
         break;
