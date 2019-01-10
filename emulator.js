@@ -2,6 +2,14 @@ class emulator{
   constructor(){
     this.pixels = this.separatePixels(title);
     this.vis = new visualizer();
+    this.registersV = new Array(16); //16 1byte registers Vx
+    this.registerI = []; //16bit register that holds addresses
+    this.registerDelay = []; //8bit register. Decrements at a rate of 60Hz if non-zero
+    this.registerSoundTimer = []; //8bit register. Decrements at a rate of 60Hz if non-zero
+    this.programCounter = []; //stores program currently executing
+    this.stackPointer = []; //used to point to the uppermost area of the stack
+    this.stack = new Array(16); //16 16bit values
+    this.undoStack = []; //stack used for undoing instructions. each value is in the form [instruction, {data}]
   }
 
   start(){
@@ -11,10 +19,22 @@ class emulator{
 
 
   //Updates the screen given a binary array and a starting index
-  updateScreen(pix = this.pixels, start = 0){
-    for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
-      this.pixels[(i+start)] = pix[i]; //update pixel in internal screen state
-      this.vis.setPixel((i+start), pix[i]); //update pixel in visualizer
+  updateScreen(pix, start = 0, options = {}){
+    if(!pix){ //if no pixels are provided, refresh the entire screen
+      pix = this.pixels;
+      options = {fill:true};
+    }
+    if (options.fill == true) { //fill mode is the method that continues on the next row
+      for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
+        this.pixels[(i+start)] = pix[i]; //update pixel in internal screen state
+        this.vis.setPixel((i+start), pix[i]); //update pixel in visualizer
+      }
+    }else{ //traditional Chip method
+      let rowNum = Math.floor( (start)/64);;
+      for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
+        this.pixels[(i+start)%64 + rowNum*64] = pix[i]; //update pixel in internal screen state
+        this.vis.setPixel((i+start)%64 + rowNum*64, pix[i]); //update pixel in visualizer
+      }
     }
   }
 
@@ -26,7 +46,7 @@ class emulator{
           case "0E0":// 00E0 - CLS - Clear the display
           case "0e0":
           //when the undo stack is implemented. add to it here
-            this.updateScreen(new Array(64*32));
+            this.updateScreen(new Array(64*32), 0, {fill: true});
             break;
         }
         break;
@@ -71,7 +91,13 @@ class emulator{
         break;
 
       case "d":
-      case "D":
+      case "D": //Dxyn
+        let x = parseInt(ins[1], 16); //x and y are registers that hold the coord values
+        let y = parseInt(ins[2], 16);
+        let size = parseInt(ins[3], 16);
+
+        //check registers x and y then draw stuff
+
         break;
 
       case "e":
