@@ -93,6 +93,7 @@ class emulator{
 
       case "d":
       case "D": //Dxyn
+      //NOTE: XOR not implemented
         let x = parseInt(this.registersV[parseInt(ins[1], 16)],16);
         let y = parseInt(this.registersV[parseInt(ins[2], 16)],16);
         let size = parseInt(ins[3], 16);
