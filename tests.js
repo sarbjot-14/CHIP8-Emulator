@@ -1,9 +1,8 @@
 function drawTesting(){
-  chip.registersV[0] = "03";
-  chip.registersV[1] = "10";
-  chip.registerI = "00";
-  chip.memory[0] = "93"
-  chip.memory[1] = "6D"
-  chip.memory[2] = "65"
-
+  chip.setRegistersV(0,"03");
+  chip.setRegistersV(1,"10");
+  chip.setRegisterI("00");
+  chip.setMemory(0,"93");
+  chip.setMemory(1,"6D");
+  chip.setMemory(2,"65");
 }

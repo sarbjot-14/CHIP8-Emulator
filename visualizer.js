@@ -42,8 +42,19 @@ class visualizer{
         pixelDom.style.backgroundColor = document.getElementById("primaryColour").value;
       }else{
         pixelDom.style.backgroundColor = document.getElementById("secondaryColour").value;
-      }  
+      }
     }
   }
+
+
+  updateRegistersV(){}
+  updateRegisterI(){}
+  updateRegisterDelay(){}
+  updateRegisterSoundTimer(){}
+  updateProgramCounter(){}
+  updateStackPointer(){}
+  updateStack(){}
+  updateMemory(){}
+  updateVF(){}
 
 }

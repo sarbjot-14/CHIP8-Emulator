@@ -2,21 +2,60 @@ class emulator{
   constructor(){
     this.pixels = this.separatePixels(title);
     this.vis = new visualizer();
+    this.undoStack = []; //stack used for undoing instructions. each value is in the form [instruction, {data}]
+
     this.registersV = new Array(16); //16 1byte registers Vx, each is from 00-FF
     this.registerI; //16bit register that holds addresses (00-FF)
-    this.registerDelay = []; //8bit register. Decrements at a rate of 60Hz if non-zero
-    this.registerSoundTimer = []; //8bit register. Decrements at a rate of 60Hz if non-zero
-    this.programCounter = []; //stores program currently executing
-    this.stackPointer = []; //used to point to the uppermost area of the stack
-    this.stack = new Array(16); //16 16bit values
-    this.undoStack = []; //stack used for undoing instructions. each value is in the form [instruction, {data}]
+    this.registerDelay; //8bit register. Decrements at a rate of 60Hz if non-zero
+    this.registerSoundTimer; //8bit register. Decrements at a rate of 60Hz if non-zero
+    this.programCounter; //stores program currently executing 16 bit (0000-FFFF)
+    this.stackPointer; //used to point to the uppermost area of the stack 8bit (00-FF)
+    this.stack = new Array(16); //16 16bit values. each 16 bit value is from 0000-FFFF
     this.memory = new Array(4096); //array of 4096 bytes. Bytes are fom 00-FF
-    this.VF; //binary register not used by any program. (instruction flag)
+    this.VF; //1bit register not used by any program. (instruction flag)
+
   }
 
   start(){
     this.vis.init();
     this.updateScreen();
+  }
+
+  setRegistersV(index,data){
+    this.registersV[index] = data;
+    this.vis.updateRegistersV();
+  }
+  setRegisterI(data){
+    this.registerI = data;
+    this.vis.updateRegisterI();
+  }
+  setRegisterDelay(data){
+    this.registerDelay = data;
+    this.vis.updateRegisterDelay();
+  }
+  setRegisterSoundTimer(data){
+    this.registerSoundTimer = data;
+    this.vis.updateRegisterSoundTimer();
+  }
+  setProgramCounter(data){
+    this.programCounter = data;
+    this.vis.updateProgramCounter();
+  }
+  setStackPointer(data){
+    this.stackPointer = data;
+    this.vis.updateStackPointer();
+  }
+  setStack(index, data){
+    this.stack[index] = data;
+    this.vis.updateStack();
+  }
+  setMemory(index, data){
+    this.memory[index] = data;
+    this.vis.updateMemory();
+  }
+  setVF(data){
+    this.VF = data;
+    this.vis.updateVF();
   }
 
 
