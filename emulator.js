@@ -114,7 +114,7 @@ class emulator{
         this.VF = 0;
         for(let i=0; i<size; i++){
           let pixelByte = this.hexToBin(this.memory[pixelStart+i]);
-          if(this.updateScreen(pixelByte,64*(y+i)+x)){
+          if(this.updateScreen(pixelByte,64*((y-i)%32)+x)){
             this.VF = 1;
           }
         }
