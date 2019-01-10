@@ -58,6 +58,25 @@ class emulator{
     this.vis.updateVF();
   }
 
+  undo(){// uses this.undoStack to undo the last instruction
+    if(this.undoStack.length > 0){
+      let popped = this.undoStack.pop();
+      let ins = popped[0];
+      let data = popped[1];
+
+
+      //use cases and write undo code for each instruction
+
+    }
+  }
+  pushUndo(ins, data){
+    this.undoStack.push([ins, data]);
+  }
+  clearUndo(){
+    this.undoStack = [];
+  }
+
+
 
   //Updates the screen given a binary array and a starting index
   updateScreen(pix, start = 0, options = {}){
@@ -74,7 +93,7 @@ class emulator{
       let vfFlag = 0;
       let rowNum = Math.floor( (start)/64);;
       for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
-        if(this.pixels[(i+start)%64 + rowNum*64] == pix[i]){
+        if(this.pixels[(i+start)%64 + rowNum*64] ^ !pix[i]){
           if(pix[i]==1){
             vfFlag = 1;
           }
@@ -91,13 +110,14 @@ class emulator{
   }
 
   executeInstruction(ins){ //ins is a 4-character string with each character beteen 0-1 or a-f/A-F
+    console.log(ins)
     switch(ins[0]){
       case "0":
         switch(ins.substring(1,4)){
 
           case "0E0":// 00E0 - CLS - Clear the display
           case "0e0":
-          //when the undo stack is implemented. add to it here
+            this.pushUndo(ins,this.pixels);
             this.updateScreen(new Array(64*32), 0, {fill: true});
             break;
         }
@@ -144,6 +164,8 @@ class emulator{
 
       case "d":
       case "D": //Dxyn
+        this.pushUndo(ins,{vf:this.VF, pixels:this.pixels});
+
         let x = parseInt(this.registersV[parseInt(ins[1], 16)],16);
         let y = parseInt(this.registersV[parseInt(ins[2], 16)],16);
         let size = parseInt(ins[3], 16);
