@@ -9,7 +9,7 @@ class emulator{
     this.registerDelay; //8bit register. Decrements at a rate of 60Hz if non-zero
     this.registerSoundTimer; //8bit register. Decrements at a rate of 60Hz if non-zero
     this.programCounter; //stores program currently executing 16 bit (0000-FFFF)
-    this.stackPointer; //used to point to the uppermost area of the stack 8bit (00-FF)
+    this.stackPointer; //used to point to the uppermost area of the stack 8bit (0-255 instead of hex)
     this.stack = new Array(16); //16 16bit values. each 16 bit value is from 0000-FFFF
     this.memory = new Array(4096); //array of 4096 bytes. Bytes are fom 00-FF
     this.VF; //1bit register not used by any program. (instruction flag)
@@ -57,6 +57,12 @@ class emulator{
     this.VF = data;
     this.vis.updateVF();
   }
+  popStack(){
+    let result = this.stack[this.stackPointer];
+    this.setStackPointer(this.stackPointer-1);
+    this.vis.updateStack();
+    return result;
+  }
 
   undo(){// uses this.undoStack to undo the last instruction
     if(this.undoStack.length > 0){
@@ -71,7 +77,18 @@ class emulator{
             case "0e0":
               this.updateScreen(data.pixels, 0, {fill: true});
               break;
+
+            case "0EE"://00EE - RET
+            case "0ee":
+            case "0Ee":
+            case "0eE":
+              this.setProgramCounter(data.programCounter);
+              this.setStackPointer(data.stackPointer);
+              this.setStack(data.stackPointer, data.stackData);
+
           }
+
+
           break;
 
         case "1":
@@ -171,7 +188,6 @@ class emulator{
 
 
   executeInstruction(ins){ //ins is a 4-character string with each character beteen 0-1 or a-f/A-F
-    console.log(ins)
     switch(ins[0]){
       case "0":
         switch(ins.substring(1,4)){
@@ -180,6 +196,16 @@ class emulator{
             this.pushUndo(ins, {pixels:this.pixels.slice(0)} );
             this.updateScreen(new Array(64*32), 0, {fill: true});
             break;
+
+          case "0EE"://00EE - RET
+          case "0ee":
+          case "0Ee":
+          case "0eE":
+            if(this.stack != []){
+              this.pushUndo(ins,{programCounter:this.programCounter, stackPointer:this.stackPointer, stackData:this.stack[this.stack.length-1]})
+              this.setProgramCounter(this.popStack());
+            }
+
         }
         break;
 

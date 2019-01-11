@@ -1,1 +1,3 @@
 proper modulus with negative numbers - https://dev.to/maurobringolf/a-neat-trick-to-compute-modulo-of-negative-numbers-111e
+
+used as a resource - http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
