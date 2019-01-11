@@ -1,0 +1,53 @@
+CMPT 276 - Team 1 Product Document
+==================================
+
+## Administrative Details
+
+We plan to meet on Wednesday between 12:30 and 2:30.
+
+We will be using Slack to communicate outside of class.  
+
+We have setup a Github repository to use for version control.
+
+The Emulator and Visualizer will be implemented in Javascript, while the two games and tool will be written in Chip8.
+
+## Software Methodology
+
+Team Roles:
+  * Emulator: Gill, Josh T, and Sarb will be working on the Emulator
+  * Visualizer: Adam will be working on the Visualizer
+  * Game 1: Josh H will take the lead on Game 1, with assistance from Brandon.
+  * Game 2: Bradon will take the lead on Game 2, with assistance from Josh H.
+  * Tool: Brandon and Josh H will work on the tool.
+  * Project Manager: Adam will be our project manager.
+
+## Testing and Quality Assurance
+
+TBD.
+
+## Detailed Use Case
+
+Major Features:
+
+  * Emulator: The emulator is designed for anyone that wishes to run a Chip8 application.
+  * Visualizer: The visualizer is designed for hobbyists who write Chip8 program, allowing them to analyze memory management.
+  * Games: The games are designed for anyone (to have fun!).
+  * Tool: At this time, we are undecided on the tool we will create and therefore do not know the use cases for it.
+
+## Detailed Work Breakdown
+
+Major Features:
+
+  * Emulator: 
+  * Visualizer: 
+  * Games: Brandon and Josh H will each take a lead on one of the games, assisting each other as necessary.
+  * Tool: Brandon and Josh H will work together to complete the tool, once we have decided what the tool is.
+
+## Detailed Schedule
+
+Major Features:
+
+  * Emulator:
+  * Visualizer
+  * Games:
+  * Tool:
