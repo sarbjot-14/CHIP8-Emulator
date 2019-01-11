@@ -12,6 +12,7 @@ class visualizer{
     }
     document.getElementById("primaryColour").onchange = function(){ chip.updateScreen(); }
     document.getElementById("secondaryColour").onchange = function(){ chip.updateScreen(); }
+    document.getElementById("stepBackBtn").onclick = function(){chip.undo()}
   }
 
   generatePixels(){

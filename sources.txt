@@ -1,0 +1,1 @@
+proper modulus with negative numbers - https://dev.to/maurobringolf/a-neat-trick-to-compute-modulo-of-negative-numbers-111e

@@ -153,15 +153,15 @@ class emulator{
       let vfFlag = 0;
       let rowNum = Math.floor( (start)/64);;
       for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
-        if(this.pixels[(i+start)%64 + rowNum*64] ^ !pix[i]){
+        if(this.pixels[(i+start)%64 + rowNum*64] ^ !pix[i]){ // a ^ !b is the same as a == b but allows for undefined and zero to count as false
           if(pix[i]==1){
             vfFlag = 1;
           }
-          this.pixels[(i+start)%64 + rowNum*64] = 0;//update pixel in internal screen state
-          this.vis.setPixel((i+start)%64 + rowNum*64, 0); //update pixel in visualizer
+          this.pixels[this.mod((i+start),64) + rowNum*64] = 0;//update pixel in internal screen state
+          this.vis.setPixel(this.mod((i+start),64) + rowNum*64, 0); //update pixel in visualizer
         }else{
-          this.pixels[(i+start)%64 + rowNum*64] = 1; //update pixel in internal screen state
-          this.vis.setPixel((i+start)%64 + rowNum*64, 1); //update pixel in visualizer
+          this.pixels[this.mod((i+start),64) + rowNum*64] = 1; //update pixel in internal screen state
+          this.vis.setPixel(this.mod((i+start),64) + rowNum*64, 1); //update pixel in visualizer
         }
       }
       return vfFlag;
@@ -235,7 +235,7 @@ class emulator{
         this.VF = 0;
         for(let i=0; i<size; i++){
           let pixelByte = this.hexToBin(this.memory[pixelStart+i]);
-          if(this.updateScreen(pixelByte,64*((y-i)%32)+x)){
+          if(this.updateScreen(pixelByte,64*(this.mod((y-i),32))+x)){
             this.VF = 1;
           }
         }
@@ -255,6 +255,10 @@ class emulator{
 
   byteFromMem(address){//returns a byte from memory ad a given address (int 0-255)
     return this.memory[address];
+  }
+
+  mod(x,n){ //modulus that works with negative numbers. found online, sourced in sources.txt
+    return (x % n + n) % n;
   }
 
   hexToBin(hex){
