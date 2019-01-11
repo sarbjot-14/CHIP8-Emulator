@@ -174,40 +174,154 @@ class emulator{
     console.log(ins)
     switch(ins[0]){
       case "0":
-        switch(ins.substring(1,4)){
+        switch(ins.substring(1,3)){
           case "0E0":// 00E0 - CLS - Clear the display
           case "0e0":
             this.pushUndo(ins, {pixels:this.pixels.slice(0)} );
             this.updateScreen(new Array(64*32), 0, {fill: true});
             break;
+
+          case "0EE":// 00EE - Return from a subroutine
+          case "0ee":
+            setProgramCounter(this.stack[this.stackPointer]);
+            setStackPointer(this.stackPointer - 1);
+            break;
+
+          default:// Print error if doesn't regconize instruction
+            print("Error: Unkown opcode 0");
         }
         break;
 
-      case "1":
+      case "1":// 1NNN - Jump to location NNN
+        let nnn = parseInt(ins.substring(1,3),16);
+
+        setProgramCoutner(nnn);
         break;
 
-      case "2":
+      case "2":// 2NNN - Call subroutine at NNN
+        let nnn = parseInt(ins.substring(1,3),16);
+
+        setStackPointer(this.stackPointer + 1);
+        setStack(this.stackPointer, this.programCounter);
+        setProgramCounter(nnn);
         break;
 
-      case "3":
+      case "3":// 3XKK - Skip next instruction if VX = KK
+        let x = parseInt(ins[1],16);
+        let kk =parseInt(ins.substring(2,3));
+
+        if(this.registersV[x] == kk)
+          setProgramCounter(this.programCounter + 2);
         break;
 
-      case "4":
+      case "4":// 4XKK - Skip next instruction if VX != KK
+        let x = parseInt(ins[1],16);
+        let kk =parseInt(ins.substring(2,3));
+
+        if(this.registersV[x] != kk)
+          setProgramCounter(this.programCounter + 2);
         break;
 
-      case "5":
+      case "5":// 5XY0 - Skip next instruction if VX = VY
+        let x = parseInt(ins[1],16);
+        let y = parseInt(ins[2],16);
+
+        if(this.registersV[x] == this.registersV[y])
+          setProgramCounter(this.programCounter + 2);
         break;
 
-      case "6":
+      case "6":// 6XKK - Set VX == KK
+        let x = parseInt(ins[1],16);
+        let kk = parseInt(ins.substring(2,3));
+
+        setRegistersV(this.registersV[x], kk);
         break;
 
-      case "7":
+      case "7":// 7XKK - Set VX = VX + KK
+        let x = parseInt(ins[1],16);
+        let kk = parseInt(ins.substring(2,3));
+
+        setRegistersV(x, this.registersV[x] + kk);
         break;
 
       case "8":
+        switch(ins.substring(1,3)){
+          let x = parseInt(ins[1],16);
+          let y = parseInt(ins[2],16);
+
+          case "XY0":// 8XY0 - Set VX = VY
+          case "xy0"
+            setRegistersV(x, this.registersV[y]);
+            break;
+
+          case "XY1":// 8XY1 - Set VX = VX OR VY
+          case "xy1":
+            setRegistersV(x, this.registersV[x] | this.registersV[y]);
+            break;
+
+          case "XY2":// 8XY2 - Set VX = VX AND VY
+          case "xy2":
+            setRegistersV(x, this.registersV[x] & this.registersV[y]);
+            break;
+
+          case "XY3":// 8XY3 - Set VX = VX XOR VY
+          case "xy3":
+            setRegistersV(x, this.registersV[x] ^ this.registersV[y]);
+            break;
+
+          case "XY4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
+          case "xy4":
+            setRegistersV(x, this.registersV[x] + this.registersV[y]);
+
+            if(this.registersV[x] > 0xFF){
+              setRegistersV(x, this.registersV[x] - 0xFF)
+              setVF(1);
+            }
+            break;
+
+          case "XY5":// 8XY5 - Set VX = VX - VY, VF = 1 = not borrow
+          case "xy5":
+            if(this.registersV[x] > this.registersV[y])
+              setVF(1);
+
+            setRegistersV(x, this.registersV[x] - this.registersV[y]);
+            break;
+
+          case "XY6":// 8XY6 - Set VX = VX >> 1
+          case "xy6":
+            if((this.registersV[x] % 2) != 0)
+              setVF(1);
+
+            setRegistersV(x, this.registersV[x] / 2);
+            break;
+
+          case "XY7":// 8XY7 - Set VX = VY - VX, VF = 1 = not borrow
+          case "xy7":
+            if(this.registersV[y] > this.registersV[x])
+              setVF(1);
+
+            setRegistersV(x, this.registersV[x] - this.registersV[y]);
+            break;
+
+          case "XYE":// 8XY5 - Set VX = VX << 1
+          case "xye":
+            if(this.registersV[x] >= 0xF0)
+              setVF(1);
+
+            setRegistersV(x, this.registersV[x] * 2);
+            break;
+
+          default:// Print error if doesn't regconize instruction
+            print("Error: Unkown opcode 8");
+        }
         break;
 
-      case "9":
+      case "9":// 9XY0 - Skip next instruction if VX != VY
+        let x = parseInt(ins[1],16);
+        let y = parseInt(ins[2],16);
+
+        if(this.registersV[x] != this.registersV[y])
+          setProgramCounter(this.programCounter + 2);
         break;
 
       case "a":
