@@ -64,9 +64,69 @@ class emulator{
       let ins = popped[0];
       let data = popped[1];
 
+      switch(ins[0]){
+        case "0":
+          switch(ins.substring(1,4)){
+            case "0E0":// 00E0 - CLS - Clear the display
+            case "0e0":
+              this.updateScreen(data.pixels, 0, {fill: true});
+              break;
+          }
+          break;
 
-      //use cases and write undo code for each instruction
+        case "1":
+          break;
 
+        case "2":
+          break;
+
+        case "3":
+          break;
+
+        case "4":
+          break;
+
+        case "5":
+          break;
+
+        case "6":
+          break;
+
+        case "7":
+          break;
+
+        case "8":
+          break;
+
+        case "9":
+          break;
+
+        case "a":
+        case "A":
+          break;
+
+        case "b":
+        case "B":
+          break;
+
+        case "c":
+        case "C":
+          break;
+
+        case "d":
+        case "D": //Dxyn
+          this.updateScreen(data.pixels,0,{fill:true});
+          this.setVF(data.vf)
+          break;
+
+        case "e":
+        case "E":
+          break;
+
+        case "f":
+        case "F":
+          break;
+      }
     }
   }
   pushUndo(ins, data){
@@ -109,15 +169,15 @@ class emulator{
 
   }
 
+
   executeInstruction(ins){ //ins is a 4-character string with each character beteen 0-1 or a-f/A-F
     console.log(ins)
     switch(ins[0]){
       case "0":
         switch(ins.substring(1,4)){
-
           case "0E0":// 00E0 - CLS - Clear the display
           case "0e0":
-            this.pushUndo(ins,this.pixels);
+            this.pushUndo(ins, {pixels:this.pixels.slice(0)} );
             this.updateScreen(new Array(64*32), 0, {fill: true});
             break;
         }
@@ -164,7 +224,7 @@ class emulator{
 
       case "d":
       case "D": //Dxyn
-        this.pushUndo(ins,{vf:this.VF, pixels:this.pixels});
+        this.pushUndo(ins,{vf:this.VF, pixels:this.pixels.slice(0)});
 
         let x = parseInt(this.registersV[parseInt(ins[1], 16)],16);
         let y = parseInt(this.registersV[parseInt(ins[2], 16)],16);
