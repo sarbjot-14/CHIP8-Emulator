@@ -2,6 +2,7 @@
 -00E0
 -00EE
 -1nnn
+-2nnn
 
 */
 
@@ -82,6 +83,47 @@ class emulator{
 
   }
 
+  pushUndo(ins, data){
+    this.undoStack.push([ins, data]);
+  }
+  clearUndo(){
+    this.undoStack = [];
+  }
+
+
+
+  //Updates the screen given a binary array and a starting index
+  updateScreen(pix, start = 0, options = {}){
+    if(!pix){ //if no pixels are provided, refresh the entire screen
+      pix = this.pixels;
+      options = {fill:true};
+    }
+    if (options.fill == true) { //fill mode is the method that continues on the next row
+      for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
+        this.pixels[(i+start)] = pix[i]; //update pixel in internal screen state
+        this.vis.setPixel((i+start), pix[i]); //update pixel in visualizer
+      }
+    }else{ //traditional Chip method
+      let vfFlag = 0;
+      let rowNum = Math.floor( (start)/64);;
+      for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
+        if(this.pixels[(i+start)%64 + rowNum*64] ^ !pix[i]){ // a ^ !b is the same as a == b but allows for undefined and zero to count as false
+          if(pix[i]==1){
+            vfFlag = 1;
+          }
+          this.pixels[this.mod((i+start),64) + rowNum*64] = 0;//update pixel in internal screen state
+          this.vis.setPixel(this.mod((i+start),64) + rowNum*64, 0); //update pixel in visualizer
+        }else{
+          this.pixels[this.mod((i+start),64) + rowNum*64] = 1; //update pixel in internal screen state
+          this.vis.setPixel(this.mod((i+start),64) + rowNum*64, 1); //update pixel in visualizer
+        }
+      }
+      return vfFlag;
+    }
+
+  }
+
+
   undo(){// uses this.undoStack to undo the last instruction
     if(this.undoStack.length > 0){
       let popped = this.undoStack.pop();
@@ -113,6 +155,8 @@ class emulator{
           break;
 
         case "2":
+          this.popStack();
+          this.setProgramCounter(data.programCounter);
           break;
 
         case "3":
@@ -164,46 +208,6 @@ class emulator{
       }
     }
   }
-  pushUndo(ins, data){
-    this.undoStack.push([ins, data]);
-  }
-  clearUndo(){
-    this.undoStack = [];
-  }
-
-
-
-  //Updates the screen given a binary array and a starting index
-  updateScreen(pix, start = 0, options = {}){
-    if(!pix){ //if no pixels are provided, refresh the entire screen
-      pix = this.pixels;
-      options = {fill:true};
-    }
-    if (options.fill == true) { //fill mode is the method that continues on the next row
-      for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
-        this.pixels[(i+start)] = pix[i]; //update pixel in internal screen state
-        this.vis.setPixel((i+start), pix[i]); //update pixel in visualizer
-      }
-    }else{ //traditional Chip method
-      let vfFlag = 0;
-      let rowNum = Math.floor( (start)/64);;
-      for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
-        if(this.pixels[(i+start)%64 + rowNum*64] ^ !pix[i]){ // a ^ !b is the same as a == b but allows for undefined and zero to count as false
-          if(pix[i]==1){
-            vfFlag = 1;
-          }
-          this.pixels[this.mod((i+start),64) + rowNum*64] = 0;//update pixel in internal screen state
-          this.vis.setPixel(this.mod((i+start),64) + rowNum*64, 0); //update pixel in visualizer
-        }else{
-          this.pixels[this.mod((i+start),64) + rowNum*64] = 1; //update pixel in internal screen state
-          this.vis.setPixel(this.mod((i+start),64) + rowNum*64, 1); //update pixel in visualizer
-        }
-      }
-      return vfFlag;
-    }
-
-  }
-
 
   executeInstruction(ins){ //ins is a 4-character string with each character beteen 0-1 or a-f/A-F
     switch(ins[0]){
@@ -228,11 +232,14 @@ class emulator{
         break;
 
       case "1":
-        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)})
+        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
         this.setProgramCounter(ins.substring(1,4));
         break;
 
       case "2":
+        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
+        this.pushStack(this.programCounter.slice(0));
+        this.setProgramCounter(ins.substring(1,4));
         break;
 
       case "3":
