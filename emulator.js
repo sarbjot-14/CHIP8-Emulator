@@ -1,3 +1,10 @@
+/*  WORKING OPCODES:
+-00E0
+-00EE
+-1nnn
+
+*/
+
 class emulator{
   constructor(){
     this.pixels = this.separatePixels(title);
