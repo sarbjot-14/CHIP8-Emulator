@@ -18,7 +18,7 @@ class emulator{
     this.registerSoundTimer; //8bit register. Decrements at a rate of 60Hz if non-zero
     this.programCounter; //stores program currently executing. 16 bit (0000-FFFF)
     this.stackPointer; //used to point to the uppermost area of the stack 8bit (0-255 instead of hex)
-    this.stack = new Array(16); //Stack contains program return order. 16 16bit values (0000-FFFF)
+    this.stack = new Array(16); //Stack contains program return order. 16 16bit values (0000-FFFF).
     this.memory = new Array(4096); //array of 4096 bytes. Bytes are fom 00-FF
     this.VF; //1bit register not used by any program. (instruction flag)
 
@@ -26,8 +26,25 @@ class emulator{
 
   start(){
     this.vis.init();
+    this.initializeRegisters();
     this.updateScreen();
   }
+  initializeRegisters(){
+    this.setRegusterI = "0000";
+    for(let i=0; i< 16; i++){
+      this.setRegistersV(i,"00");
+      this.setStack(i, "0000");
+    }
+    this.setRegisterDelay("00");
+    this.setRegisterSoundTimer("00");
+    this.setProgramCounter("0000");
+    this.setStackPointer(0);
+    for(let i= 0; i<4096;i++){
+      this,this.setMemory(i, "00")
+    }
+
+  }
+
 
   setRegistersV(index,data){
     this.registersV[index] = this.fixHexLength(data, 2);
@@ -77,7 +94,7 @@ class emulator{
   }
 
   popStack(){
-    if(this.stackPointer > -1){
+    if(this.stackPointer > 0){
       let result = this.stack[this.stackPointer];
       this.setStackPointer(this.stackPointer-1);
       this.vis.updateStack();
