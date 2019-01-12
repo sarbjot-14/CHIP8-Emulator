@@ -58,10 +58,12 @@ class emulator{
     this.vis.updateVF();
   }
   popStack(){
-    let result = this.stack[this.stackPointer];
-    this.setStackPointer(this.stackPointer-1);
-    this.vis.updateStack();
-    return result;
+    if(this.stackPointer > -1){
+      let result = this.stack[this.stackPointer];
+      this.setStackPointer(this.stackPointer-1);
+      this.vis.updateStack();
+      return result;
+    }
   }
   pushStack(val){
     if(this.stackPointer > 15){
@@ -209,8 +211,8 @@ class emulator{
           case "0ee":
           case "0Ee":
           case "0eE":
-            if(this.stack != []){
-              this.pushUndo(ins,{programCounter:this.programCounter, stackData:this.stack[this.stackPointer]})
+            if(this.stackPointer > 0){
+              this.pushUndo(ins,{programCounter:this.programCounter.slice(0), stackData:this.stack[this.stackPointer].slice(0)})
               this.setProgramCounter(this.popStack());
             }
 
