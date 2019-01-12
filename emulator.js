@@ -102,6 +102,7 @@ class emulator{
           break;
 
         case "1":
+          this.setProgramCounter(data.programCounter);
           break;
 
         case "2":
@@ -220,6 +221,8 @@ class emulator{
         break;
 
       case "1":
+        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)})
+        this.setProgramCounter(ins.substring(1,4));
         break;
 
       case "2":
