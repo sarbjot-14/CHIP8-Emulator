@@ -8,9 +8,9 @@ class emulator{
     this.registerI; //16bit register that holds addresses (00-FF)
     this.registerDelay; //8bit register. Decrements at a rate of 60Hz if non-zero
     this.registerSoundTimer; //8bit register. Decrements at a rate of 60Hz if non-zero
-    this.programCounter; //stores program currently executing 16 bit (0000-FFFF)
+    this.programCounter; //stores program currently executing. Originally 16 bit but only 12 bits are used so we will give it 12 bits (000-FFF)
     this.stackPointer; //used to point to the uppermost area of the stack 8bit (0-255 instead of hex)
-    this.stack = new Array(16); //16 16bit values. each 16 bit value is from 0000-FFFF
+    this.stack = new Array(16); //Stack contains program return order. Originally 16 16bit values but only 12 bits from each is used (see programCounter) so we will give it 12 bits each (000-FFF)
     this.memory = new Array(4096); //array of 4096 bytes. Bytes are fom 00-FF
     this.VF; //1bit register not used by any program. (instruction flag)
 
@@ -63,6 +63,15 @@ class emulator{
     this.vis.updateStack();
     return result;
   }
+  pushStack(val){
+    if(this.stackPointer > 15){
+      console.log("Chip-8 ERROR: cant add to a full stack");
+    }else{
+      this.setStackPointer(this.stackPointer+1);
+      this.setStack(this.stackPointer, val);
+    }
+
+  }
 
   undo(){// uses this.undoStack to undo the last instruction
     if(this.undoStack.length > 0){
@@ -83,8 +92,7 @@ class emulator{
             case "0Ee":
             case "0eE":
               this.setProgramCounter(data.programCounter);
-              this.setStackPointer(data.stackPointer);
-              this.setStack(data.stackPointer, data.stackData);
+              this.pushStack(data.stackData);
 
           }
 
@@ -202,7 +210,7 @@ class emulator{
           case "0Ee":
           case "0eE":
             if(this.stack != []){
-              this.pushUndo(ins,{programCounter:this.programCounter, stackPointer:this.stackPointer, stackData:this.stack[this.stack.length-1]})
+              this.pushUndo(ins,{programCounter:this.programCounter, stackData:this.stack[this.stackPointer]})
               this.setProgramCounter(this.popStack());
             }
 

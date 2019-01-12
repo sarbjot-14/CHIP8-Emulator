@@ -8,14 +8,14 @@ function drawTesting(){
 }
 
 function retTest(){
-  chip.setStack(0,"0001");
-  chip.setStack(1,"001F");
-  chip.setStack(2,"01FE");
-  chip.setStack(3,"1FED");
-  chip.setStack(4,"FEDC");
+  chip.setStack(0,"001");
+  chip.setStack(1,"01F");
+  chip.setStack(2,"1FE");
+  chip.setStack(3,"FED");
+  chip.setStack(4,"EDC");
 
   chip.setStackPointer(4);
 
-  chip.setProgramCounter("EDCB");
+  chip.setProgramCounter("DCB");
 
 }
