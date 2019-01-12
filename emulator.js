@@ -13,12 +13,12 @@ class emulator{
     this.undoStack = []; //stack used for undoing instructions. each value is in the form [instruction, {data}]
 
     this.registersV = new Array(16); //16 1byte registers Vx, each is from 00-FF
-    this.registerI; //16bit register that holds addresses (00-FF)
+    this.registerI; //16bit register that holds addresses (0000-FFFF)
     this.registerDelay; //8bit register. Decrements at a rate of 60Hz if non-zero
     this.registerSoundTimer; //8bit register. Decrements at a rate of 60Hz if non-zero
-    this.programCounter; //stores program currently executing. Originally 16 bit but only 12 bits are used so we will give it 12 bits (000-FFF)
+    this.programCounter; //stores program currently executing. 16 bit (0000-FFFF)
     this.stackPointer; //used to point to the uppermost area of the stack 8bit (0-255 instead of hex)
-    this.stack = new Array(16); //Stack contains program return order. Originally 16 16bit values but only 12 bits from each is used (see programCounter) so we will give it 12 bits each (000-FFF)
+    this.stack = new Array(16); //Stack contains program return order. 16 16bit values (0000-FFFF)
     this.memory = new Array(4096); //array of 4096 bytes. Bytes are fom 00-FF
     this.VF; //1bit register not used by any program. (instruction flag)
 
@@ -30,23 +30,23 @@ class emulator{
   }
 
   setRegistersV(index,data){
-    this.registersV[index] = data;
+    this.registersV[index] = this.fixHexLength(data, 2);
     this.vis.updateRegistersV();
   }
   setRegisterI(data){
-    this.registerI = data;
+    this.registerI = this.fixHexLength(data, 4);
     this.vis.updateRegisterI();
   }
   setRegisterDelay(data){
-    this.registerDelay = data;
+    this.registerDelay = this.fixHexLength(data, 2);
     this.vis.updateRegisterDelay();
   }
   setRegisterSoundTimer(data){
-    this.registerSoundTimer = data;
+    this.registerSoundTimer = this.fixHexLength(data, 2);
     this.vis.updateRegisterSoundTimer();
   }
   setProgramCounter(data){
-    this.programCounter = data;
+    this.programCounter = this.fixHexLength(data, 4);
     this.vis.updateProgramCounter();
   }
   setStackPointer(data){
@@ -54,17 +54,28 @@ class emulator{
     this.vis.updateStackPointer();
   }
   setStack(index, data){
-    this.stack[index] = data;
+    this.stack[index] = this.fixHexLength(data, 4);
     this.vis.updateStack();
   }
   setMemory(index, data){
-    this.memory[index] = data;
+    this.memory[index] = this.fixHexLength(data, 2);
     this.vis.updateMemory();
   }
   setVF(data){
     this.VF = data;
     this.vis.updateVF();
   }
+
+  fixHexLength(val, len){
+    if(val.length > len){
+      console.log("Error in fixHexLength()")
+    }
+    while(val.length < len){
+      val = "0"+val;
+    }
+    return val;
+  }
+
   popStack(){
     if(this.stackPointer > -1){
       let result = this.stack[this.stackPointer];
