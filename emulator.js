@@ -327,15 +327,15 @@ class emulator{
             break;
 
           case "1":// 8XY1 - Set VX = VX OR VY
-            setRegistersV(x, parseInt(this.registersV[x] | parseInt(this.registersV[y]));
+            setRegistersV(x, parseInt(this.registersV[x]) | parseInt(this.registersV[y]));
             break;
 
           case "2":// 8XY2 - Set VX = VX AND VY
-            setRegistersV(x, parseInt(this.registersV[x] & parseInt(this.registersV[y]));
+            setRegistersV(x, parseInt(this.registersV[x]) & parseInt(this.registersV[y]));
             break;
 
           case "3":// 8XY3 - Set VX = VX XOR VY
-            setRegistersV(x, parseInt(this.registersV[x] ^ parseInt(this.registersV[y]));
+            setRegistersV(x, parseInt(this.registersV[x]) ^ parseInt(this.registersV[y]));
             break;
 
           case "4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
