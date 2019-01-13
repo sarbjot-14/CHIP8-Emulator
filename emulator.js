@@ -349,32 +349,36 @@ class emulator{
             break;
 
           case "5":// 8XY5 - Set VX = VX - VY, VF = 1 = not borrow
-            if(this.registersV[x] > this.registersV[y])
+            if(parseInt(this.registersV[x], 16) > parseInt(this.registersV[y], 16)){
               setVF(1);
+            }
 
-            setRegistersV(x, this.registersV[x] - this.registersV[y]);
+            setRegistersV(x, (parseInt(this.registersV[x], 16) - parseInt(this.registersV[y], 16)).toString(16) );
             break;
 
           case "6":// 8XY6 - Set VX = VX >> 1
-            if((this.registersV[x] % 2) != 0)
+            if(( parseInt(this.registersV[x], 16) % 2) != 0){
               setVF(1);
+            }
 
-            setRegistersV(x, this.registersV[x] / 2);
+            setRegistersV(x, (parseInt(this.registersV[x], 16) / 2).toString(16) );
             break;
 
           case "7":// 8XY7 - Set VX = VY - VX, VF = 1 = not borrow
-            if(this.registersV[y] > this.registersV[x])
+            if(parseInt(this.registersV[y], 16) > parseInt(this.registersV[x], 16)){
               setVF(1);
+            }
 
-            setRegistersV(x, this.registersV[x] - this.registersV[y]);
+            setRegistersV(x, (parseInt(this.registersV[x], 16) - parseInt(this.registersV[y], 16)).toString(16) );
             break;
 
           case "E":// 8XY5 - Set VX = VX << 1
           case "e":
-            if(this.registersV[x] >= 0xF0)
+            if(parseInt(this.registersV[x], 16) >= 128){
               setVF(1);
+            }
 
-            setRegistersV(x, this.registersV[x] * 2);
+            setRegistersV(x, (parseInt(this.registersV[x]) * 2).toString(16) );
             break;
 
           default:// Print error if doesn't regconize instruction
@@ -388,7 +392,7 @@ class emulator{
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
 
         if(this.registersV[x] != this.registersV[y])
-          setProgramCounter(this.programCounter + 2);
+          setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
         break;
 
       case "a":
