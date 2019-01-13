@@ -111,12 +111,7 @@ class emulator{
 
   }
 
-  pushUndo(ins, data){
-    this.undoStack.push([ins, data]);
-  }
-  clearUndo(){
-    this.undoStack = [];
-  }
+
 
 
 
@@ -152,6 +147,13 @@ class emulator{
   }
 
 
+  pushUndo(ins, data){
+    this.undoStack.push([ins, data]);
+  }
+  clearUndo(){
+    this.undoStack = [];
+  }
+  
   undo(){// uses this.undoStack to undo the last instruction
     if(this.undoStack.length > 0){
       let popped = this.undoStack.pop();
@@ -314,7 +316,7 @@ class emulator{
         let kk = parseInt(ins.substring(2,3));
 
         this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); /////////****************** not sure if this is correct*****************///////////////
-        setRegistersV(x, this.registersV[x] + kk);
+        setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(kk, 16)).toString(16) );
         break;
 
       case "8":
