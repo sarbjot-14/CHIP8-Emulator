@@ -90,7 +90,7 @@ class emulator{
     while(val.length < len){
       val = "0"+val;
     }
-    return val;
+    return val.toLowerCase();
   }
 
   popStack(){
@@ -238,6 +238,7 @@ class emulator{
   }
 
   executeInstruction(ins){ //ins is a 4-character string with each character beteen 0-1 or a-f/A-F
+    ins = ins.toLowerCase();
     switch(ins[0]){
       case "0":
         switch(ins.substring(1,4)){
