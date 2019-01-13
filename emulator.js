@@ -153,7 +153,7 @@ class emulator{
   clearUndo(){
     this.undoStack = [];
   }
-  
+
   undo(){// uses this.undoStack to undo the last instruction
     if(this.undoStack.length > 0){
       let popped = this.undoStack.pop();
@@ -282,7 +282,7 @@ class emulator{
 
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
         if(this.registersV[x] == kk)
-          setProgramCounter(this.programCounter + 2);
+          this.setProgramCounter(this.programCounter + 2);
         break;
 
       case "4":// 4XKK - Skip next instruction if VX != KK
@@ -291,7 +291,7 @@ class emulator{
 
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
         if(this.registersV[x] != kk)
-          setProgramCounter(this.programCounter + 2);
+          this.setProgramCounter(this.programCounter + 2);
         break;
 
       case "5":// 5XY0 - Skip next instruction if VX = VY
@@ -300,7 +300,7 @@ class emulator{
 
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
         if(this.registersV[x] == this.registersV[y])
-          setProgramCounter(this.programCounter + 2);
+          this.setProgramCounter(this.programCounter + 2);
         break;
 
       case "6":// 6XKK - Set VX == KK
@@ -308,7 +308,7 @@ class emulator{
         let kk = parseInt(ins.substring(2,3));
 
         this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); /////////****************** not sure if this is correct*****************///////////////
-        setRegistersV(this.registersV[x], kk);
+        this.setRegistersV(this.registersV[x], kk);
         break;
 
       case "7":// 7XKK - Set VX = VX + KK
@@ -316,7 +316,7 @@ class emulator{
         let kk = parseInt(ins.substring(2,3));
 
         this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); /////////****************** not sure if this is correct*****************///////////////
-        setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(kk, 16)).toString(16) );
+        this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(kk, 16)).toString(16) );
         break;
 
       case "8":
@@ -325,62 +325,62 @@ class emulator{
       this.pushUndo(ins,{registersV:this.registersV[x].slice(0), registersV:this.registersV[y].slice(0), flagV:this.VF.slice(0)});// push to undo stacks: VX, VY, VF(carry flag)
         switch(ins[3]){
           case "0":// 8XY0 - Set VX = VY
-            setRegistersV(x, this.registersV[y]);
+            this.setRegistersV(x, this.registersV[y]);
             break;
 
           case "1":// 8XY1 - Set VX = VX OR VY
-            setRegistersV(x, (parseInt(this.registersV[x], 16) | parseInt(this.registersV[y], 16)).toString(16) );
+            this.setRegistersV(x, (parseInt(this.registersV[x], 16) | parseInt(this.registersV[y], 16)).toString(16) );
             break;
 
           case "2":// 8XY2 - Set VX = VX AND VY
-            setRegistersV(x, (parseInt(this.registersV[x], 16) & parseInt(this.registersV[y], 16)).toString(16) );
+            this.setRegistersV(x, (parseInt(this.registersV[x], 16) & parseInt(this.registersV[y], 16)).toString(16) );
             break;
 
           case "3":// 8XY3 - Set VX = VX XOR VY
-            setRegistersV(x, (parseInt(this.registersV[x], 16) ^ parseInt(this.registersV[y], 16)).toString(16) );
+            this.setRegistersV(x, (parseInt(this.registersV[x], 16) ^ parseInt(this.registersV[y], 16)).toString(16) );
             break;
 
           case "4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
             if( (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)) > parseInt("FF", 16)){
-              setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16).substring(0,3))
-              setVF(1);
+              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16).substring(0,3))
+              this.setVF(1);
             }else{
-              setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16)  );
+              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16)  );
             }
 
             break;
 
           case "5":// 8XY5 - Set VX = VX - VY, VF = 1 = not borrow
             if(parseInt(this.registersV[x], 16) > parseInt(this.registersV[y], 16)){
-              setVF(1);
+              this.setVF(1);
             }
 
-            setRegistersV(x, (parseInt(this.registersV[x], 16) - parseInt(this.registersV[y], 16)).toString(16) );
+            this.setRegistersV(x, (parseInt(this.registersV[x], 16) - parseInt(this.registersV[y], 16)).toString(16) );
             break;
 
           case "6":// 8XY6 - Set VX = VX >> 1
             if(( parseInt(this.registersV[x], 16) % 2) != 0){
-              setVF(1);
+              this.setVF(1);
             }
 
-            setRegistersV(x, (parseInt(this.registersV[x], 16) / 2).toString(16) );
+            this.setRegistersV(x, (parseInt(this.registersV[x], 16) / 2).toString(16) );
             break;
 
           case "7":// 8XY7 - Set VX = VY - VX, VF = 1 = not borrow
             if(parseInt(this.registersV[y], 16) > parseInt(this.registersV[x], 16)){
-              setVF(1);
+              this.setVF(1);
             }
 
-            setRegistersV(x, (parseInt(this.registersV[x], 16) - parseInt(this.registersV[y], 16)).toString(16) );
+            this.setRegistersV(x, (parseInt(this.registersV[x], 16) - parseInt(this.registersV[y], 16)).toString(16) );
             break;
 
           case "E":// 8XY5 - Set VX = VX << 1
           case "e":
             if(parseInt(this.registersV[x], 16) >= 128){
-              setVF(1);
+              this.setVF(1);
             }
 
-            setRegistersV(x, (parseInt(this.registersV[x]) * 2).toString(16) );
+            this.setRegistersV(x, (parseInt(this.registersV[x]) * 2).toString(16) );
             break;
 
           default:// Print error if doesn't regconize instruction
@@ -394,7 +394,7 @@ class emulator{
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
 
         if(this.registersV[x] != this.registersV[y])
-          setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
+          this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
         break;
 
       case "a":
