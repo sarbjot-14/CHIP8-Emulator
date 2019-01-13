@@ -256,39 +256,159 @@ class emulator{
               this.setProgramCounter(this.popStack());
             }
 
+          default:
+            console.log("Error: Unknown opcode 0");
+
         }
         break;
 
-      case "1":
+      case "1":// 1NNN - Jump to location NNN
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
         this.setProgramCounter(ins.substring(1,4));
         break;
 
-      case "2":
-        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
+      case "2":// 2NNN - Call subroutine at NNN
+        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)}); //////****** not sure if this is correct *****///////
         this.pushStack(this.programCounter.slice(0));
         this.setProgramCounter(ins.substring(1,4));
         break;
 
-      case "3":
+      case "3":// 3XKK - Skip next instruction if VX = KK
+        let x = parseInt(ins[1],16);
+        let kk =parseInt(ins.substring(2,3));
+
+        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
+        if(this.registersV[x] == kk)
+          setProgramCounter(this.programCounter + 2);
         break;
 
-      case "4":
+      case "4":// 4XKK - Skip next instruction if VX != KK
+        let x = parseInt(ins[1],16);
+        let kk =parseInt(ins.substring(2,3));
+
+        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
+        if(this.registersV[x] != kk)
+          setProgramCounter(this.programCounter + 2);
         break;
 
-      case "5":
+      case "5":// 5XY0 - Skip next instruction if VX = VY
+        let x = parseInt(ins[1],16);
+        let y = parseInt(ins[2],16);
+
+        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
+        if(this.registersV[x] == this.registersV[y])
+          setProgramCounter(this.programCounter + 2);
         break;
 
-      case "6":
+      case "6":// 6XKK - Set VX == KK
+        let x = parseInt(ins[1],16);
+        let kk = parseInt(ins.substring(2,3));
+
+        this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); /////////****************** not sure if this is correct*****************///////////////
+        setRegistersV(this.registersV[x], kk);
         break;
 
-      case "7":
+      case "7":// 7XKK - Set VX = VX + KK
+        let x = parseInt(ins[1],16);
+        let kk = parseInt(ins.substring(2,3));
+
+        this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); /////////****************** not sure if this is correct*****************///////////////
+        setRegistersV(x, this.registersV[x] + kk);
         break;
 
       case "8":
+        switch(ins[3]){
+          let x = parseInt(ins[1],16);
+          let y = parseInt(ins[2],16);
+          this.pushUndo(ins,{registersV:this.registersV[x].slice(0), registersV:this.registersV[y].slice(0), flagV:this.VF.slice(0)});// push to undo stacks: VX, VY, VF(carry flag) /////////****************** not sure if this is correct*****************///////////////
+
+          case "0":// 8XY0 - Set VX = VY
+            setRegistersV(x, this.registersV[y]);
+            break;
+
+          case "1":// 8XY1 - Set VX = VX OR VY
+            binX = hexToBin(this.registersV[x]);
+            binY = hexToBin(this.registersV[y]);
+
+            for(let i=0; i<7; i++){
+              if(this.registersV[x][i] | this.registersV[y][i])  /////////***** not very sure about syntax ******//////////
+                setRegistersV(this.registersV[x][i], 1);
+              else
+                setRegistersV(this.registersV[x][i], 0);
+            break;
+
+          case "2":// 8XY2 - Set VX = VX AND VY
+            binX = hexToBin(this.registersV[x]);
+            binY = hexToBin(this.registersV[y]);
+
+            for(let i=0; i<7; i++){
+              if(this.registersV[x][i] & this.registersV[y][i])
+                setRegistersV(this.registersV[x][i], 1);
+              else
+                setRegistersV(this.registersV[x][i], 0);
+            break;
+
+          case "3":// 8XY3 - Set VX = VX XOR VY
+            binX = hexToBin(this.registersV[x]);
+            binY = hexToBin(this.registersV[y]);
+
+            for(let i=0; i<7; i++){
+              if(this.registersV[x][i] ^ this.registersV[y][i])
+                setRegistersV(this.registersV[x][i], 1);
+              else
+                setRegistersV(this.registersV[x][i], 0);
+            break;
+
+          case "4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
+            setRegistersV(x, this.registersV[x] + this.registersV[y]);
+
+            if(this.registersV[x] > 0xFF){
+              setRegistersV(x, this.registersV[x] - 0xFF)
+              setVF(1);
+            }
+            break;
+
+          case "5":// 8XY5 - Set VX = VX - VY, VF = 1 = not borrow
+            if(this.registersV[x] > this.registersV[y])
+              setVF(1);
+
+            setRegistersV(x, this.registersV[x] - this.registersV[y]);
+            break;
+
+          case "6":// 8XY6 - Set VX = VX >> 1
+            if((this.registersV[x] % 2) != 0)
+              setVF(1);
+
+            setRegistersV(x, this.registersV[x] / 2);
+            break;
+
+          case "7":// 8XY7 - Set VX = VY - VX, VF = 1 = not borrow
+            if(this.registersV[y] > this.registersV[x])
+              setVF(1);
+
+            setRegistersV(x, this.registersV[x] - this.registersV[y]);
+            break;
+
+          case "E":// 8XY5 - Set VX = VX << 1
+          case "e":
+            if(this.registersV[x] >= 0xF0)
+              setVF(1);
+
+            setRegistersV(x, this.registersV[x] * 2);
+            break;
+
+          default:// Print error if doesn't regconize instruction
+            console.log("Error: Unkown opcode 8");
+        }
         break;
 
-      case "9":
+      case "9":// 9XY0 - Skip next instruction if VX != VY
+        let x = parseInt(ins[1],16);
+        let y = parseInt(ins[2],16);
+        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
+
+        if(this.registersV[x] != this.registersV[y])
+          setProgramCounter(this.programCounter + 2);
         break;
 
       case "a":
