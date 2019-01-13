@@ -205,9 +205,13 @@ class emulator{
           break;
 
         case "8":
+          this.setRegistersV(parseInt(ins[1],16), data.registersVX);
+          this.setRegistersV(parseInt(ins[2],16), data.registersVY);
+          this.setVF(data.flagV);
           break;
 
-        case "9":
+        case "9": // 9XY0 - Skip next instruction if VX != VY
+          this.setProgramCounter(data.programCounter);
           break;
 
         case "a":
@@ -322,7 +326,7 @@ class emulator{
       case "8":
       let x = parseInt(ins[1],16);
       let y = parseInt(ins[2],16);
-      this.pushUndo(ins,{registersV:this.registersV[x].slice(0), registersV:this.registersV[y].slice(0), flagV:this.VF.slice(0)});// push to undo stacks: VX, VY, VF(carry flag)
+      this.pushUndo(ins,{registersVX:this.registersV[x].slice(0), registersVY:this.registersV[y].slice(0), flagV:this.VF.slice(0)});// push to undo stacks: VX, VY, VF(carry flag)
         switch(ins[3]){
           case "0":// 8XY0 - Set VX = VY
             this.setRegistersV(x, this.registersV[y]);
