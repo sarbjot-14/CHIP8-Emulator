@@ -339,12 +339,13 @@ class emulator{
             break;
 
           case "4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
-            setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16)  );
-
-            if(this.registersV[x] > 0xFF){
-              setRegistersV(x, this.registersV[x] - 0xFF)
+            if( (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)) > parseInt("FF", 16)){
+              setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16).substring(0,3))
               setVF(1);
+            }else{
+              setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16)  );
             }
+
             break;
 
           case "5":// 8XY5 - Set VX = VX - VY, VF = 1 = not borrow
