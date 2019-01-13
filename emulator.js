@@ -221,7 +221,7 @@ class emulator{
           break;
 
         case "d":
-        case "D": //Dxyn
+        case "D": //DXYN
           this.updateScreen(data.pixels,0,{fill:true});
           this.setVF(data.vf)
           break;
@@ -262,18 +262,18 @@ class emulator{
         }
         break;
 
-      case "1":// 1NNN - Jump to location NNN
+      case "1":// 1NNN - JP addr - Jump to location NNN
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
         this.setProgramCounter(ins.substring(1,4));
         break;
 
-      case "2":// 2NNN - Call subroutine at NNN
+      case "2":// 2NNN - CALL addr - Call subroutine at NNN
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)}); //////****** not sure if this is correct *****///////
         this.pushStack(this.programCounter.slice(0));
         this.setProgramCounter(ins.substring(1,4));
         break;
 
-      case "3":// 3XKK - Skip next instruction if VX = KK
+      case "3":// 3XKK - SE Vx, byte - Skip next instruction if VX = KK
         let x = parseInt(ins[1],16);
         let kk =parseInt(ins.substring(2,3));
 
@@ -317,46 +317,24 @@ class emulator{
         break;
 
       case "8":
+      let x = parseInt(ins[1],16);
+      let y = parseInt(ins[2],16);
+      this.pushUndo(ins,{registersV:this.registersV[x].slice(0), registersV:this.registersV[y].slice(0), flagV:this.VF.slice(0)});// push to undo stacks: VX, VY, VF(carry flag)
         switch(ins[3]){
-          let x = parseInt(ins[1],16);
-          let y = parseInt(ins[2],16);
-          this.pushUndo(ins,{registersV:this.registersV[x].slice(0), registersV:this.registersV[y].slice(0), flagV:this.VF.slice(0)});// push to undo stacks: VX, VY, VF(carry flag) /////////****************** not sure if this is correct*****************///////////////
-
           case "0":// 8XY0 - Set VX = VY
             setRegistersV(x, this.registersV[y]);
             break;
 
           case "1":// 8XY1 - Set VX = VX OR VY
-            binX = hexToBin(this.registersV[x]);
-            binY = hexToBin(this.registersV[y]);
-
-            for(let i=0; i<7; i++){
-              if(this.registersV[x][i] | this.registersV[y][i])  /////////***** not very sure about syntax ******//////////
-                setRegistersV(this.registersV[x][i], 1);
-              else
-                setRegistersV(this.registersV[x][i], 0);
+            setRegistersV(x, parseInt(this.registersV[x] | parseInt(this.registersV[y]));
             break;
 
           case "2":// 8XY2 - Set VX = VX AND VY
-            binX = hexToBin(this.registersV[x]);
-            binY = hexToBin(this.registersV[y]);
-
-            for(let i=0; i<7; i++){
-              if(this.registersV[x][i] & this.registersV[y][i])
-                setRegistersV(this.registersV[x][i], 1);
-              else
-                setRegistersV(this.registersV[x][i], 0);
+            setRegistersV(x, parseInt(this.registersV[x] & parseInt(this.registersV[y]));
             break;
 
           case "3":// 8XY3 - Set VX = VX XOR VY
-            binX = hexToBin(this.registersV[x]);
-            binY = hexToBin(this.registersV[y]);
-
-            for(let i=0; i<7; i++){
-              if(this.registersV[x][i] ^ this.registersV[y][i])
-                setRegistersV(this.registersV[x][i], 1);
-              else
-                setRegistersV(this.registersV[x][i], 0);
+            setRegistersV(x, parseInt(this.registersV[x] ^ parseInt(this.registersV[y]));
             break;
 
           case "4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
@@ -424,7 +402,7 @@ class emulator{
         break;
 
       case "d":
-      case "D": //Dxyn
+      case "D": //DXYN - display n-byte sprite at memory location I at (VX, VY), set VF = collision
         this.pushUndo(ins,{vf:this.VF, pixels:this.pixels.slice(0)});
 
         let x = parseInt(this.registersV[parseInt(ins[1], 16)],16);
