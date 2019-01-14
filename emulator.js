@@ -30,7 +30,7 @@ class emulator{
     this.updateScreen();
   }
   initializeRegisters(){
-    this.setRegusterI = "0000";
+    this.setRegisterI("0000");
     for(let i=0; i< 16; i++){
       this.setRegistersV(i,"00");
       this.setStack(i, "0000");
@@ -220,11 +220,13 @@ class emulator{
           break;
 
         case "a":
-        case "A":
+        case "A"://Set I = nnn.
+          this.setRegisterI(data.registerI);
           break;
 
         case "b":
-        case "B":
+        case "B": //Jump to location nnn + V0.
+          this.setProgramCounter(data.programCounter);
           break;
 
         case "c":
@@ -404,16 +406,21 @@ class emulator{
         let y = parseInt(ins[2],16);
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
 
-        if(this.registersV[x] != this.registersV[y])
+        if(this.registersV[x] != this.registersV[y]){
           this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
+        }
         break;
 
       case "a":
-      case "A":
+      case "A": //Set I = nnn.
+        this.pushUndo(ins,{registerI:this.registerI.slice(0)});
+        this.setRegisterI(ins.substring(1,4))
         break;
 
       case "b":
-      case "B":
+      case "B": //Jump to location nnn + V0.
+        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
+        this.setProgramCounter( (parseInt(ins.substring(1,4), 16) + parseInt(registersV[0], 16)).toString(16) )
         break;
 
       case "c":
