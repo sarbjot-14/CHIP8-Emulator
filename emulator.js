@@ -231,6 +231,7 @@ class emulator{
 
         case "c":
         case "C":
+          this.setRegistersV(parseInt(ins[1],16), data.registersV);
           break;
 
         case "d":
@@ -425,6 +426,8 @@ class emulator{
 
       case "c":
       case "C":
+        this.pushUndo(ins, {registersV: this.registersV[parseInt(ins[1], 16)]});
+        this.setRegistersV( parseInt(ins[1], 16) ,(Match.round(Match.random()*255) & parseInt(ins.substring(2,4), 16)).toString(16) );
         break;
 
       case "d":
