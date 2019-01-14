@@ -189,19 +189,24 @@ class emulator{
           this.setProgramCounter(data.programCounter);
           break;
 
-        case "3":
+        case "3":// 3XKK - SE Vx, byte - Skip next instruction if VX = KK
+          this.setProgramCounter(data.programCounter);
           break;
 
-        case "4":
+        case "4":// 4XKK - Skip next instruction if VX != KK
+          this.setProgramCounter(data.programCounter);
           break;
 
-        case "5":
+        case "5":// 5XY0 - Skip next instruction if VX = VY
+          this.setProgramCounter(data.programCounter);
           break;
 
-        case "6":
+        case "6":  // 6XKK - Set VX == KK
+          this.setRegistersV(parseInt(ins[1],16), data.registersV);
           break;
 
-        case "7":
+        case "7": // 7XKK - Set VX = VX + KK
+          this.setRegistersV(parseInt(ins[1],16), data.registersV);
           break;
 
         case "8":
@@ -285,8 +290,9 @@ class emulator{
         let kk =parseInt(ins.substring(2,3));
 
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
-        if(this.registersV[x] == kk)
+        if(this.registersV[x] == kk){
           this.setProgramCounter(this.programCounter + 2);
+        }
         break;
 
       case "4":// 4XKK - Skip next instruction if VX != KK
@@ -294,8 +300,9 @@ class emulator{
         let kk =parseInt(ins.substring(2,3));
 
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
-        if(this.registersV[x] != kk)
-          this.setProgramCounter(this.programCounter + 2);
+        if(this.registersV[x] != kk){
+          this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
+        }
         break;
 
       case "5":// 5XY0 - Skip next instruction if VX = VY
@@ -304,7 +311,7 @@ class emulator{
 
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
         if(this.registersV[x] == this.registersV[y])
-          this.setProgramCounter(this.programCounter + 2);
+          this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
         break;
 
       case "6":// 6XKK - Set VX == KK
@@ -312,7 +319,7 @@ class emulator{
         let kk = parseInt(ins.substring(2,3));
 
         this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); /////////****************** not sure if this is correct*****************///////////////
-        this.setRegistersV(this.registersV[x], kk);
+        this.setRegistersV(x, kk);
         break;
 
       case "7":// 7XKK - Set VX = VX + KK
