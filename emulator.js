@@ -21,7 +21,7 @@ class emulator{
     this.stack = new Array(16); //Stack contains program return order. 16 16bit values (0000-FFFF).
     this.memory = new Array(4096); //array of 4096 bytes. Bytes are fom 00-FF
     this.VF; //1bit register not used by any program. (instruction flag)
-
+    this.paused; //true if paused (step forward still avsilable)
   }
 
   start(){
@@ -42,7 +42,31 @@ class emulator{
     for(let i= 0; i<4096;i++){
       this,this.setMemory(i, "00")
     }
+    this.paused = false;
 
+  }
+
+  emulationLoop(){
+    //run code at program programCounter
+    let ins = this.memory[parseInt(this.programCounter)] + this.memory[parseInt(this.programCounter, 16) + 1];
+    this.executeInstruction(ins);
+
+    //increment programCounter by 2
+    this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
+
+
+    //decrement timers
+    if(parseInt(this.registerDelay, 16)){
+      this.setRegisterDelay((parseInt(this.registerDelay) -1).toString(16));
+    }
+    if(parseInt(this.registerSoundTimer, 16)){
+      this.setRegisterSoundTimer((parseInt(this.registerSoundTimer) -1).toString(16));
+    }
+
+    //delay (60Hz)
+    if(!this.paused){
+      setTimeout(function(){emulationLoop},(50/3));
+    }
   }
 
 
