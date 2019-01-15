@@ -42,9 +42,7 @@ class emulator{
     for(let i= 0; i<4096;i++){
       this,this.setMemory(i, "00")
     }
-
   }
-
 
   setRegistersV(index,data){
     this.registersV[index] = this.fixHexLength(data, 2);
@@ -93,28 +91,6 @@ class emulator{
     return val.toLowerCase();
   }
 
-  popStack(){
-    if(this.stackPointer > 0){
-      let result = this.stack[this.stackPointer];
-      this.setStackPointer(this.stackPointer-1);
-      this.vis.updateStack();
-      return result;
-    }
-  }
-  pushStack(val){
-    if(this.stackPointer > 15){
-      console.log("Chip-8 ERROR: cant add to a full stack");
-    }else{
-      this.setStackPointer(this.stackPointer+1);
-      this.setStack(this.stackPointer, val);
-    }
-
-  }
-
-
-
-
-
   //Updates the screen given a binary array and a starting index
   updateScreen(pix, start = 0, options = {}){
     if(!pix){ //if no pixels are provided, refresh the entire screen
@@ -146,7 +122,23 @@ class emulator{
 
   }
 
+  popStack(){
+    if(this.stackPointer > 0){
+      let result = this.stack[this.stackPointer];
+      this.setStackPointer(this.stackPointer-1);
+      this.vis.updateStack();
+      return result;
+    }
+  }
+  pushStack(val){
+    if(this.stackPointer > 15){
+      console.log("Chip-8 ERROR: cant add to a full stack");
+    }else{
+      this.setStackPointer(this.stackPointer+1);
+      this.setStack(this.stackPointer, val);
+    }
 
+  }
   pushUndo(ins, data){
     this.undoStack.push([ins, data]);
   }
@@ -413,19 +405,19 @@ class emulator{
         break;
 
       case "a":
-      case "A": //Set I = nnn.
+      case "A":// ANNN - Set I = nnn.
         this.pushUndo(ins,{registerI:this.registerI.slice(0)});
         this.setRegisterI(ins.substring(1,4))
         break;
 
       case "b":
-      case "B": //Jump to location nnn + V0.
+      case "B":// BNNN - Jump to location nnn + V0.
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
         this.setProgramCounter( (parseInt(ins.substring(1,4), 16) + parseInt(registersV[0], 16)).toString(16) )
         break;
 
       case "c":
-      case "C":
+      case "C":// CXKK - Set VX = random byte AND KK
         this.pushUndo(ins, {registersV: this.registersV[parseInt(ins[1], 16)]});
         this.setRegistersV( parseInt(ins[1], 16) ,(Match.round(Match.random()*255) & parseInt(ins.substring(2,4), 16)).toString(16) );
         break;
@@ -452,27 +444,94 @@ class emulator{
 
       case "e":
       case "E":
+  /*      let x = parseInt(ins[1], 16);
+        switch(ins.substring(2, 3)){
+          case "9E":
+          case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
+
+            break;
+
+          case "A1":
+          case "a1":// EXA1 - SKNP - Skip next instruction if key with the value VX is not pressed
+
+            break;
+        }*/
         break;
 
       case "f":
       case "F":
-        break;
+        let x = parseInt(ins[1], 16);
+        switch(ins.substring(2, 3)){
+          case "07":// FX07 - LD VX, DT - Set VX = delay timer value
+            setRegistersV(this.registersV[x], this.registerDelay);
+            break;
 
+          /*case "0A"// FX0A - LD VX, K - Wait for a key to press, store value of key into VX
+            break;*/
+
+          case "15":// FX15 - LD DT, VX - Set delay timer = VX
+            setRegisterDelay(this.registersV[x]);
+            break;
+
+          case "18":// FX18 - LD ST, VX - Set sound timer = VX
+            setRegisterSoundTimer(this.registersV[x]);
+            break;
+
+          case "1E":
+          case "1e":// FX1E - ADD I, VX - Set I = I + VX
+            setRegisterI((parseInt(this.registerI, 16) + parseInt(this.registersV[x], 16)).toString(16));
+            break;
+
+        /*  case "29":// FX29 - LD F, VX - Set I = Location of sprite for digit VX
+            break;*/
+
+          case "33":// FX33 - Store Binary Coded Decimal VX in memory location I, I+1, I+2
+            let registerVX = parseInt(this.regitersV[x], 16).toString(10);
+
+            if(registerVX.length == 3)
+              setMemory(this.registerI, registerVX[0]);
+              setMemory(this.registerI + 1, registerVX[1]);
+              setMemory(this.registerI + 2, registerVX[2]);
+            else if(registerVX.length == 2)
+              setMemory(this.registerI + 1, registerVX[0]);
+              setMemory(this.registerI + 2, registerVX[1]);
+            else
+              setMemory(this.registerI + 2, registerVX[0])
+            break;
+
+          case "55":// FX55 - LD [I], VX - Store registers V0 through VX in memory starting at location I
+              let maxReg = parseInt(ins[1], 16);
+              let regI = parseInt(this.registerI, 16);
+
+              for(let int i = 0; i <= maxReg; i++){
+                setMemory(regI, this.registersV[i])
+                regI += 2;
+              }
+              break;
+
+          case "65":// FX65 - LD VX, [I] - Read registers V0 through VX from memory starting at location I
+            let maxReg = parseInt(ins[1], 16);
+            let regI = parseInt(this.registerI, 16);
+
+            for(let int i = 0; i <= maxReg; i++){
+              setRegistersV(i, this.memory[regI])
+              regI += 2;
+            }
+            break;
+        }
+        break;
     }
   }
 
   byteFromMem(address){//returns a byte from memory ad a given address (int 0-255)
     return this.memory[address];
   }
-
   mod(x,n){ //modulus that works with negative numbers. found online, sourced in sources.txt
     return (x % n + n) % n;
   }
-
   hexToBin(hex){
     return this.separatePixels(parseInt(hex,16).toString(2));
   }
-
   separatePixels(pixString){ //converts binary string into an int array
     let result = [];
     for(let i=0;i<pixString.length;i++){
