@@ -40,7 +40,7 @@ class emulator{
     this.setProgramCounter("0000");
     this.setStackPointer(0);
     for(let i= 0; i<4096;i++){
-      this,this.setMemory(i, "00")
+      this,this.setMemory(i, "00");
     }
     this.paused = false;
   }
@@ -287,7 +287,7 @@ class emulator{
           case "0Ee":
           case "0eE":
             if(this.stackPointer > 0){
-              this.pushUndo(ins,{programCounter:this.programCounter.slice(0), stackData:this.stack[this.stackPointer].slice(0)})
+              this.pushUndo(ins,{programCounter:this.programCounter.slice(0), stackData:this.stack[this.stackPointer].slice(0)});
               this.setProgramCounter(this.popStack());
             }
 
@@ -359,7 +359,7 @@ class emulator{
 
           case "4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
             if( (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)) > parseInt("FF", 16)){
-              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16).substring(0,3))
+              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16).substring(0,3));
               this.setVF(1);
             }else{
               this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16)  );
@@ -416,13 +416,13 @@ class emulator{
       case "a":
       case "A":// ANNN - Set I = nnn.
         this.pushUndo(ins,{registerI:this.registerI.slice(0)});
-        this.setRegisterI(ins.substring(1,4))
+        this.setRegisterI(ins.substring(1,4));
         break;
 
       case "b":
       case "B":// BNNN - Jump to location nnn + V0.
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
-        this.setProgramCounter( (parseInt(ins.substring(1,4), 16) + parseInt(registersV[0], 16)).toString(16) )
+        this.setProgramCounter( (parseInt(ins.substring(1,4), 16) + parseInt(registersV[0], 16)).toString(16) );
         break;
 
       case "c":
@@ -502,7 +502,7 @@ class emulator{
               setMemory(this.registerI + 2, registerVX[1]);
             }
             else
-              setMemory(this.registerI + 2, registerVX[0])
+              setMemory(this.registerI + 2, registerVX[0]);
             break;
 
           case "55":// FX55 - LD [I], VX - Store registers V0 through VX in memory starting at location I
@@ -520,7 +520,7 @@ class emulator{
             let regI = parseInt(this.registerI, 16);
 
             for(let int i = 0; i <= maxReg; i++){
-              setRegistersV(i, this.memory[regI])
+              setRegistersV(i, this.memory[regI]);
               regI += 2;
             }
             break;
