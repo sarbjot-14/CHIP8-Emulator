@@ -5,25 +5,25 @@ CMPT 276 - Team 1 Product Document
 
 We plan to meet on Wednesday between 12:30 and 2:30.
 
-We will be using Slack to communicate outside of class.  
+We will be using Slack to communicate outside of class, with separate channels in Slack for each part of the project to discuss progress on the work being done.  
 
 We have setup a Github repository to use for version control.
 
-The Emulator and Visualizer will be implemented in Javascript, while the two games and tool will be written in Chip8.
+The Emulator and Visualizer will be implemented in Javascript, while the two games (Pong and Tetris) in Chip8. The tool (a sprite-editor) will be created in Javascript.
 
 ## Software Methodology
 
 Team Roles:
-  * Emulator: Gill, Josh T, and Sarb will be working on the Emulator
+  * Emulator: Josh T, and Adam will be working on the Emulator
   * Visualizer: Adam will be working on the Visualizer
-  * Game 1: Josh H will take the lead on Game 1, with assistance from Brandon.
-  * Game 2: Bradon will take the lead on Game 2, with assistance from Josh H.
-  * Tool: Brandon and Josh H will work on the tool.
+  * Game 1 (Pong): Josh H will take the lead on Game 1, with assistance from Brandon.
+  * Game 2 (Tetris): Bradon will take the lead on Game 2, with assistance from Josh H.
+  * Tool: Sarb will be working on the tool.
   * Project Manager: Adam will be our project manager.
 
 ## Testing and Quality Assurance
 
-TBD.
+Currently we are using Unit testing to test each componenet of the project, as well as working with each other to ensure we are consistent with how we implement features.
 
 ## Detailed Use Case
 
@@ -31,23 +31,25 @@ Major Features:
 
   * Emulator: The emulator is designed for anyone that wishes to run a Chip8 application.
   * Visualizer: The visualizer is designed for hobbyists who write Chip8 program, allowing them to analyze memory management.
-  * Games: The games are designed for anyone (to have fun!).
-  * Tool: At this time, we are undecided on the tool we will create and therefore do not know the use cases for it.
+  * Games: The games are designed for anyone.
+  * Tool: The sprite editor is for people designing Chip8 games, to assist them in creating their games.
 
 ## Detailed Work Breakdown
 
 Major Features:
 
-  * Emulator: 
-  * Visualizer: 
-  * Games: Brandon and Josh H will each take a lead on one of the games, assisting each other as necessary.
-  * Tool: Brandon and Josh H will work together to complete the tool, once we have decided what the tool is.
+  * Emulator: Josh T and Adam estimate that it will take roughly 60 hours to complete (5 hours per week, for 12 weeks).
+  * Visualizer: Adam estimate that it will take roughly 60 hours to complete (5 hours per week, for 12 weeks).
+  * Game 1 (Pong): Josh H estimate that it will take roughly 60 hours to complete (5 hours per week, for 12 weeks).
+  * Game 2 (Tetris): Brandon estimate that it will take roughly 60 hours to complete (5 hours per week, for 12 weeks).
+  * Tool (Sprite Editor): Sarb estimate that it will take roughly 60 hours to complete (5 hours per week, for 12 weeks).
 
 ## Detailed Schedule
 
 Major Features:
 
-  * Emulator:
-  * Visualizer
-  * Games:
-  * Tool:
+  * Emulator: First version of emulator ready, able to take commands as text and load them into memory, for release 1. Plan to have all opcodes implemented and working by first release with a working emulation cycle.
+  * Visualizer: Visuals for the registers and memory implemented.
+  * Game 1 (Pong): Ball movement and Paddle movement/collisions implemented for Release 1.
+  * Game 2 (Tetris): Basic shape movement and physics implemented for Release 1.
+  * Tool: General user-interface and able to create sprites by clicking on the grid, and able to translate that image into a binary string for first Release.
