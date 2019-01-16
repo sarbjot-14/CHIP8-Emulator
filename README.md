@@ -7,4 +7,5 @@ Josh Hait,
 Kia Mirsalehi,
 Sarbjot Singh,
 Josh Tran,
-Adam Zubek-Nizol
+Adam Zubek-Nizol,
+Brandon Ong
