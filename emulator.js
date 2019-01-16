@@ -64,7 +64,7 @@ class emulator{
 
     //delay (60Hz)
     if(!this.paused){
-      setTimeout(function(){emulationLoop},(50/3));
+      setTimeout(function(){emulationLoop()},(50/3));
     }
   }
 
