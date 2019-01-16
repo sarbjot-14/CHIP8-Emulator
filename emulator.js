@@ -510,7 +510,7 @@ class emulator{
               let regI = parseInt(this.registerI, 16);
 
               for(let int i = 0; i <= maxReg; i++){
-                setMemory(regI, this.registersV[i])
+                setMemory(regI, this.registersV[i]);
                 regI += 2;
               }
               break;
