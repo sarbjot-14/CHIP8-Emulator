@@ -269,6 +269,10 @@ class emulator{
 
   executeInstruction(ins){ //ins is a 4-character string with each character beteen 0-1 or a-f/A-F
     ins = ins.toLowerCase();
+    let x = parseInt(ins[1],16);
+    let y = parseInt(ins[2],16);
+    let kk = parseInt(ins.substring(2,3));
+
     switch(ins[0]){
       case "0":
         switch(ins.substring(1,4)){
@@ -305,54 +309,37 @@ class emulator{
         break;
 
       case "3":// 3XKK - SE Vx, byte - Skip next instruction if VX = KK
-        let x = parseInt(ins[1],16);
-        let kk =parseInt(ins.substring(2,3));
+
 
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
-        if(this.registersV[x] == kk){
+        if(this.registersV[x] == kk)
           this.setProgramCounter(this.programCounter + 2);
-        }
         break;
 
       case "4":// 4XKK - Skip next instruction if VX != KK
-        let x = parseInt(ins[1],16);
-        let kk =parseInt(ins.substring(2,3));
-
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
-        if(this.registersV[x] != kk){
+        if(this.registersV[x] != kk)
           this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
-        }
         break;
 
       case "5":// 5XY0 - Skip next instruction if VX = VY
-        let x = parseInt(ins[1],16);
-        let y = parseInt(ins[2],16);
-
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
         if(this.registersV[x] == this.registersV[y])
           this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
         break;
 
       case "6":// 6XKK - Set VX == KK
-        let x = parseInt(ins[1],16);
-        let kk = parseInt(ins.substring(2,3));
-
         this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); /////////****************** not sure if this is correct*****************///////////////
         this.setRegistersV(x, kk);
         break;
 
       case "7":// 7XKK - Set VX = VX + KK
-        let x = parseInt(ins[1],16);
-        let kk = parseInt(ins.substring(2,3));
-
         this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); /////////****************** not sure if this is correct*****************///////////////
         this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(kk, 16)).toString(16) );
         break;
 
       case "8":
-      let x = parseInt(ins[1],16);
-      let y = parseInt(ins[2],16);
-      this.pushUndo(ins,{registersVX:this.registersV[x].slice(0), registersVY:this.registersV[y].slice(0), flagV:this.VF.slice(0)});// push to undo stacks: VX, VY, VF(carry flag)
+        this.pushUndo(ins,{registersVX:this.registersV[x].slice(0), registersVY:this.registersV[y].slice(0), flagV:this.VF.slice(0)});// push to undo stacks: VX, VY, VF(carry flag)
         switch(ins[3]){
           case "0":// 8XY0 - Set VX = VY
             this.setRegistersV(x, this.registersV[y]);
@@ -419,8 +406,6 @@ class emulator{
         break;
 
       case "9":// 9XY0 - Skip next instruction if VX != VY
-        let x = parseInt(ins[1],16);
-        let y = parseInt(ins[2],16);
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
 
         if(this.registersV[x] != this.registersV[y]){
@@ -449,11 +434,7 @@ class emulator{
       case "d":
       case "D": //DXYN - display n-byte sprite at memory location I at (VX, VY), set VF = collision
         this.pushUndo(ins,{vf:this.VF, pixels:this.pixels.slice(0)});
-
-        let x = parseInt(this.registersV[parseInt(ins[1], 16)],16);
-        let y = parseInt(this.registersV[parseInt(ins[2], 16)],16);
         let size = parseInt(ins[3], 16);
-
         let pixelStart = parseInt(this.registerI,16);
 
         this.VF = 0;
@@ -468,7 +449,7 @@ class emulator{
 
       case "e":
       case "E":
-  /*      let x = parseInt(ins[1], 16);
+  /*
         switch(ins.substring(2, 3)){
           case "9E":
           case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
@@ -483,8 +464,7 @@ class emulator{
         break;
 
       case "f":
-      case "F":
-        let x = parseInt(ins[1], 16);
+      case "F": ///////////////////*********** missing pushUndo *******************///////////////////////////
         switch(ins.substring(2, 3)){
           case "07":// FX07 - LD VX, DT - Set VX = delay timer value
             setRegistersV(this.registersV[x], this.registerDelay);
