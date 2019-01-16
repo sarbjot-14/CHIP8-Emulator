@@ -492,13 +492,15 @@ class emulator{
           case "33":// FX33 - Store Binary Coded Decimal VX in memory location I, I+1, I+2
             let registerVX = parseInt(this.regitersV[x], 16).toString(10);
 
-            if(registerVX.length == 3)
+            if(registerVX.length == 3){
               setMemory(this.registerI, registerVX[0]);
               setMemory(this.registerI + 1, registerVX[1]);
               setMemory(this.registerI + 2, registerVX[2]);
-            else if(registerVX.length == 2)
+            }
+            else if(registerVX.length == 2){
               setMemory(this.registerI + 1, registerVX[0]);
               setMemory(this.registerI + 2, registerVX[1]);
+            }
             else
               setMemory(this.registerI + 2, registerVX[0])
             break;
