@@ -467,23 +467,23 @@ class emulator{
       case "F": ///////////////////*********** missing pushUndo *******************///////////////////////////
         switch(ins.substring(2, 3)){
           case "07":// FX07 - LD VX, DT - Set VX = delay timer value
-            setRegistersV(this.registersV[x], this.registerDelay);
+            this.setRegistersV(this.registersV[x], this.registerDelay);
             break;
 
           /*case "0A"// FX0A - LD VX, K - Wait for a key to press, store value of key into VX
             break;*/
 
           case "15":// FX15 - LD DT, VX - Set delay timer = VX
-            setRegisterDelay(this.registersV[x]);
+            this.setRegisterDelay(this.registersV[x]);
             break;
 
           case "18":// FX18 - LD ST, VX - Set sound timer = VX
-            setRegisterSoundTimer(this.registersV[x]);
+            this.setRegisterSoundTimer(this.registersV[x]);
             break;
 
           case "1E":
           case "1e":// FX1E - ADD I, VX - Set I = I + VX
-            setRegisterI((parseInt(this.registerI, 16) + parseInt(this.registersV[x], 16)).toString(16));
+            this.setRegisterI((parseInt(this.registerI, 16) + parseInt(this.registersV[x], 16)).toString(16));
             break;
 
         /*  case "29":// FX29 - LD F, VX - Set I = Location of sprite for digit VX
@@ -493,24 +493,24 @@ class emulator{
             let registerVX = parseInt(this.regitersV[x], 16).toString(10);
 
             if(registerVX.length == 3){
-              setMemory(this.registerI, registerVX[0]);
-              setMemory(this.registerI + 1, registerVX[1]);
-              setMemory(this.registerI + 2, registerVX[2]);
+              this.setMemory(this.registerI, registerVX[0]);
+              this.setMemory(this.registerI + 1, registerVX[1]);
+              this.setMemory(this.registerI + 2, registerVX[2]);
             }
             else if(registerVX.length == 2){
-              setMemory(this.registerI + 1, registerVX[0]);
-              setMemory(this.registerI + 2, registerVX[1]);
+              this.setMemory(this.registerI + 1, registerVX[0]);
+              this.setMemory(this.registerI + 2, registerVX[1]);
             }
             else
-              setMemory(this.registerI + 2, registerVX[0]);
+              this.setMemory(this.registerI + 2, registerVX[0]);
             break;
 
           case "55":// FX55 - LD [I], VX - Store registers V0 through VX in memory starting at location I
               let maxReg = parseInt(ins[1], 16);
               let regI = parseInt(this.registerI, 16);
 
-              for(let int i = 0; i <= maxReg; i++){
-                setMemory(regI, this.registersV[i]);
+              for(let i = 0; i <= maxReg; i++){
+                this.setMemory(regI, this.registersV[i]);
                 regI += 2;
               }
               break;
@@ -519,8 +519,8 @@ class emulator{
             let maxReg = parseInt(ins[1], 16);
             let regI = parseInt(this.registerI, 16);
 
-            for(let int i = 0; i <= maxReg; i++){
-              setRegistersV(i, this.memory[regI]);
+            for(let i = 0; i <= maxReg; i++){
+              this.setRegistersV(i, this.memory[regI]);
               regI += 2;
             }
             break;
