@@ -34,6 +34,7 @@ h1{
   margin: 20px;
   width: 400px;
   color: white;
+  resize: none;
 }
 body{
   background-color: #2D313B;
