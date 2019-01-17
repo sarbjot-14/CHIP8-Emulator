@@ -1,0 +1,34 @@
+* {
+  box-sizing: border-box;
+}
+
+#pixels {
+  height: 460px;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+}
+.pixel {
+
+  flex-grow: 1;
+  margin: 0;
+  padding: 0;
+  border: solid grey 1px;
+}
+.pixelRow {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+}
+.document{
+  align-items: center;
+}
+h1{
+  text-align: center;
+}
+#text{
+  background-color: grey;
+  margin: 20px;
+  width: 400px;
+}
