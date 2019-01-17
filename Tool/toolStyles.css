@@ -14,7 +14,7 @@
   flex-grow: 1;
   margin: 0;
   padding: 0;
-  border: solid grey 1px;
+  border: solid #6F6F80 1px;
 }
 .pixelRow {
   display: flex;
@@ -26,9 +26,21 @@
 }
 h1{
   text-align: center;
+  color: white;
 }
 #text{
-  background-color: grey;
+  background-color: rgba(0,0,0,0.5);
+  border: solid #02050D 2px;
   margin: 20px;
   width: 400px;
+  color: white;
+}
+body{
+  background-color: #2D313B;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#buttons{
+  margin-top: 10px;
 }
