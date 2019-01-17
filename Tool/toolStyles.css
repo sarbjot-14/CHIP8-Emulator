@@ -45,3 +45,17 @@ body{
 #buttons{
   margin-top: 10px;
 }
+button{
+  background-color: #454954;
+  color: white;
+  border: 0;
+  padding: 3px;
+  border-radius: 3px;
+  padding-left: 6px;
+  padding-right: 6px;
+  border: solid #02050D 1px;
+}
+button:hover{
+  cursor: pointer;
+  background-color: #535c65;
+}
