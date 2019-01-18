@@ -116,3 +116,27 @@ textarea {
 #codeBox{
   width: 60%;
 }
+#playPauseBtn{
+  background-image: url("playBtn.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 40px;
+}
+#stepForwardBtn{
+  background-image: url("forwardBtn.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 30px;
+}
+#stepBackBtn{
+  background-image: url("backBtn.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 30px;
+}
+#bottomMenu button{
+  height: 25px;
+}
