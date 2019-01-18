@@ -51,11 +51,10 @@ class emulator{
   emulationLoop(){
     //run code at program programCounter
     let ins = this.memory[parseInt(this.programCounter)] + this.memory[parseInt(this.programCounter, 16) + 1];
-    this.executeInstruction(ins);
-
-    //increment programCounter by 2
-    this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
-
+    if(this.executeInstruction(ins)){
+      //increment programCounter by 2
+      this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
+    }
 
     //decrement timers
     if(parseInt(this.registerDelay, 16)){
@@ -284,6 +283,7 @@ class emulator{
     }
   }
 
+  //returns 1 if instruction was valid (ie pushUndo() was called) and 0 otherwise
   executeInstruction(ins){ //ins is a 4-character string with each character beteen 0-1 or a-f/A-F
     ins = ins.toLowerCase();
     let x = parseInt(ins[1],16);
@@ -297,7 +297,7 @@ class emulator{
           case "0e0":
             this.pushUndo(ins, {pixels:this.pixels.slice(0)} );
             this.updateScreen(new Array(64*32), 0, {fill: true});
-            break;
+            return 1;
 
           case "0EE"://00EE - RET
           case "0ee":
@@ -307,7 +307,7 @@ class emulator{
               this.pushUndo(ins,{programCounter:this.programCounter.slice(0), stackData:this.stack[this.stackPointer].slice(0)});
               this.setProgramCounter(this.popStack());
             }
-            break;
+            return 1;
 
           default:
             console.log("Error: Unknown opcode 0");
@@ -318,43 +318,46 @@ class emulator{
       case "1":// 1NNN - JP addr - Jump to location NNN
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
         this.setProgramCounter(ins.substring(1,4));
-        break;
+        return 1;
 
       case "2":// 2NNN - CALL addr - Call subroutine at NNN
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)}); //////****** not sure if this is correct *****///////
         this.pushStack(this.programCounter.slice(0));
         this.setProgramCounter(ins.substring(1,4));
-        break;
+        return 1;
 
       case "3":// 3XKK - SE Vx, byte - Skip next instruction if VX = KK
 
 
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
-        if(this.registersV[x] == kk)
+        if(this.registersV[x] == kk){
           this.setProgramCounter(this.programCounter + 2);
-        break;
+        }
+        return 1;
 
       case "4":// 4XKK - Skip next instruction if VX != KK
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
-        if(this.registersV[x] != kk)
+        if(this.registersV[x] != kk){
           this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
-        break;
+        }
+        return 1;
 
       case "5":// 5XY0 - Skip next instruction if VX = VY
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
-        if(this.registersV[x] == this.registersV[y])
+        if(this.registersV[x] == this.registersV[y]){
           this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
-        break;
+        }
+        return 1;
 
       case "6":// 6XKK - Set VX == KK
         this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); /////////****************** not sure if this is correct*****************///////////////
         this.setRegistersV(x, kk);
-        break;
+        return 1;
 
       case "7":// 7XKK - Set VX = VX + KK
         this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); /////////****************** not sure if this is correct*****************///////////////
         this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(kk, 16)).toString(16) );
-        break;
+        return 1;
 
       case "8":
         this.pushUndo(ins,{registersVX:this.registersV[x].slice(0), registersVY:this.registersV[y].slice(0), flagV:this.VF.slice(0)});// push to undo stacks: VX, VY, VF(carry flag)
@@ -421,7 +424,7 @@ class emulator{
           default:// Print error if doesn't regconize instruction
             console.log("Error: Unkown opcode 8");
         }
-        break;
+        return 1;
 
       case "9":// 9XY0 - Skip next instruction if VX != VY
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
@@ -429,25 +432,25 @@ class emulator{
         if(this.registersV[x] != this.registersV[y]){
           this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
         }
-        break;
+        return 1;
 
       case "a":
       case "A":// ANNN - Set I = nnn.
         this.pushUndo(ins,{registerI:this.registerI.slice(0)});
         this.setRegisterI(ins.substring(1,4));
-        break;
+        return 1;
 
       case "b":
       case "B":// BNNN - Jump to location nnn + V0.
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
         this.setProgramCounter( (parseInt(ins.substring(1,4), 16) + parseInt(registersV[0], 16)).toString(16) );
-        break;
+        return 1;
 
       case "c":
       case "C":// CXKK - Set VX = random byte AND KK
         this.pushUndo(ins, {registersV: this.registersV[parseInt(ins[1], 16)]});
         this.setRegistersV( parseInt(ins[1], 16) ,(Match.round(Match.random()*255) & parseInt(ins.substring(2,4), 16)).toString(16) );
-        break;
+        return 1;
 
       case "d":
       case "D": //DXYN - display n-byte sprite at memory location I at (VX, VY), set VF = collision
@@ -462,8 +465,7 @@ class emulator{
             this.VF = 1;
           }
         }
-
-        break;
+        return 1;
 
       case "e":
       case "E":
@@ -543,7 +545,8 @@ class emulator{
         }
         break;
     }
-  }
+    return 0;
+  }//end of executeInstruction()
 
   byteFromMem(address){//returns a byte from memory ad a given address (int 0-255)
     return this.memory[address];
