@@ -58,7 +58,15 @@ class visualizer{
 
   }
 
-  updatePaused(){}
+  updatePaused(state){ //state is 1 if paused, 0 if not.
+    if(state){//paused
+      document.getElementById("playPauseBtn").style.backgroundImage = "url('playBtn.png')";
+      document.getElementById("playPauseBtn").title = "Play"
+    }else{
+      document.getElementById("playPauseBtn").style.backgroundImage = "url('pauseBtn.png')";
+      document.getElementById("playPauseBtn").title = "Pause"
+    }
+  }
   updateRegistersV(){}
   updateRegisterI(){}
   updateRegisterDelay(){}
