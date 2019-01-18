@@ -466,6 +466,9 @@ class emulator{
       case "f":
       case "F": ///////////////////*********** missing pushUndo *******************///////////////////////////
         switch(ins.substring(2, 3)){
+        let maxReg = parseInt(ins[1], 16);
+        let regI = parseInt(this.registerI, 16);
+        
           case "07":// FX07 - LD VX, DT - Set VX = delay timer value
             this.setRegistersV(this.registersV[x], this.registerDelay);
             break;
@@ -506,9 +509,6 @@ class emulator{
             break;
 
           case "55":// FX55 - LD [I], VX - Store registers V0 through VX in memory starting at location I
-              let maxReg = parseInt(ins[1], 16);
-              let regI = parseInt(this.registerI, 16);
-
               for(let i = 0; i <= maxReg; i++){
                 this.setMemory(regI, this.registersV[i]);
                 regI += 2;
@@ -516,8 +516,7 @@ class emulator{
               break;
 
           case "65":// FX65 - LD VX, [I] - Read registers V0 through VX from memory starting at location I
-            let maxReg = parseInt(ins[1], 16);
-            let regI = parseInt(this.registerI, 16);
+
 
             for(let i = 0; i <= maxReg; i++){
               this.setRegistersV(i, this.memory[regI]);
