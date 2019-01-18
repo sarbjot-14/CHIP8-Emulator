@@ -465,10 +465,9 @@ class emulator{
 
       case "f":
       case "F": ///////////////////*********** missing pushUndo *******************///////////////////////////
+        let maxReg = parseInt(ins[1], 16);
+        let regI = parseInt(this.registerI, 16);
         switch(ins.substring(2,3)){
-          let maxReg = parseInt(ins[1], 16);
-          let regI = parseInt(this.registerI, 16);
-
           case "07":// FX07 - LD VX, DT - Set VX = delay timer value
             this.setRegistersV(this.registersV[x], this.registerDelay);
             break;
