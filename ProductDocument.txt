@@ -38,8 +38,8 @@ Major Features:
 
 Major Features:
 
-  * Emulator: Josh T and Adam estimate that it will take roughly 60 hours to complete (5 hours per week, for 12 weeks).
-  * Visualizer: Adam estimate that it will take roughly 60 hours to complete (5 hours per week, for 12 weeks).
+  * Emulator: Josh T and Adam estimate that it will take roughly 60 hours each to complete (5 hours per week, for 12 weeks).
+  * Visualizer: Adam estimate that it will take roughly 24 hours to complete (2 hours per week, for 12 weeks).
   * Game 1 (Pong): Josh H estimate that it will take roughly 60 hours to complete (5 hours per week, for 12 weeks).
   * Game 2 (Tetris): Brandon estimate that it will take roughly 60 hours to complete (5 hours per week, for 12 weeks).
   * Tool (Sprite Editor): Sarb estimate that it will take roughly 60 hours to complete (5 hours per week, for 12 weeks).
@@ -48,7 +48,7 @@ Major Features:
 
 Major Features:
 
-  * Emulator: First version of emulator ready, able to take commands as text and load them into memory, for release 1. Plan to have all opcodes implemented and working by first release with a working emulation cycle.
+  * Emulator: First version of emulator ready, able to take commands as text and load them into memory, for release 1. Plan to have all opcodes implemented and working by first release with a working emulation cycle. Additionally we plan to have the step forwards, step backwards, and play/pause buttons functioning.
   * Visualizer: Visuals for the registers and memory implemented.
   * Game 1 (Pong): Ball movement and Paddle movement/collisions implemented for Release 1.
   * Game 2 (Tetris): Basic shape movement and physics implemented for Release 1.
