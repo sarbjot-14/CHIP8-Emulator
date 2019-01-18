@@ -9,7 +9,7 @@
 class emulator{
   constructor(){
     this.pixels = this.separatePixels(title);
-    this.vis = new visualizer();
+    this.vis = new visualizer(this);
     this.undoStack = []; //stack used for undoing instructions. each value is in the form [instruction, {data}]
 
     this.registersV = new Array(16); //16 1byte registers Vx, each is from 00-FF

@@ -1,6 +1,6 @@
 class visualizer{
-  constructor(){
-
+  constructor(em){
+    this.em = em; //reference to parent emulator object
   }
 
   init(){
