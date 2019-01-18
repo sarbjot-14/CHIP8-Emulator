@@ -205,6 +205,7 @@ class emulator{
             case "0eE":
               this.setProgramCounter(data.programCounter);
               this.pushStack(data.stackData);
+              break;
 
           }
 
@@ -306,6 +307,7 @@ class emulator{
               this.pushUndo(ins,{programCounter:this.programCounter.slice(0), stackData:this.stack[this.stackPointer].slice(0)});
               this.setProgramCounter(this.popStack());
             }
+            break;
 
           default:
             console.log("Error: Unknown opcode 0");
