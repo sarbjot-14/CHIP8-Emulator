@@ -42,7 +42,7 @@ class emulator{
     for(let i= 0; i<4096;i++){
       this,this.setMemory(i, "00");
     }
-    this.paused = false;
+    this.paused = true;
   }
 
   emulationLoop(){
@@ -69,6 +69,7 @@ class emulator{
   }
 
   loadProgram(program){ //program must be a hex string
+    program = program.replace(/\s+/g,"")
     for(let i=0; i < program.length; i += 2){
       if(program[i+1]){
         this.setMemory(512+(i/2), program.substring(i,i+2)); //memory starts at "0200" hex which is 512
@@ -274,6 +275,7 @@ class emulator{
         case "F":
           break;
       }
+      this.setProgramCounter((parseInt(this.programCounter,16)-2).toString(16) );
     }
   }
 
