@@ -26,10 +26,13 @@ class emulator{
 
   start(){
     this.vis.init();
-    this.initializeRegisters();
+    this.initializeData();
     this.updateScreen();
   }
-  initializeRegisters(){
+  initializeData(){
+    this.pixels = this.separatePixels(title);
+    this.updateScreen();
+    this.undoStack = [];
     this.setRegisterI("0000");
     for(let i=0; i< 16; i++){
       this.setRegistersV(i,"00");
@@ -70,6 +73,7 @@ class emulator{
 
   loadProgram(program){ //program must be a hex string
     program = program.replace(/\s+/g,"")
+    this.initializeData()
     for(let i=0; i < program.length; i += 2){
       if(program[i+1]){
         this.setMemory(512+(i/2), program.substring(i,i+2)); //memory starts at "0200" hex which is 512
