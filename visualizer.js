@@ -14,7 +14,7 @@ class visualizer{
     document.getElementById("secondaryColour").onchange = function(){ chip.updateScreen(); }
     document.getElementById("stepBackBtn").onclick = function(){chip.undo()}
     document.getElementById("stepForwardBtn").onclick = function(){chip.emulationLoop();}
-    //document.getElementById("runBtn").onclick = function(){chip.vis.runCode()}
+    document.getElementById("playPauseBtn").onclick = function(){chip.togglePause()}
     document.getElementById("loadBtn").onclick = function(){chip.loadProgram(document.getElementById('code').value)}
   }
 
@@ -58,6 +58,7 @@ class visualizer{
 
   }
 
+  updatePaused(){}
   updateRegistersV(){}
   updateRegisterI(){}
   updateRegisterDelay(){}

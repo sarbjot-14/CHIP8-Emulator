@@ -54,6 +54,8 @@ class emulator{
     if(this.executeInstruction(ins)){
       //increment programCounter by 2
       this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
+    }else if(!parseInt(this.registerSoundTimer, 16) && !parseInt(this.registerDelay, 16)){
+      this.togglePause();
     }
 
     //decrement timers
@@ -64,9 +66,11 @@ class emulator{
       this.setRegisterSoundTimer((parseInt(this.registerSoundTimer) -1).toString(16));
     }
 
+
+
     //delay (60Hz)
     if(!this.paused){
-      setTimeout(function(){emulationLoop()},(50/3));
+      setTimeout(function(){chip.emulationLoop()},(50/3)); //I'm not sure if theres a way to do it without using chip object by name
     }
   }
 
@@ -547,6 +551,14 @@ class emulator{
     }
     return 0;
   }//end of executeInstruction()
+
+  togglePause(){
+    this.paused = !this.paused;
+    this.vis.updatePaused(this.paused);
+    if(!this.paused){
+        this.emulationLoop();
+    }
+  }
 
   byteFromMem(address){//returns a byte from memory ad a given address (int 0-255)
     return this.memory[address];
