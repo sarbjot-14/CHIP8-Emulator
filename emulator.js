@@ -271,7 +271,7 @@ class emulator{
     ins = ins.toLowerCase();
     let x = parseInt(ins[1],16);
     let y = parseInt(ins[2],16);
-    let kk = parseInt(ins.substring(2,3));
+    let kk = parseInt(ins.substring(2,4));
 
     switch(ins[0]){
       case "0":
@@ -359,7 +359,7 @@ class emulator{
 
           case "4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
             if( (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)) > parseInt("FF", 16)){
-              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16).substring(0,3));
+              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16).substring(0,4));
               this.setVF(1);
             }else{
               this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16)  );
@@ -467,7 +467,7 @@ class emulator{
       case "F": ///////////////////*********** missing pushUndo *******************///////////////////////////
         let maxReg = parseInt(ins[1], 16);
         let regI = parseInt(this.registerI, 16);
-        switch(ins.substring(2,3)){
+        switch(ins.substring(2,4)){
           case "07":// FX07 - LD VX, DT - Set VX = delay timer value
             this.setRegistersV(this.registersV[x], this.registerDelay);
             break;
