@@ -13,7 +13,8 @@ class visualizer{
     document.getElementById("primaryColour").onchange = function(){ chip.updateScreen(); }
     document.getElementById("secondaryColour").onchange = function(){ chip.updateScreen(); }
     document.getElementById("stepBackBtn").onclick = function(){chip.undo()}
-    document.getElementById("runBtn").onclick = function(){chip.vis.runCode()}
+    //document.getElementById("runBtn").onclick = function(){chip.vis.runCode()}
+    document.getElementById("runBtn").onclick = function(){chip.loadProgram(document.getElementById('code').value)}
   }
 
   generatePixels(){

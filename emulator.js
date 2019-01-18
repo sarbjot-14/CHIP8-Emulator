@@ -37,7 +37,7 @@ class emulator{
     }
     this.setRegisterDelay("00");
     this.setRegisterSoundTimer("00");
-    this.setProgramCounter("0000");
+    this.setProgramCounter("0200");
     this.setStackPointer(0);
     for(let i= 0; i<4096;i++){
       this,this.setMemory(i, "00");
@@ -65,6 +65,16 @@ class emulator{
     //delay (60Hz)
     if(!this.paused){
       setTimeout(function(){emulationLoop()},(50/3));
+    }
+  }
+
+  loadProgram(program){ //program must be a hex string
+    for(let i=0; i < program.length; i += 2){
+      if(program[i+1]){
+        this.setMemory(512+(i/2), program.substring(i,i+2)); //memory starts at "0200" hex which is 512
+      }else{ //last character is missing.
+        this.setMemory(512+(i/2), (program[i]+"0") );
+      }
     }
   }
 
