@@ -5,7 +5,7 @@ CMPT 276 - Team 1 Product Document
 
 We plan to meet on Wednesday between 12:30 and 2:30.
 
-We will be using Slack to communicate outside of class, with separate channels in Slack for each part of the project to discuss progress on the work being done.  
+We will be using Slack to communicate outside of class, with separate channels in Slack for each part of the project to discuss progress on the work being done.
 
 We have setup a Github repository to use for version control.
 
@@ -23,7 +23,7 @@ Team Roles:
 
 ## Testing and Quality Assurance
 
-Currently we are using Unit testing to test each componenet of the project, as well as working with each other to ensure we are consistent with how we implement features.
+Currently we are using Unit testing to test each component of the project, as well as working with each other to ensure we are consistent with how we implement features.
 
 ## Detailed Use Case
 
