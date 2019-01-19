@@ -36,6 +36,8 @@ h1{
   color: white;
   resize: none;
   font-weight: bold;
+  text-align: center;
+  width: 320px;
 }
 body{
   background-color: #2D313B;
