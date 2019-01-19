@@ -1,6 +1,6 @@
 console.log("this is the tool");
 
-var spriteArray = []
+let spriteArray = []
 
 function invertColor(x){
   if(x.style.backgroundColor=="black"){
@@ -14,14 +14,19 @@ function invertColor(x){
 
 function resetPixels(){
   elements = document.getElementsByClassName("pixel");
-  for (var i = 0; i < elements.length; i++) {
+  for (let i = 0; i < elements.length; i++) {
     elements[i].style.backgroundColor="black";
   }
 }
 
 function translateSprite(){
+  let outputBox= document.getElementById("outputBox");
+  let outputString;
+  outputBox.innerHTML = "";
+
+  spriteArray = [];
   elements = document.getElementsByClassName("pixel");
-  for (var i = 0; i < elements.length; i++) {
+  for (let i = 0; i < elements.length; i++) {
     if(elements[i].style.backgroundColor=="black"){
 
       spriteArray.push(0);
@@ -32,11 +37,10 @@ function translateSprite(){
 
   }
 
-  var outputBox= document.getElementById("outputBox");
-  var outputString;
 
-  for(var i=0; i<15 ; i++){
-    for(var j= 0; j<8; j++){
+
+  for(let i=0; i<15 ; i++){
+    for(let j= 0; j<8; j++){
       outputBox.innerHTML+= spriteArray[j+8*i];
     }
     outputBox.innerHTML+= ",\n";
