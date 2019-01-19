@@ -35,6 +35,7 @@ h1{
   width: 400px;
   color: white;
   resize: none;
+  font-weight: bold;
 }
 body{
   background-color: #2D313B;

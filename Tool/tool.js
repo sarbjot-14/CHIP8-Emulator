@@ -28,7 +28,6 @@ function translateSprite(){
   elements = document.getElementsByClassName("pixel");
   for (let i = 0; i < elements.length; i++) {
     if(elements[i].style.backgroundColor=="black"){
-
       spriteArray.push(0);
     }
     else{
@@ -40,12 +39,27 @@ function translateSprite(){
 
 
   for(let i=0; i<15 ; i++){
+    let binRow = "";
     for(let j= 0; j<8; j++){
-      outputBox.innerHTML+= spriteArray[j+8*i];
+      binRow += spriteArray[j+8*i];
     }
-    outputBox.innerHTML+= ",\n";
+    outputBox.innerHTML+= "Bin: "+ binRow + "  |  Hex: " + byteToHex(binRow) + "\n";
   }
 
   console.log("the array is:"+ spriteArray);
 
+}
+
+function byteToHex(binStr){
+  return fixHexLength(parseInt(binStr,2).toString(16), 2);
+}
+
+function fixHexLength(val, len){
+  if(val.length > len){
+    console.log("Error in fixHexLength()")
+  }
+  while(val.length < len){
+    val = "0"+val;
+  }
+  return val.toLowerCase();
 }
