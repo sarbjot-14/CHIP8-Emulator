@@ -292,8 +292,8 @@ class emulator{
     ins = ins.toLowerCase();
     let x = parseInt(ins[1],16);
     let y = parseInt(ins[2],16);
-    let kk = parseInt(ins.substring(2,4));
-
+    let kk = ins.substring(2,4);
+    console.log(ins)
     switch(ins[0]){
       case "0":
         switch(ins.substring(1,4)){
@@ -331,11 +331,9 @@ class emulator{
         return 1;
 
       case "3":// 3XKK - SE Vx, byte - Skip next instruction if VX = KK
-
-
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
         if(this.registersV[x] == kk){
-          this.setProgramCounter(this.programCounter + 2);
+          this.setProgramCounter((parseInt(this.programCounter, 16) + 2).toString(16));
         }
         return 1;
 
@@ -465,7 +463,9 @@ class emulator{
         this.VF = 0;
         for(let i=0; i<size; i++){
           let pixelByte = this.hexToBin(this.memory[pixelStart+i]);
-          if(this.updateScreen(pixelByte,64*(this.mod((y-i),32))+x)){
+          let posX = parseInt(this.registersV[x],16);
+          let posY = parseInt(this.registersV[y],16);
+          if(this.updateScreen(pixelByte,64*(this.mod((posY+i),32))+posX)){
             this.VF = 1;
           }
         }
