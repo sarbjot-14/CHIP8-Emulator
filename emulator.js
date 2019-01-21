@@ -321,7 +321,7 @@ class emulator{
 
       case "1":// 1NNN - JP addr - Jump to location NNN
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
-        this.setProgramCounter(ins.substring(1,4));
+        this.setProgramCounter((parseInt(ins.substring(1,4),16)-2).toString(16)); //minus two so it doesnt skip first instruction
         return 1;
 
       case "2":// 2NNN - CALL addr - Call subroutine at NNN
