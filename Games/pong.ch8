@@ -1,0 +1,93 @@
+; Registers
+; ---------
+; V0 empty
+; V1 empty
+; V2 empty
+; V3 empty
+; V4 x coord of score
+; V5 y coord of score
+; V6 x coord of ball
+; V7 y coord of ball
+; V8 x dir of ball
+; V9 y dir of ball
+; VA score
+; VB x coord of left paddle
+; VC y coord of left paddle
+; VD x Coord of right paddle
+; VE Y coord of right paddle
+; VF collision
+
+; keyboard stuff for input later
+; 123C		1234
+; 456D	==>	qwer
+; 789E		asdf
+; A0BF		zxcv
+
+; directional stuff
+;	-1
+;-1	 o	1
+;	 1
+
+; drawing stuff
+; (0,0)		(63,0)
+; (0,31) 	(63,31
+
+
+;THE ACTUAL GAME IS BELOW HERE
+
+;init
+
+LD i, ball; set i to memory address of ball
+LD V6, 32; set initial x value to 32 (mid-way)
+LD V7, 16; set initial y value to 16 (mid-way)
+LD V8, 1; set initial x dir to 1 (right)
+LD V9, 1; set initial y dir to 1 (down)
+DRW V6, V7, 1; draw the ball
+
+; main loop
+loop
+	; general case of ball moving
+	; TODO - USE DELAY TIMER TO SLOW DOWN THE BALL
+
+	DRW V6, V7, 1; erase the ball
+	ADD V6, V8; add the x dir of ball to x coord of ball
+	ADD V7, V9; add the y dir of ball to y coord of ball
+ 	DRW V6, V7, 1; draw the ball at its new position
+
+
+	; handle collisions with the walls of the screen
+
+	; if the ball is at the top of the screen, change y dir to 1 (bounce off top)
+	SNE V7, 0; check if the y value of the ball is 0 (top), skip next if not 0
+	LD V9, 1; change y dir of ball 
+
+	; if the ball is at the bottom of the screen, change y dir to -1
+	SNE V7, 31; check if the y value of the ball is 31 (bottom), skip next if not 31
+	LD V9, -1; change y dir of ball
+
+	; if the ball is at the right of the screen, change x dir to -1
+	SNE V6, 63; check if the x value of the ball is 63 (right), skip next if not 63
+	LD V8, -1; change x dir of ball
+
+	; if the ball is at the left of the screen, change x dir to 1
+	SNE V6, 0; check if the x value of the ball is 0 (left), skip next if not 0
+	LD V8, 1; change x dir of ball
+
+	; continue the to loop, essentially moving the ball
+	JP loop
+
+; commands useful for user_input:
+; SKP Vx
+;	skip next instruction if key with the value of Vx is pressed
+;	checks the keyboard, and if the key corresponding tot he value of Vx is currently in the down position, PC is increase by 2
+; SKNP Vx
+;	skip next instruction if key with the value of Vx is NOT pressed
+;	checks the keyboard, and if the key corresponding to the value of Vx is currently in the up posisition, PC is increased by 2
+; LD Vx, byte
+;	Set Vx = kk (put value kk into register Vx)
+;	use one of the empty registers to take input
+
+ball
+	byte 	%1.......
+
+
