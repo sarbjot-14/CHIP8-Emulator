@@ -50,7 +50,7 @@ class emulator{
 
   emulationLoop(){
     //run code at program programCounter
-    let ins = this.memory[parseInt(this.programCounter)] + this.memory[parseInt(this.programCounter, 16) + 1];
+    let ins = this.memory[parseInt(this.programCounter, 16)] + this.memory[parseInt(this.programCounter, 16) + 1];
     if(this.executeInstruction(ins)){
       //increment programCounter by 2
       this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
@@ -315,7 +315,7 @@ class emulator{
 
           default:
             console.log("Error: Unknown opcode 0");
-
+            break;
         }
         break;
 
