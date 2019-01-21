@@ -28,13 +28,16 @@ h1{
   text-align: center;
   color: white;
 }
-#text{
+#outputBox{
   background-color: rgba(0,0,0,0.5);
   border: solid #02050D 2px;
   margin: 20px;
   width: 400px;
   color: white;
   resize: none;
+  font-weight: bold;
+  text-align: center;
+  width: 320px;
 }
 body{
   background-color: #2D313B;
