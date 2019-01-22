@@ -23,8 +23,27 @@
 #topMenu {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   width: 100%;
   background-color: #22252B;
+}
+#resetColours{
+  margin: 0;
+  height: 100%;
+  border-radius: 2px;
+}
+#speedMenu{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+#speedMenu *{
+  color: white;
+}
+#speedMenu input, #speedMenu p{
+  padding: 0;
+  margin: 0;
+  margin-left: 7px;
 }
 body{
   display: flex;

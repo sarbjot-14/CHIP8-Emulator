@@ -16,6 +16,13 @@ class visualizer{
     document.getElementById("stepForwardBtn").onclick = function(){chip.emulationLoop();}
     document.getElementById("playPauseBtn").onclick = function(){chip.togglePause()}
     document.getElementById("loadBtn").onclick = function(){chip.loadProgram(document.getElementById('code').value)}
+    document.getElementById("speedSlider").onchange = function(){
+      if(this.value < 1){
+        chip.speed = 10- 10*this.value;
+      }else{
+        chip.speed = 1 - (this.value-1)
+      }
+    }
   }
 
   generatePixels(){

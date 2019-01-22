@@ -21,7 +21,9 @@ class emulator{
     this.stack = new Array(16); //Stack contains program return order. 16 16bit values (0000-FFFF).
     this.memory = new Array(4096); //array of 4096 bytes. Bytes are fom 00-FF
     this.VF; //1bit register not used by any program. (instruction flag)
+
     this.paused; //true if paused (step forward still avsilable)
+    this.speed = 1; //speed multiplier
   }
 
   start(){
@@ -70,7 +72,7 @@ class emulator{
 
     //delay (60Hz)
     if(!this.paused){
-      setTimeout(function(){chip.emulationLoop()},(50/3)); //I'm not sure if theres a way to do it without using chip object by name
+      setTimeout(function(){chip.emulationLoop()},(50/3)*this.speed); //I'm not sure if theres a way to do it without using chip object by name
     }
   }
 
