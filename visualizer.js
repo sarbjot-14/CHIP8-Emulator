@@ -16,13 +16,14 @@ class visualizer{
     document.getElementById("stepForwardBtn").onclick = function(){chip.emulationLoop();}
     document.getElementById("playPauseBtn").onclick = function(){chip.togglePause()}
     document.getElementById("loadBtn").onclick = function(){chip.loadProgram(document.getElementById('code').value)}
-    document.getElementById("speedSlider").onchange = function(){
+    document.getElementById("speedSlider").oninput = function(){
       if(this.value < 1){
         chip.speed = 10- 10*this.value;
       }else{
         chip.speed = 1 - (this.value-1)
       }
     }
+    document.getElementById("resetSpeed").onclick = function(){document.getElementById("speedSlider").value = 1; chip.speed = 1;};
   }
 
   generatePixels(){
@@ -67,10 +68,10 @@ class visualizer{
 
   updatePaused(state){ //state is 1 if paused, 0 if not.
     if(state){//paused
-      document.getElementById("playPauseBtn").style.backgroundImage = "url('playBtn.png')";
+      document.getElementById("playPauseBtn").style.backgroundImage = "url('Images/playBtn.png')";
       document.getElementById("playPauseBtn").title = "Play"
     }else{
-      document.getElementById("playPauseBtn").style.backgroundImage = "url('pauseBtn.png')";
+      document.getElementById("playPauseBtn").style.backgroundImage = "url('Images/pauseBtn.png')";
       document.getElementById("playPauseBtn").title = "Pause"
     }
   }
