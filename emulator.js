@@ -32,6 +32,7 @@ class emulator{
     this.updateScreen();
   }
   initializeData(){
+    this.paused = true;
     this.pixels = this.separatePixels(title);
     this.updateScreen();
     this.undoStack = [];
@@ -47,7 +48,6 @@ class emulator{
     for(let i= 0; i<4096;i++){
       this,this.setMemory(i, "00");
     }
-    this.paused = true;
   }
 
   emulationLoop(){

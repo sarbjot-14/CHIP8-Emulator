@@ -15,7 +15,7 @@ class visualizer{
     document.getElementById("stepBackBtn").onclick = function(){chip.undo()}
     document.getElementById("stepForwardBtn").onclick = function(){chip.emulationLoop();}
     document.getElementById("playPauseBtn").onclick = function(){chip.togglePause()}
-    document.getElementById("loadBtn").onclick = function(){chip.loadProgram(document.getElementById('code').value)}
+    document.getElementById("loadBtn").onclick = function(){chip.loadProgram(document.getElementById('code').value); chip.vis.updatePaused(1)}
     document.getElementById("speedSlider").oninput = function(){
       if(this.value < 1){
         chip.speed = 10- 10*this.value;
