@@ -88,6 +88,6 @@ loop
 ;	use one of the empty registers to take input
 
 ball
-	byte 	%1.......
+	byte 	%10000000
 
 
