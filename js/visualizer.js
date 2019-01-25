@@ -75,7 +75,12 @@ class visualizer{
       document.getElementById("playPauseBtn").title = "Pause"
     }
   }
-  updateRegistersV(){}
+  updateRegistersV(){
+    let registerDoms = document.getElementById("registersV");
+    for(let i=0; i<16; i++){
+      registerDoms.children[i].children[1].innerHTML = this.em.registersV[i]
+    }
+  }
   updateRegisterI(){}
   updateRegisterDelay(){}
   updateRegisterSoundTimer(){}
