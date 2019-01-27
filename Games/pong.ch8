@@ -35,7 +35,7 @@
 
 ;THE ACTUAL GAME IS BELOW HERE
 
-;init
+; init
 
 LD i, ball; set i to memory address of ball
 LD V6, 32; set initial x value to 32 (mid-way)
@@ -44,11 +44,20 @@ LD V8, 1; set initial x dir to 1 (right)
 LD V9, 1; set initial y dir to 1 (down)
 DRW V6, V7, 1; draw the ball
 
-; main loop
-loop
-	; general case of ball moving
-	; TODO - USE DELAY TIMER TO SLOW DOWN THE BALL
+; main game loop
+loop	
+	call draw_ball
+	jp loop
 
+; function to draw and update the position of the ball
+draw_ball
+	
+	LD V0, 1 ; load the value to delay by into the empty register (to pass to delay timer)
+	LD DT, V0 ; pass the above value into the delay timer "register"
+	CALL delay ; loops until delay timer is 0
+		
+
+	; erase the ball, move it, then redraw it at new position
 	DRW V6, V7, 1; erase the ball
 	ADD V6, V8; add the x dir of ball to x coord of ball
 	ADD V7, V9; add the y dir of ball to y coord of ball
@@ -72,9 +81,17 @@ loop
 	; if the ball is at the left of the screen, change x dir to 1
 	SNE V6, 0; check if the x value of the ball is 0 (left), skip next if not 0
 	LD V8, 1; change x dir of ball
+	RET
 
-	; continue the to loop, essentially moving the ball
-	JP loop
+; function to delay the drawing of the ball
+delay
+	LD V0, DT ; get the value for the delay timer
+	SE V0, 0 ; if the value of the "delay timer" is 0, skip the next instruction
+	JP delay ; jump to the start of the function, repeating until the delay timer is 0
+	RET
+	
+	
+
 
 ; commands useful for user_input:
 ; SKP Vx
@@ -89,5 +106,8 @@ loop
 
 ball
 	byte 	%10000000
+
+
+
 
 
