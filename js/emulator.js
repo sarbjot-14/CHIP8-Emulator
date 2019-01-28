@@ -570,8 +570,12 @@ class emulator{
   mod(x,n){ //modulus that works with negative numbers. found online, sourced in sources.txt
     return (x % n + n) % n;
   }
-  hexToBin(hex){
-    return this.separatePixels(parseInt(hex,16).toString(2));
+  hexToBin(hex, len = 8){
+    let result = this.separatePixels(parseInt(hex,16).toString(2));
+    while(result.length < len){
+      result = [0].concat(result);
+    }
+    return result;
   }
   separatePixels(pixString){ //converts binary string into an int array
     let result = [];
