@@ -196,6 +196,8 @@ class emulator{
       let ins = popped[0];
       let data = popped[1];
 
+      this.setProgramCounter((parseInt(this.programCounter,16)-2).toString(16) );
+
       switch(ins[0]){
         case "0":
           switch(ins.substring(1,4)){
@@ -285,7 +287,7 @@ class emulator{
         case "F":
           break;
       }
-      this.setProgramCounter((parseInt(this.programCounter,16)-2).toString(16) );
+
     }
   }
 
