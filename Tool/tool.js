@@ -33,17 +33,17 @@ function translateSprite(){
     else{
       spriteArray.push(1);
     }
-
   }
-
-
 
   for(let i=0; i<15 ; i++){
     let binRow = "";
     for(let j= 0; j<8; j++){
       binRow += spriteArray[j+8*i];
     }
-    outputBox.innerHTML+= "Bin: "+ binRow + "  |  Hex: " + byteToHex(binRow) + "\n";
+    if(binRow!="00000000"){
+      outputBox.innerHTML+= "Bin: "+ binRow + "  |  Hex: " + byteToHex(binRow) + "\n";
+    }
+  
   }
 
   console.log("the array is:"+ spriteArray);
