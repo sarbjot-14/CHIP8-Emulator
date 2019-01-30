@@ -297,6 +297,7 @@ class emulator{
     let x = parseInt(ins[1],16);
     let y = parseInt(ins[2],16);
     let kk = ins.substring(2,4);
+    let nnn = ins.substring(1,4);
     console.log(ins)
     switch(ins[0]){
       case "0":
@@ -325,13 +326,13 @@ class emulator{
 
       case "1":// 1NNN - JP addr - Jump to location NNN
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
-        this.setProgramCounter((parseInt(ins.substring(1,4),16)-2).toString(16)); //minus two so it doesnt skip first instruction
+        this.setProgramCounter((parseInt(nnn,16)-2).toString(16)); //minus two so it doesnt skip first instruction
         return 1;
 
       case "2":// 2NNN - CALL addr - Call subroutine at NNN
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)}); //////****** not sure if this is correct *****///////
         this.pushStack(this.programCounter.slice(0));
-        this.setProgramCounter(ins.substring(1,4));
+        this.setProgramCounter(nnn);
         return 1;
 
       case "3":// 3XKK - SE Vx, byte - Skip next instruction if VX = KK
@@ -449,7 +450,7 @@ class emulator{
       case "b":
       case "B":// BNNN - Jump to location nnn + V0.
         this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
-        this.setProgramCounter( (parseInt(ins.substring(1,4), 16) + parseInt(registersV[0], 16)).toString(16) );
+        this.setProgramCounter( (parseInt(nnn, 16) + parseInt(registersV[0], 16)).toString(16) );
         return 1;
 
       case "c":
