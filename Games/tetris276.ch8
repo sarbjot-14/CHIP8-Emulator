@@ -1,9 +1,9 @@
 ; Registers
 ; ---------
-; V0 empty
-; V1 empty
-; V2 empty
-; V3 empty
+; V0 free
+; V1 free
+; V2 free
+; V3 free
 ; V4 
 ; V5 x 
 ; V6 x coord of shape
@@ -14,7 +14,7 @@
 ; VB
 ; VC
 ; VD
-; VE 
+; VE used to determine most current shape (1=T, 2=S, 3=reverseL, 4=L, 5=I, 6=Z)
 ; VF collision
 
 ; keyboard stuff for input later
@@ -96,8 +96,8 @@ draw_shape
 	; handle collisions with the bottom wall
 
 	; if the shape is at the bottom of the screen, change y dir to 0, so the shape stop at bottom
-	SNE V7, 29; check if the y value of the shape is 29 (bottom), skip next if not 31
-	DRW V6, V7, 3; draw the shape
+	SNE V7, 28; check if the y value of the shape is 29 (bottom), skip next if not 31
+	DRW V6, V7, 3; draw the shape (will be modified later to change based on VE)
 
 	; if the shape is at bottom of the screen, change y value to 0, so the shape can start at top
 	SNE V7, 28; check if the y value of the shape is 31 (bottom), skip next if not 31
@@ -108,8 +108,9 @@ draw_shape
 
 undoDrop
 	DRW V6, V7, 3; undo mistake
-	SUB V7, V8; add -1, go back up one
-	DRW V6, V7, 3; draw in righ place
+	LD V8, 1
+	SUB V7, V8; subtract 1 to go back up one
+	DRW V6, V7, 3; draw in right place
 	LD V7, 0; set initial y value to 16 top of screen
 	RET
 	
