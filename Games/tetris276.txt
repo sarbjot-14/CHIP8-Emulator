@@ -4,12 +4,12 @@
 ; V1 empty
 ; V2 empty
 ; V3 empty
-; V4 x coord of score
-; V5 y coord of score
-; V6 x coord of ball
-; V7 y coord of ball
-; V8 x dir of ball
-; V9 y dir of ball
+; V4 
+; V5 
+; V6 x coord of shape
+; V7 y coord of shape
+; V8 x dir of shape
+; V9 y dir of shape
 ; VA score
 ; VB x coord of left paddle
 ; VC y coord of left paddle
@@ -37,44 +37,68 @@
 
 ; init
 
-LD i, ball; set i to memory address of ball
+LD i, zed; set i to memory address of shape
 LD V6, 32; set initial x value to 32 (mid-way)
 LD V7, 0; set initial y value to 16 top of screen
-;LD V8, 1; set initial x dir to 1 (right)
+LD V8, 1; undo drop if collion with another shape
 LD V9, 1; set initial y dir to 1 (down)
-DRW V6, V7, 3; draw the ball
+
 
 ; main game loop
 loop	
-	call draw_ball
+	call draw_shape
 	jp loop
 
-; function to draw and update the position of the ball
-draw_ball
+; function to draw and update the position of the shape
+draw_shape
 	
-	LD V0, 3 ; load the value to delay by into the empty register (to pass to delay timer)
+	LD VF, 0 ;set vf to zero so we can detect collisions
+
+	; draw	
+	DRW V6, V7, 3; draw the shape
+
+	SNE VF, 1; check if the collion
+	call undoDrop ; if shape landed on something undo the collison and redraw on top
+	
+	SNE VF, 1; check if the collion, 
+	RET
+
+
+
+	;Delay
+	LD V0, 9 ; load the value to delay by into the empty register (to pass to delay timer)
 	LD DT, V0 ; pass the above value into the delay timer "register"
 	CALL delay ; loops until delay timer is 0
-		
 
-	; erase the ball, move it, then redraw it at new position
-	DRW V6, V7, 3; erase the ball
-	;ADD V6, V8; add the x dir of ball to x coord of ball
-	ADD V7, V9; add the y dir of ball to y coord of ball ;want to go striaght down
- 	DRW V6, V7, 3; draw the ball at its new position
+	; erase the shape, move it, then redraw it at new position
+	DRW V6, V7, 3; erase the shape
+	;ADD V6, V8; add the x dir of shape to x coord of shape
+	ADD V7, V9; add the y dir of shape to y coord of shape ;want to go striaght down
+ 	
+	
 
+	; handle collisions with the bottom wall
 
-	; handle collisions with the walls of the screen
+	; if the shape is at the bottom of the screen, change y dir to 0, so the shape stop at bottom
+	SNE V7, 29; check if the y value of the shape is 29 (bottom), skip next if not 31
+	DRW V6, V7, 3; draw the shape
 
-
-	; if the ball is at the bottom of the screen, change y dir to 0, so the shape stop at bottom
-	SNE V7, 29; check if the y value of the ball is 31 (bottom), skip next if not 31
-	LD V9, 0; change y dir of ball
+	; if the shape is at bottom of the screen, change y value to 0, so the shape can start at top
+	SNE V7, 29; check if the y value of the shape is 31 (bottom), skip next if not 31
+	LD V7, 0; set initial y value to 0 top of screen
 
 
 	RET
+;function
+undoDrop
+	DRW V6, V7, 3; undo mistake
+	SUB V7, V8; add -1, go back up one
+	DRW V6, V7, 3; draw in righ place
+	LD V7, 0; set initial y value to 16 top of screen
+	RET
+	
 
-; function to delay the drawing of the ball
+; function to delay the drawing of the shape
 delay
 	LD V0, DT ; get the value for the delay timer
 	SE V0, 0 ; if the value of the "delay timer" is 0, skip the next instruction
@@ -95,7 +119,8 @@ delay
 ;	Set Vx = kk (put value kk into register Vx)
 ;	use one of the empty registers to take input
 
-ball
+
+zed
 	byte    %00001000
 	byte 	%00011000
 	byte    %00010000
