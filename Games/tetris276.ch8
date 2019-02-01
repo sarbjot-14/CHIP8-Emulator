@@ -1,0 +1,150 @@
+; Registers
+; ---------
+; V0 empty
+; V1 empty
+; V2 empty
+; V3 empty
+; V4 
+; V5 x 
+; V6 x coord of shape
+; V7 y coord of shape
+; V8 x dir of shape
+; V9 y dir of shape
+; VA score
+; VB
+; VC
+; VD
+; VE 
+; VF collision
+
+; keyboard stuff for input later
+; 123C		1234
+; 456D	==>	qwer
+; 789E		asdf
+; A0BF		zxcv
+
+; drawing stuff
+; (0,0)		(63,0)
+; (0,31) 	(63,31)
+
+
+;THE ACTUAL GAME IS BELOW HERE
+
+
+; init
+borderInit
+	LD I, border; set i to memory address of shape
+	LD V0, 27; set left border's x value
+	LD V1, 39; set right border's x value because this game of tetris played on 10 x 24 between pixels 28 and 38
+	LD V2, 0; set y value to 0 top of screen
+	LD V3, 31; set y value to 31 bottom of screen
+	call drawVerticalBorder
+
+drawVerticalBorder
+	DRW V1, V2, 1; draw left border
+	DRW V0, V2, 1; draw right border
+	ADD V2, 1; keep adding one to y value
+	SE V2, V3; skip the jump if y value of the border is 31
+	jp drawVerticalBorder
+
+drawHorizBorder
+	DRW V0, V3, 1
+	ADD V0, 1
+	SE V0, V1
+	jp drawHorizBorder
+	DRW V0, V3, 1; draws last corner pixel
+
+drawZ
+	LD I, shapeZ; set i to memory address of shape
+	LD V6, 25; set initial x value
+	LD V7, 0; set initial y value top of screen
+	LD V9, 1; set initial y dir to 1 (down)
+	call draw_shape
+
+; main game loop
+loop	
+	call draw_shape
+	jp loop
+
+; function to draw and update the position of the shape
+draw_shape
+	
+	LD VF, 0 ;set vf to zero so we can detect collisions
+
+	DRW V6, V7, 3; draw the shape
+
+	SNE VF, 1; check if the collision
+	call undoDrop ; if shape landed on something undo the collision and redraw on top
+	
+	SNE VF, 1; check the collision
+	RET
+
+
+
+	;Delay
+	LD V0, 9 ; load the value to delay by into the empty register (to pass to delay timer)
+	LD DT, V0 ; pass the above value into the delay timer "register"
+	CALL delay ; loops until delay timer is 0
+
+	; erase the shape, move it, then redraw it at new position
+	DRW V6, V7, 3; erase the shape
+	;ADD V6, V8; add the x dir of shape to x coord of shape
+	ADD V7, V9; add the y dir of shape to y coord of shape ;want to go striaght down
+ 	
+	
+
+	; handle collisions with the bottom wall
+
+	; if the shape is at the bottom of the screen, change y dir to 0, so the shape stop at bottom
+	SNE V7, 29; check if the y value of the shape is 29 (bottom), skip next if not 31
+	DRW V6, V7, 3; draw the shape
+
+	; if the shape is at bottom of the screen, change y value to 0, so the shape can start at top
+	SNE V7, 28; check if the y value of the shape is 31 (bottom), skip next if not 31
+	LD V7, 0; set initial y value to 0 top of screen
+
+
+	RET
+
+undoDrop
+	DRW V6, V7, 3; undo mistake
+	SUB V7, V8; add -1, go back up one
+	DRW V6, V7, 3; draw in righ place
+	LD V7, 0; set initial y value to 16 top of screen
+	RET
+	
+
+; function to delay the drawing of the shape
+delay
+	LD V0, DT ; get the value for the delay timer
+	SE V0, 0 ; if the value of the "delay timer" is 0, skip the next instruction
+	JP delay ; jump to the start of the function, repeating until the delay timer is 0
+	RET
+
+
+border
+	byte	%10000000
+shapeT
+	byte	%00010000
+	byte	%00111000
+shapeS
+	byte    %00010000
+	byte 	%00011000
+	byte    %00001000
+shapeReverseL
+	byte	%00010000
+	byte	%00010000
+	byte	%00110000
+shapeL
+	byte	%00010000
+	byte	%00010000
+	byte	%00011000
+shapeI
+	byte	%00010000
+	byte	%00010000
+	byte	%00010000
+	byte	%00010000
+shapeZ
+	byte    %00001000
+	byte 	%00011000
+	byte    %00010000
