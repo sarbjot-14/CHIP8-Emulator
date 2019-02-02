@@ -24,6 +24,25 @@ class emulator{
 
     this.paused; //true if paused (step forward still avsilable)
     this.speed = 1; //speed multiplier
+
+    this.keyInput = {
+      "0": false,
+      "1": false,
+      "2": false,
+      "3": false,
+      "4": false,
+      "5": false,
+      "6": false,
+      "7": false,
+      "8": false,
+      "9": false,
+      "a": false,
+      "b": false,
+      "c": false,
+      "d": false,
+      "e": false,
+      "f": false
+    }
   }
 
   start(){
@@ -298,7 +317,7 @@ class emulator{
     let y = parseInt(ins[2],16);
     let kk = ins.substring(2,4);
     let nnn = ins.substring(1,4);
-    console.log(ins)
+    //console.log(ins) //enable this line to get opcode readouts
     switch(ins[0]){
       case "0":
         switch(ins.substring(1,4)){
