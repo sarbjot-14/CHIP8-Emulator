@@ -1,11 +1,3 @@
-/*  WORKING OPCODES:
--00E0
--00EE
--1nnn
--2nnn
-
-*/
-
 class emulator{
   constructor(){
     this.pixels = this.separatePixels(title);
@@ -497,7 +489,7 @@ class emulator{
 
       case "e":
       case "E":
-  /*
+      /*
         switch(ins.substring(2, 3)){
           case "9E":
           case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
@@ -603,6 +595,10 @@ class emulator{
       result.push(parseInt(pixString[i],2));
     }
     return result;
+  }
+
+  keyIsDown(key){
+    return this.keyInput[key];
   }
 
 }
