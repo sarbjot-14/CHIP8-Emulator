@@ -22,7 +22,7 @@ function resetPixels(){
 function translateSprite(){
   let outputBox= document.getElementById("outputBox");
   let outputString;
-  let startRow = 0; //figure out what row the sprite starts and ends
+  let startRow = -1; //figure out what row the sprite starts and ends
   let lastRow = 0;
   outputBox.innerHTML = "";
 
@@ -40,8 +40,9 @@ function translateSprite(){
   for(let i=0; i<15 ; i++){ //find startRow and endRow
     let binRow = "";
     for(let j= 0; j<8; j++){
-      if(startRow==0 && spriteArray[j+8*i] == 1 ){ //set the startRow
+      if(startRow==-1 && spriteArray[j+8*i] == 1 ){ //set the startRow
         startRow = i;
+      
       }
       if(i > lastRow && spriteArray[j+8*i] == 1 ){ //update endRow
         lastRow = i;
@@ -50,6 +51,7 @@ function translateSprite(){
       binRow += spriteArray[j+8*i];
     }
   }
+
    //print lines (output translations)
   for(let i=0; i<15 ; i++){
     let binRow = "";
