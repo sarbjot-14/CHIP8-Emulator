@@ -398,11 +398,11 @@ class emulator{
             break;
 
           case "4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
-            if( (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)) > parseInt("FF", 16)){
-              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16).substring(0,4));
+            if( (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)) > parseInt("FF", 16)){
+              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)).toString(16).substring(0,4));
               this.setVF(1);
             }else{
-              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16)  );
+              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)).toString(16)  );
             }
 
             break;
