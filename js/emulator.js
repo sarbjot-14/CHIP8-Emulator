@@ -48,7 +48,7 @@ class emulator{
     this.updateScreen();
     this.undoStack = [];
     this.setRegisterI("0000");
-    this.setVF("0")
+    this.setVF(0)
     for(let i=0; i< 16; i++){
       this.setRegistersV(i,"00");
       this.setStack(i, "0000");
@@ -379,7 +379,7 @@ class emulator{
         return 1;
 
       case "8":
-        this.pushUndo(ins,{registersVX:this.registersV[x].slice(0), registersVY:this.registersV[y].slice(0), flagV:this.VF.slice(0)});// push to undo stacks: VX, VY, VF(carry flag)
+        this.pushUndo(ins,{registersVX:this.registersV[x].slice(0), registersVY:this.registersV[y].slice(0), flagV:this.VF});// push to undo stacks: VX, VY, VF(carry flag)
         switch(ins[3]){
           case "0":// 8XY0 - Set VX = VY
             this.setRegistersV(x, this.registersV[y]);
@@ -398,11 +398,15 @@ class emulator{
             break;
 
           case "4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
-            if( (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)) > parseInt("FF", 16)){
-              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16).substring(0,4));
+<<<<<<< HEAD
+            if((parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)) > parseInt("FF", 16)){
+=======
+            if( (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)) > parseInt("FF", 16)){
+>>>>>>> 9880c7744f44b933bf46393ab56458e0ddff4d87
+              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)).toString(16).substring(0,4));
               this.setVF(1);
             }else{
-              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)).toString(16)  );
+              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)).toString(16)  );
             }
 
             break;
@@ -490,18 +494,22 @@ class emulator{
 
       case "e":
       case "E":
-      /*
-        switch(ins.substring(2, 3)){
+        this.pushUndo(ins, {programCounter:this.programCounter.slice(0)});
+        switch(ins.substring(2, 4)){
           case "9E":
           case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
-
+            if(this.keyInput == x){
+               this.setProgramCounter((parseInt(this.programCounter, 16) + 2).toString(16));
+            }
             break;
 
           case "A1":
           case "a1":// EXA1 - SKNP - Skip next instruction if key with the value VX is not pressed
-
+            if(this.keyInput !== x){
+               this.setProgramCounter((parseInt(this.programCounter, 16) + 2).toString(16));
+            }
             break;
-        }*/
+        }
         break;
 
       case "f":
@@ -556,8 +564,6 @@ class emulator{
               break;
 
           case "65":// FX65 - LD VX, [I] - Read registers V0 through VX from memory starting at location I
-
-
             for(let i = 0; i <= maxReg; i++){
               this.setRegistersV(i, this.memory[regI]);
               regI += 2;
