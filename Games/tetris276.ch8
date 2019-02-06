@@ -65,8 +65,8 @@ drawHorizBorder
 gameLoop
 	SNE VE, 1 ; if the block ID is 1, spawn Z block
 	call drawZ
-	;SNE VE, 2 ; if block ID is 2, spawn L block 
-	;call drawI
+	SNE VE, 2 ; if block ID is 2, spawn L block 
+	call drawI
 	SNE VE, 3 ; if block ID is 3, spawn reverse L block
 	call drawReverseL
 	SNE VE, 4 ; if block ID is 4, spawn L block
@@ -111,10 +111,17 @@ drawZ
 	call draw_shape
 	RET
 
+drawBlock
+	SNE VE, 2 ;If it is an I block, draw it (needs more number of bytes to represent it)
+	DRW V6, V7, 4
+	SE VE, 2 ; otherwise, draw the blocks (rest of block need the same number of bytes needed to represent it)
+	DRW V6, V7, 3
+	RET
+
 ; function to draw and update the position of the shape
 draw_shape
-
-	DRW V6, V7, 3
+	
+	call drawBlock
 
 	SNE VF, 1; check if there is a collision with another block or with the border
 	call undoDrop ; if shape landed on something undo the collision and redraw on top
@@ -128,16 +135,16 @@ draw_shape
 	CALL delay ; loops until delay timer is 0
 
 	; erase the shape, move it, then redraw it at new position
-	DRW V6, V7, 3; erase the shape
+	call drawBlock; erase the shape
 	ADD V7, 1; add 1  y coord of shape - want to go striaght down
  	
  	RET
 
 undoDrop
-	DRW V6, V7, 3; undo mistake
+	call drawBlock; undo mistake
 	LD V8, 1 ; set up V8 register
 	SUB V7, V8; subtract 1 to go back up one
-	DRW V6, V7, 3; draw in right place
+	call drawBlock; draw in right place
 	LD V7, 0; set y value to top of screen
 	RET
 	
@@ -170,9 +177,10 @@ shapeL
 	byte	%00010000
 	byte	%00011000
 shapeI
-	byte	%00000000
-	byte	%00000000
-	byte	%00111100
+	byte	%00100000
+	byte	%00100000
+	byte	%00100000
+	byte	%00100000
 shapeZ
 	byte    %00001000
 	byte 	%00011000
