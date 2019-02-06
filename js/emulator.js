@@ -48,7 +48,7 @@ class emulator{
     this.updateScreen();
     this.undoStack = [];
     this.setRegisterI("0000");
-    this.setVF("0")
+    this.setVF(0)
     for(let i=0; i< 16; i++){
       this.setRegistersV(i,"00");
       this.setStack(i, "0000");
@@ -379,7 +379,7 @@ class emulator{
         return 1;
 
       case "8":
-        this.pushUndo(ins,{registersVX:this.registersV[x].slice(0), registersVY:this.registersV[y].slice(0), flagV:this.VF.slice(0)});// push to undo stacks: VX, VY, VF(carry flag)
+        this.pushUndo(ins,{registersVX:this.registersV[x].slice(0), registersVY:this.registersV[y].slice(0), flagV:this.VF});// push to undo stacks: VX, VY, VF(carry flag)
         switch(ins[3]){
           case "0":// 8XY0 - Set VX = VY
             this.setRegistersV(x, this.registersV[y]);
