@@ -48,6 +48,7 @@ class emulator{
     this.updateScreen();
     this.undoStack = [];
     this.setRegisterI("0000");
+    this.setVF("0")
     for(let i=0; i< 16; i++){
       this.setRegistersV(i,"00");
       this.setStack(i, "0000");
