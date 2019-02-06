@@ -399,7 +399,11 @@ class emulator{
 
           case "4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
 <<<<<<< HEAD
+<<<<<<< HEAD
             if((parseInt(this.registersV[x], 16) + parseInt(his.registersV[y], 16)) > parseInt("FF", 16)){
+=======
+            if( (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)) > parseInt("FF", 16)){
+>>>>>>> 9880c7744f44b933bf46393ab56458e0ddff4d87
 =======
             if( (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)) > parseInt("FF", 16)){
 >>>>>>> 9880c7744f44b933bf46393ab56458e0ddff4d87
