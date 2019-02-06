@@ -37,6 +37,7 @@
 
 ; init
 
+CLS
 LD i, ball; set i to memory address of ball
 LD V6, 32; set initial x value to 32 (mid-way)
 LD V7, 16; set initial y value to 16 (mid-way)

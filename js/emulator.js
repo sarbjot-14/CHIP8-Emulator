@@ -1,11 +1,3 @@
-/*  WORKING OPCODES:
--00E0
--00EE
--1nnn
--2nnn
-
-*/
-
 class emulator{
   constructor(){
     this.pixels = this.separatePixels(title);
@@ -24,6 +16,25 @@ class emulator{
 
     this.paused; //true if paused (step forward still avsilable)
     this.speed = 1; //speed multiplier
+
+    this.keyInput = {
+      "0": false,
+      "1": false,
+      "2": false,
+      "3": false,
+      "4": false,
+      "5": false,
+      "6": false,
+      "7": false,
+      "8": false,
+      "9": false,
+      "a": false,
+      "b": false,
+      "c": false,
+      "d": false,
+      "e": false,
+      "f": false
+    }
   }
 
   start(){
@@ -298,7 +309,7 @@ class emulator{
     let y = parseInt(ins[2],16);
     let kk = ins.substring(2,4);
     let nnn = ins.substring(1,4);
-    console.log(ins)
+    //console.log(ins) //enable this line to get opcode readouts
     switch(ins[0]){
       case "0":
         switch(ins.substring(1,4)){
@@ -478,7 +489,7 @@ class emulator{
 
       case "e":
       case "E":
-  /*
+      /*
         switch(ins.substring(2, 3)){
           case "9E":
           case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
@@ -584,6 +595,10 @@ class emulator{
       result.push(parseInt(pixString[i],2));
     }
     return result;
+  }
+
+  keyIsDown(key){
+    return this.keyInput[key];
   }
 
 }
