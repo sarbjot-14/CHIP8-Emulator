@@ -312,6 +312,7 @@ class emulator{
     let nnn = ins.substring(1,4);
     //console.log(ins) //enable this line to get opcode readouts
     switch(ins[0]){
+      console.log("Running instruction " + ins);
       case "0":
         switch(ins.substring(1,4)){
           case "0E0":// 00E0 - CLS - Clear the display
