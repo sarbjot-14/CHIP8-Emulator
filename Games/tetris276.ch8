@@ -30,15 +30,19 @@
 
 ;THE ACTUAL GAME IS BELOW HERE
 
-
 ; init
-borderInit
+Init
 	LD I, border; set i to memory address of shape
+	LD V6, 29; set all shapes' initial x value to the middle (29) 
+	LD V7, 0; set all shapes' initial y value to top (0)
 	LD V0, 27; set left border's x value
 	LD V1, 39; set right border's x value because this game of tetris played on 10 x 24 between pixels 28 and 38
 	LD V2, 0; set y value to 0 top of screen
 	LD V3, 31; set y value to 31 bottom of screen
 	call drawVerticalBorder
+	call drawHorizBorder
+	jp gameLoop
+	RET
 
 drawVerticalBorder
 	DRW V1, V2, 1; draw left border
@@ -46,6 +50,7 @@ drawVerticalBorder
 	ADD V2, 1; keep adding one to y value
 	SE V2, V3; skip the jump if y value of the border is 31
 	jp drawVerticalBorder
+	RET
 
 drawHorizBorder
 	DRW V0, V3, 1
@@ -53,25 +58,63 @@ drawHorizBorder
 	SE V0, V1
 	jp drawHorizBorder
 	DRW V0, V3, 1; draws last corner pixel
+	RET
 
-drawZ
-	LD I, shapeZ; set i to memory address of shape
-	LD V6, 25; set initial x value
-	LD V7, 0; set initial y value top of screen
-	LD V9, 1; set initial y dir to 1 (down)
-	call draw_shape
 
 ; main game loop
-loop	
+gameLoop
+	SNE VE, 1
+	call drawZ
+	SNE VE, 3
+	call drawReverseL
+	SNE VE, 4
+	call drawL
+	SNE VE, 5
+	call drawS
+	SNE VE, 6
+	call drawT
+	SNE VE, 6
+	LD VE, 1
+	SNE V7, 0; if the block (y val) is not at the top, dont have to change the block ID
+	ADD VE, 1
+	jp gameLoop
+
+drawT
+	LD I, shapeT; set I to memory address of shape
 	call draw_shape
-	jp loop
+	RET
+
+drawS
+	LD I, shapeS; set I to memory address of shape
+	call draw_shape
+	RET
+
+drawReverseL
+	LD I, shapeReverseL; set I to memory address of shape
+	call draw_shape
+	RET
+
+drawL
+	LD I, shapeL; set I to memory address of shape
+	call draw_shape
+	RET
+
+drawI
+	LD I, shapeI; set I to memory address of shape
+	call draw_shape
+	RET
+
+drawZ
+	LD I, shapeZ; set I to memory address of shape
+	call draw_shape
+	RET
 
 ; function to draw and update the position of the shape
 draw_shape
 	
 	LD VF, 0 ;set vf to zero so we can detect collisions
 
-	DRW V6, V7, 3; draw the shape
+	DRW V6, V7, 3
 
 	SNE VF, 1; check if the collision
 	call undoDrop ; if shape landed on something undo the collision and redraw on top
@@ -79,39 +122,23 @@ draw_shape
 	SNE VF, 1; check the collision
 	RET
 
-
-
 	;Delay
-	LD V0, 9 ; load the value to delay by into the empty register (to pass to delay timer)
+	LD V0, 5 ; load the value to delay by into the empty register (to pass to delay timer)
 	LD DT, V0 ; pass the above value into the delay timer "register"
 	CALL delay ; loops until delay timer is 0
 
 	; erase the shape, move it, then redraw it at new position
 	DRW V6, V7, 3; erase the shape
-	;ADD V6, V8; add the x dir of shape to x coord of shape
-	ADD V7, V9; add the y dir of shape to y coord of shape ;want to go striaght down
+	ADD V7, 1; add 1 to the y dir of shape to y coord of shape ;want to go striaght down
  	
-	
-
-	; handle collisions with the bottom wall
-
-	; if the shape is at the bottom of the screen, change y dir to 0, so the shape stop at bottom
-	SNE V7, 28; check if the y value of the shape is 29 (bottom), skip next if not 31
-	DRW V6, V7, 3; draw the shape (will be modified later to change based on VE)
-
-	; if the shape is at bottom of the screen, change y value to 0, so the shape can start at top
-	SNE V7, 28; check if the y value of the shape is 31 (bottom), skip next if not 31
-	LD V7, 0; set initial y value to 0 top of screen
-
-
-	RET
+ 	RET
 
 undoDrop
 	DRW V6, V7, 3; undo mistake
 	LD V8, 1
 	SUB V7, V8; subtract 1 to go back up one
 	DRW V6, V7, 3; draw in right place
-	LD V7, 0; set initial y value to 16 top of screen
+	LD V7, 0; set y value to top of screen
 	RET
 	
 
@@ -127,7 +154,8 @@ border
 	byte	%10000000
 shapeT
 	byte	%00010000
-	byte	%00111000
+	byte	%00011000
+	byte	%00010000
 shapeS
 	byte    %00010000
 	byte 	%00011000
@@ -141,10 +169,9 @@ shapeL
 	byte	%00010000
 	byte	%00011000
 shapeI
-	byte	%00010000
-	byte	%00010000
-	byte	%00010000
-	byte	%00010000
+	byte	%00000000
+	byte	%00000000
+	byte	%00111100
 shapeZ
 	byte    %00001000
 	byte 	%00011000
