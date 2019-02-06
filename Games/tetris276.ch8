@@ -5,7 +5,7 @@
 ; V2 free
 ; V3 free
 ; V4 
-; V5 x 
+; V5 
 ; V6 x coord of shape
 ; V7 y coord of shape
 ; V8 x dir of shape
@@ -29,7 +29,7 @@
 
 
 ;THE ACTUAL GAME IS BELOW HERE
-
+CLS
 ; init
 Init
 	LD I, border; set i to memory address of shape
@@ -45,16 +45,16 @@ Init
 	RET
 
 drawVerticalBorder
-	DRW V1, V2, 1; draw left border
-	DRW V0, V2, 1; draw right border
-	ADD V2, 1; keep adding one to y value
+	DRW V1, V2, 1; draw right border
+	DRW V0, V2, 1; draw left border
+	ADD V2, 1; keep adding one to y value (drawing walls)
 	SE V2, V3; skip the jump if y value of the border is 31
 	jp drawVerticalBorder
 	RET
 
 drawHorizBorder
-	DRW V0, V3, 1
-	ADD V0, 1
+	DRW V0, V3, 1 ; draw horizontal border pixel
+	ADD V0, 1 ; keep adding one to x location
 	SE V0, V1
 	jp drawHorizBorder
 	DRW V0, V3, 1; draws last corner pixel
@@ -63,19 +63,21 @@ drawHorizBorder
 
 ; main game loop
 gameLoop
-	SNE VE, 1
+	SNE VE, 1 ; if the block ID is 1, spawn Z block
 	call drawZ
-	SNE VE, 3
+	;SNE VE, 2 ; if block ID is 2, spawn L block 
+	;call drawI
+	SNE VE, 3 ; if block ID is 3, spawn reverse L block
 	call drawReverseL
-	SNE VE, 4
+	SNE VE, 4 ; if block ID is 4, spawn L block
 	call drawL
-	SNE VE, 5
+	SNE VE, 5 ; if block ID is not 5, spawn S block
 	call drawS
-	SNE VE, 6
+	SNE VE, 6 ; if block ID is 6, spawn T block
 	call drawT
-	SNE VE, 6
+	SNE VE, 6 ; if block ID is 6, loop back around to 1
 	LD VE, 1
-	SNE V7, 0; if the block (y val) is not at the top, dont have to change the block ID
+	SNE V7, 0; if the block (y val) is not at the top, dont have to change the block ID, otherwise, keep adding 1
 	ADD VE, 1
 	jp gameLoop
 
@@ -111,12 +113,10 @@ drawZ
 
 ; function to draw and update the position of the shape
 draw_shape
-	
-	LD VF, 0 ;set vf to zero so we can detect collisions
 
 	DRW V6, V7, 3
 
-	SNE VF, 1; check if the collision
+	SNE VF, 1; check if there is a collision with another block or with the border
 	call undoDrop ; if shape landed on something undo the collision and redraw on top
 	
 	SNE VF, 1; check the collision
@@ -129,13 +129,13 @@ draw_shape
 
 	; erase the shape, move it, then redraw it at new position
 	DRW V6, V7, 3; erase the shape
-	ADD V7, 1; add 1 to the y dir of shape to y coord of shape ;want to go striaght down
+	ADD V7, 1; add 1  y coord of shape - want to go striaght down
  	
  	RET
 
 undoDrop
 	DRW V6, V7, 3; undo mistake
-	LD V8, 1
+	LD V8, 1 ; set up V8 register
 	SUB V7, V8; subtract 1 to go back up one
 	DRW V6, V7, 3; draw in right place
 	LD V7, 0; set y value to top of screen
@@ -149,6 +149,7 @@ delay
 	JP delay ; jump to the start of the function, repeating until the delay timer is 0
 	RET
 
+;sprite data
 
 border
 	byte	%10000000
