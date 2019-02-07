@@ -1,4 +1,5 @@
-## Instructions
+Instructions
+============
 
 
 ## Using Chip-8
