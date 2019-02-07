@@ -93,6 +93,15 @@ class emulator{
     }
   }
 
+  testInstructions(){// this function is for the purpose of automated testing
+    chip.loadProgram("7014")
+    if(chip.regitersV[0] == "14"){
+      console.log("7014 - PASS")
+    }else{
+      console.log("7014 - FAIL")
+    }
+  }
+
   loadProgram(program){ //program must be a hex string
     program = program.replace(/\s+/g,"")
     this.initializeData()
@@ -655,9 +664,10 @@ class emulator{
     ];
     for(let i=0; i<fontArray.length; i++){
       for(let j=0; i<5; j++){
-        setMemory(i, fontArray[i][j]);
+        this.setMemory(i, fontArray[i][j]);
       }
     }
   }
+
 }
 let chip = new emulator();
