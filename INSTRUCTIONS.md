@@ -3,12 +3,19 @@ Instructions
 
 
 ## Using Chip-8
+### Run sample Chip 8 title page
+1. Open index.html or use this link : https://adamnizol.github.io/CHIP-8-Emulator/
+2. Press "Load Program" button
+3. Press "Play" button
 
+### How to use additional features
+1. Speed Slider: Slide dial to change speed after starting the program
+2. Undo/Redo buttons: press undo or redo after pausing the program to undo or redo opcodes
 ## Using Sprite Editor Tool
-1. Open tool.html located in Tool folder. 
+1. Open tool.html located in Tool folder.
 2. Draw sprite of choice by clickin on boxes in grid
 3. Click Finish Translating button get the binary and hexidecimal conversion of sprite
-4. Click Pixels if you wish to restart the 
+4. Click Pixels if you wish to restart the
 
 ## Running basic pong sample code
 _For instructions with pictures, see the PongInstructions document, located in the Games folder_
@@ -23,11 +30,11 @@ D672 4700 8914 471E 8915 463F 8815 4600
 
 ## Automated Testing
 
-## Chip-8 testing
+### Chip-8 testing
 
-## Tool-Sprite Editor Testing
+### Tool-Sprite Editor Testing
 
-There are three tests made for the tool. You can run them individually or all together. To run tests input the function calls into console of the browser.
+_There are three tests made for the tool. You can run them individually or all together. To run tests input the function calls into console of the browser._
 
 Testing horizontally gapped sprite:
 translateSpriteWithHGaps();
@@ -35,11 +42,8 @@ translateSpriteWithHGaps();
 Testing vertically gapped sprite:
 translateSpriteWithVGaps();
 
-Testing sprite with random gaps: 
+Testing sprite with random gaps:
 translateSpriteWithRandomGaps();
 
 Running all tests at once:
-
 runTests();
-
-
