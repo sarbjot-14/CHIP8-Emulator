@@ -551,6 +551,8 @@ class emulator{
 
           case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX
 
+            break;
+
           case "33":// FX33 - Store Binary Coded Decimal VX in memory location I, I+1, I+2
             let registerVX = parseInt(this.regitersV[x], 16).toString(10);
 
@@ -617,7 +619,7 @@ class emulator{
     return this.keyInput[key];
   }
   setupFont(){// Setup a list of Chip-8 fonts and place them into beginning of the memory
-    let font0 = ["F0", "90", "90", "90", "F0"];
+    let fot0 = ["F0", "90", "90", "90", "F0"];
     let font1 = ["20", "60", "20", "20", "70"];
     let font2 = ["F0", "10", "F0", "80", "F0"];
     let font3 = ["F0", "10", "F0", "10", "F0"];
@@ -651,11 +653,8 @@ class emulator{
       fontE,
       fontF
     ];
-    copyArray(fontArray, this.memory);
-  }
-  copyArray(fromArray, toArray){
     for(let int i=0; i<fromArray.length; i++){
-      toArrary[i] = fromArray[i];
+      setMemory(i, fontArray[i]);
     }
   }
 }
