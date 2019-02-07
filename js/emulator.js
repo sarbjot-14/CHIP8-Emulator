@@ -653,7 +653,7 @@ class emulator{
       fontE,
       fontF
     ];
-    for(let int i=0; i<fromArray.length; i++){
+    for(let i=0; i<fromArray.length; i++){
       setMemory(i, fontArray[i]);
     }
   }
