@@ -65,11 +65,9 @@ class emulator{
 
   emulationLoop(){
     //run code at program programCounter
-    this.testInstruction();
     let ins = this.memory[parseInt(this.programCounter, 16)] + this.memory[parseInt(this.programCounter, 16) + 1];
-
     let insResult = this.executeInstruction(ins);
-
+    this.testInstruction();
     if(insResult == 1){
       //increment programCounter by 2
       this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
@@ -97,14 +95,12 @@ class emulator{
 
 
   testInstructions(){// this function is for the purpose of automated testing
-    let chip8Display = "00e0"
-
-    chip.loadProgram(chip8Display)
-    /*if(chip.regitersV[0] == "14"){
+    chip.loadProgram("7014")
+    if(chip.regitersV[0] == "14"){
       console.log("7014 - PASS")
     }else{
       console.log("7014 - FAIL")
-    }*/
+    }
   }
 
   loadProgram(program){ //program must be a hex string
