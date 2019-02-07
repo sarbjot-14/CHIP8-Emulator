@@ -29,7 +29,7 @@ D672 4700 8914 471E 8915 463F 8815 4600
 5. Press the "Play" button.
 
 ## Running the assembly files for the Tetris and Pong games
-_For instructions with pictures, see the ExternalEmulatorInstructions document, located in /Games/ExternalEmulator/ folder_
+_For instructions with pictures, see the ExternalEmulatorInstructions document, located in /Games/ folder_
 
 ## Automated Testing
 
