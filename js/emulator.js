@@ -97,8 +97,8 @@ class emulator{
 
 
   testInstructions(){// this function is for the purpose of automated testing
-    let chip8Display = "00e0 a248 6000 611e 6200 d202 d212 7208 3240 120a 6000 613e 6202 a24a d02e d12e 720e d02e d12e a258 600b 6108 d01f 700a a267 d01f 700a a276 d01f 7003 a285 d01f 700a a294 d01f 0000 ffff c0c0 c0c0 c0c0 c0c0 c0c0 c0c0 c0c0 ff80 8080 8080 8080 8080 8080 8080 ff81 8181 8181 8181 ff81 8181 8181 8181 8080 8080 8080 8080 8080 8080 8080 80ff 8181 8181 8181 ff80 8080 8080 8080 ff81 8181 8181 81ff 8181 8181 8181 ffff
-          "
+    let chip8Display = "00e0"
+
     chip.loadProgram(chip8Display)
     /*if(chip.regitersV[0] == "14"){
       console.log("7014 - PASS")
