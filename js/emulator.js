@@ -60,14 +60,13 @@ class emulator{
     for(let i=0; i<4096;i++){
       this,this.setMemory(i, "00");
     }
-    //this.setupFont(); //this function is not finished
+    this.setupFont();
   }
 
   emulationLoop(){
     //run code at program programCounter
     let ins = this.memory[parseInt(this.programCounter, 16)] + this.memory[parseInt(this.programCounter, 16) + 1];
     let insResult = this.executeInstruction(ins);
-    this.testInstruction();
     if(insResult == 1){
       //increment programCounter by 2
       this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
@@ -85,8 +84,6 @@ class emulator{
       this.setRegisterSoundTimer((parseInt(this.registerSoundTimer) -1).toString(16));
     }
 
-
-
     //delay (60Hz)
     if(!this.paused){
       setTimeout(function(){chip.emulationLoop()},(50/3)*this.speed); //I'm not sure if theres a way to do it without using chip object by name
@@ -94,7 +91,7 @@ class emulator{
   }
 
 
-  testInstructions(){// this function is for the purpose of automated testing
+  testInstructions(){// this function is for the purpose of automated testing NOT FINISHED
     chip.loadProgram("7014")
     if(chip.regitersV[0] == "14"){
       console.log("7014 - PASS")
