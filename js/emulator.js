@@ -619,7 +619,7 @@ class emulator{
     return this.keyInput[key];
   }
   setupFont(){// Setup a list of Chip-8 fonts and place them into beginning of the memory
-    let fot0 = ["F0", "90", "90", "90", "F0"];
+    let font0 = ["F0", "90", "90", "90", "F0"];
     let font1 = ["20", "60", "20", "20", "70"];
     let font2 = ["F0", "10", "F0", "80", "F0"];
     let font3 = ["F0", "10", "F0", "10", "F0"];
