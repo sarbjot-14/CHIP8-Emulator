@@ -655,7 +655,7 @@ class emulator{
   }
   copyArray(fromArray, toArray){
     for(let int i=0; i<fromArray.length; i++){
-      toArrary[i] = fromArray[i]
+      toArrary[i] = fromArray[i];
     }
   }
 }
