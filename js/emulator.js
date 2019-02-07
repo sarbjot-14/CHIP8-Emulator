@@ -60,7 +60,7 @@ class emulator{
     for(let i=0; i<4096;i++){
       this,this.setMemory(i, "00");
     }
-    this.setupFont();
+    //this.setupFont(); //this function is not finished
   }
 
   emulationLoop(){
@@ -558,7 +558,7 @@ class emulator{
             this.setRegisterI((parseInt(this.registerI, 16) + parseInt(this.registersV[x], 16)).toString(16));
             break;
 
-          case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX
+          case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX ////**** this case isn't finished ****////
 
             break;
 
