@@ -94,7 +94,7 @@ class emulator{
   }
 
   testInstructions(){// this function is for the purpose of automated testing
-    chip.loadProgram("7014");
+    chip.loadProgram("00E0");
     this.emulationLoop();
     if(chip.regitersV[0] == "14"){
       console.log("7014 - PASS")
