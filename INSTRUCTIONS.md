@@ -20,7 +20,7 @@ Instructions
 ## Running basic pong sample code
 _For instructions with pictures, see the PongInstructions document, located in the Games folder_
 1. Open index.html located in the main directory of the project.
-2. Delete the default opcodes from the text field in the center of the screen.
+2. Delete the default opcodes (the sample Chip8 title page opcodes) from the Emulator's text field in the center of the screen.
 3. In the space where the default opcodes were deleted, copy and paste the following opcodes:  
 00e0 A22A 6620 6710 6801 6901 6102 D672  
 D672 4700 8914 471E 8915 463F 8815 4600  
@@ -28,8 +28,8 @@ D672 4700 8914 471E 8915 463F 8815 4600
 4. Press the "Load Program" button.
 5. Press the "Play" button.
 
-## Running the assembly files for the Tetris and Pong games
-_For instructions with pictures, see the ExternalEmulatorInstructions document, located in /Games/ExternalEmulator/ folder_
+## Running the assembly files for the Tetris and Pong games using an external emulator
+_For instructions with pictures, see the ExternalEmulatorInstructions document, located in Games folder_
 
 ## Automated Testing
 
