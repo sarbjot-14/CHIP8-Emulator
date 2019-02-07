@@ -18,8 +18,8 @@ _For instructions with pictures, see the PongInstructions document, located in t
 00e0 A22A 6620 6710 6801 6901 6102 D672  
 D672 4700 8914 471E 8915 463F 8815 4600  
 8814 8684 8794 D672 1210 0080  
-4. Press the 'Load Program' button.
-5. Press the 'Play' button.
+4. Press the "Load Program" button.
+5. Press the "Play" button.
 
 ## Automated Testing
 
