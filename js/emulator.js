@@ -57,9 +57,10 @@ class emulator{
     this.setRegisterSoundTimer("00");
     this.setProgramCounter("0200");
     this.setStackPointer(0);
-    for(let i= 0; i<4096;i++){
+    for(let i=0; i<4096;i++){
       this,this.setMemory(i, "00");
     }
+    this.setupFont();
   }
 
   emulationLoop(){
@@ -229,10 +230,7 @@ class emulator{
               this.setProgramCounter(data.programCounter);
               this.pushStack(data.stackData);
               break;
-
           }
-
-
           break;
 
         case "1":
@@ -352,7 +350,7 @@ class emulator{
         return 1;
 
       case "2":// 2NNN - CALL addr - Call subroutine at NNN
-        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)}); //////****** not sure if this is correct *****///////
+        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)}); ////****not sure if this is correct ****////
         this.pushStack(this.programCounter.slice(0));
         this.setProgramCounter(nnn);
         return 1;
@@ -379,12 +377,12 @@ class emulator{
         return 1;
 
       case "6":// 6XKK - Set VX == KK
-        this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); /////////****************** not sure if this is correct*****************///////////////
+        this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); ////**** not sure if this is correct****////
         this.setRegistersV(x, kk);
         return 1;
 
       case "7":// 7XKK - Set VX = VX + KK
-        this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); /////////****************** not sure if this is correct*****************///////////////
+        this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); ////**** not sure if this is correct****////
         this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(kk, 16)).toString(16) );
         return 1;
 
@@ -519,7 +517,7 @@ class emulator{
         break;
 
       case "f":
-      case "F": ///////////////////*********** missing pushUndo *******************///////////////////////////
+      case "F": ////**** missing pushUndo ****////
         let maxReg = parseInt(ins[1], 16);
         let regI = parseInt(this.registerI, 16);
         switch(ins.substring(2,4)){
@@ -551,8 +549,7 @@ class emulator{
             this.setRegisterI((parseInt(this.registerI, 16) + parseInt(this.registersV[x], 16)).toString(16));
             break;
 
-        /*  case "29":// FX29 - LD F, VX - Set I = Location of sprite for digit VX
-            break;*/
+          case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX
 
           case "33":// FX33 - Store Binary Coded Decimal VX in memory location I, I+1, I+2
             let registerVX = parseInt(this.regitersV[x], 16).toString(10);
@@ -589,21 +586,20 @@ class emulator{
     return 0;
   }//end of executeInstruction()
 
-  togglePause(){
+  togglePause(){//pause or resume the running program
     this.paused = !this.paused;
     this.vis.updatePaused(this.paused);
     if(!this.paused){
         this.emulationLoop();
     }
   }
-
   byteFromMem(address){//returns a byte from memory ad a given address (int 0-255)
     return this.memory[address];
   }
   mod(x,n){ //modulus that works with negative numbers. found online, sourced in sources.txt
     return (x % n + n) % n;
   }
-  hexToBin(hex, len = 8){
+  hexToBin(hex, len = 8){// translate from hexadecimal to binary
     let result = this.separatePixels(parseInt(hex,16).toString(2));
     while(result.length < len){
       result = [0].concat(result);
@@ -617,10 +613,50 @@ class emulator{
     }
     return result;
   }
-
-  keyIsDown(key){
+  keyIsDown(key){// recognize if a key is pressed
     return this.keyInput[key];
   }
-
+  setupFont(){// Setup a list of Chip-8 fonts and place them into beginning of the memory
+    let font0[] = ["F0", "90", "90", "90", "F0"];
+    let font1[] = ["20", "60", "20", "20", "70"];
+    let font2[] = ["F0", "10", "F0", "80", "F0"];
+    let font3[] = ["F0", "10", "F0", "10", "F0"];
+    let font4[] = ["90", "90", "F0", "10", "10"];
+    let font5[] = ["F0", "80", "F0", "10", "F0"];
+    let font6[] = ["F0", "80", "F0", "90", "F0"];
+    let font7[] = ["F0", "10", "20", "40", "40"];
+    let font8[] = ["F0", "90", "F0", "90", "F0"];
+    let font9[] = ["F0", "90", "F0", "10", "F0"];
+    let fontA[] = ["F0", "90", "F0", "90", "90"];
+    let fontB[] = ["E0", "90", "E0", "90", "E0"];
+    let fontC[] = ["F0", "80", "80", "80", "F0"];
+    let fontD[] = ["E0", "90", "90", "90", "E0"];
+    let fontE[] = ["F0", "80", "F0", "80", "F0"];
+    let fontF[] = ["F0", "80", "F0", "80", "80"];
+    let fontArray[] = [
+      font0,
+      font1,
+      font2,
+      font3,
+      font4,
+      font5,
+      font6,
+      font7,
+      font8,
+      font9,
+      fontA,
+      fontB,
+      fontC,
+      fontD,
+      fontE,
+      fontF
+    ];
+    copyArray(fontArray, this.memory);
+  }
+  copyArray(fromArray, toArray){
+    for(int i=0; i<fromArray.length; i++){
+      toArrary[i] = fromArray[i]
+    }
+  }
 }
 let chip = new emulator();
