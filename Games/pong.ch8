@@ -17,26 +17,7 @@
 ; VE Y coord of right paddle
 ; VF collision
 
-; keyboard stuff for input later
-; 123C		1234
-; 456D	==>	qwer
-; 789E		asdf
-; A0BF		zxcv
-
-; directional stuff
-;	-1
-;-1	 o	1
-;	 1
-
-; drawing stuff
-; (0,0)		(63,0)
-; (0,31) 	(63,31
-
-
-;THE ACTUAL GAME IS BELOW HERE
-
-; init
-
+; initialize
 CLS
 LD i, ball; set i to memory address of ball
 LD V6, 32; set initial x value to 32 (mid-way)
@@ -90,20 +71,6 @@ delay
 	SE V0, 0 ; if the value of the "delay timer" is 0, skip the next instruction
 	JP delay ; jump to the start of the function, repeating until the delay timer is 0
 	RET
-	
-	
-
-
-; commands useful for user_input:
-; SKP Vx
-;	skip next instruction if key with the value of Vx is pressed
-;	checks the keyboard, and if the key corresponding tot he value of Vx is currently in the down position, PC is increase by 2
-; SKNP Vx
-;	skip next instruction if key with the value of Vx is NOT pressed
-;	checks the keyboard, and if the key corresponding to the value of Vx is currently in the up posisition, PC is increased by 2
-; LD Vx, byte
-;	Set Vx = kk (put value kk into register Vx)
-;	use one of the empty registers to take input
 
 ball
 	byte 	%10000000
