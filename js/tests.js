@@ -19,3 +19,13 @@ function retTest(){
   chip.setProgramCounter("DCB");
 
 }
+
+function testInstructions(){
+  //7xkk - Set VX = VX + KK
+  chip.loadProgram("7014")
+  if(chip.regitersV[0] == "14"){
+    console.log("7014 - PASS")
+  }else{
+    console.log("7014 - FAIL")
+  }
+}
