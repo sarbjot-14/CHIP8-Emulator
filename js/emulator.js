@@ -617,23 +617,23 @@ class emulator{
     return this.keyInput[key];
   }
   setupFont(){// Setup a list of Chip-8 fonts and place them into beginning of the memory
-    let font0[] = ["F0", "90", "90", "90", "F0"];
-    let font1[] = ["20", "60", "20", "20", "70"];
-    let font2[] = ["F0", "10", "F0", "80", "F0"];
-    let font3[] = ["F0", "10", "F0", "10", "F0"];
-    let font4[] = ["90", "90", "F0", "10", "10"];
-    let font5[] = ["F0", "80", "F0", "10", "F0"];
-    let font6[] = ["F0", "80", "F0", "90", "F0"];
-    let font7[] = ["F0", "10", "20", "40", "40"];
-    let font8[] = ["F0", "90", "F0", "90", "F0"];
-    let font9[] = ["F0", "90", "F0", "10", "F0"];
-    let fontA[] = ["F0", "90", "F0", "90", "90"];
-    let fontB[] = ["E0", "90", "E0", "90", "E0"];
-    let fontC[] = ["F0", "80", "80", "80", "F0"];
-    let fontD[] = ["E0", "90", "90", "90", "E0"];
-    let fontE[] = ["F0", "80", "F0", "80", "F0"];
-    let fontF[] = ["F0", "80", "F0", "80", "80"];
-    let fontArray[] = [
+    let font0 = ["F0", "90", "90", "90", "F0"];
+    let font1 = ["20", "60", "20", "20", "70"];
+    let font2 = ["F0", "10", "F0", "80", "F0"];
+    let font3 = ["F0", "10", "F0", "10", "F0"];
+    let font4 = ["90", "90", "F0", "10", "10"];
+    let font5 = ["F0", "80", "F0", "10", "F0"];
+    let font6 = ["F0", "80", "F0", "90", "F0"];
+    let font7 = ["F0", "10", "20", "40", "40"];
+    let font8 = ["F0", "90", "F0", "90", "F0"];
+    let font9 = ["F0", "90", "F0", "10", "F0"];
+    let fontA = ["F0", "90", "F0", "90", "90"];
+    let fontB = ["E0", "90", "E0", "90", "E0"];
+    let fontC = ["F0", "80", "80", "80", "F0"];
+    let fontD = ["E0", "90", "90", "90", "E0"];
+    let fontE = ["F0", "80", "F0", "80", "F0"];
+    let fontF = ["F0", "80", "F0", "80", "80"];
+    let fontArray = [
       font0,
       font1,
       font2,
