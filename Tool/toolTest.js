@@ -1,23 +1,25 @@
-console.log("running tests");
 
-runTests();
+
+//runTests();
 
 function runTests(){
+  console.log("Running tests for Sprite Editor Tool\n");
   ///TESTING HORIZONTAL GAPS//////
   translateSpriteWithHGaps();
-  resetPixels();
+
 
   ///TESTING VERTICAL GAPS//////
   translateSpriteWithVGaps();
-  resetPixels();
+
 
   ///TESTING RANDOM GAPS//////
   translateSpriteWithRandomGaps();
-  //resetPixels();
+
 
 }
 ///TESTING HORIZONTAL GAPS//////
 function translateSpriteWithHGaps(){
+  resetPixels();
   console.log("TESTING HORIZONTAL GAPS");
   elements = document.getElementsByClassName("pixel");
 
@@ -41,6 +43,7 @@ function translateSpriteWithHGaps(){
 
 ///TESTING VERTICAL GAPS//////
 function translateSpriteWithVGaps(){
+  resetPixels();
   console.log("TESTING RANDOM GAPS");
   elements = document.getElementsByClassName("pixel");
 
@@ -66,6 +69,7 @@ function translateSpriteWithVGaps(){
 
 ///TESTING RANDOM GAPS//////
 function translateSpriteWithRandomGaps(){
+  resetPixels();
   console.log("TESTING HORIZONTAL GAPS");
   elements = document.getElementsByClassName("pixel");
 
@@ -124,6 +128,6 @@ function checkTranslation(image){ //pass in right answer
     console.log("Test Failed");
   }
   else{
-    console.log("Test Passed");
+    console.log("Test Passed\n");
   }
 }
