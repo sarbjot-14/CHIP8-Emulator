@@ -661,7 +661,7 @@ class emulator{
       fontF
     ];
     for(let i=0; i<fontArray.length; i++){
-      for(let j=0; i<5; j++){
+      for(let j=0; j<5; j++){
         this.setMemory(i, fontArray[i][j]);
       }
     }
