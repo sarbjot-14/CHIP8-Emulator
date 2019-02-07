@@ -65,9 +65,13 @@ class emulator{
   emulationLoop(){
     //run code at program programCounter
     let ins = this.memory[parseInt(this.programCounter, 16)] + this.memory[parseInt(this.programCounter, 16) + 1];
-    if(this.executeInstruction(ins)){
+
+    let insResult = this.executeInstruction(ins);
+    if(insResult == 1){
       //increment programCounter by 2
       this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
+    }else if(insResult == 2){
+      //do nothing
     }else if(!parseInt(this.registerSoundTimer, 16) && !parseInt(this.registerDelay, 16)){
       this.togglePause();
     }
@@ -297,12 +301,18 @@ class emulator{
 
         case "f":
         case "F":
+          switch(ins.substring(2,4)){
+            case "0A":
+              this.setRegistersV(parseInt(ins[1],16), data.registersV);
+              break;
+          }
           break;
       }
 
     }
   }
 
+  //returns 0 on invalid instruction, 1 on executed instructions with undo stack push, and 2 if program counter shouldn't increment (for instructions that wait)
   //returns 1 if instruction was valid (ie pushUndo() was called) and 0 otherwise
   executeInstruction(ins){ //ins is a 4-character string with each character beteen 0-1 or a-f/A-F
     ins = ins.toLowerCase();
@@ -514,11 +524,19 @@ class emulator{
         let regI = parseInt(this.registerI, 16);
         switch(ins.substring(2,4)){
           case "07":// FX07 - LD VX, DT - Set VX = delay timer value
-            this.setRegistersV(this.registersV[x], this.registerDelay);
+            this.setRegistersV(x, this.registerDelay);
             break;
 
-          /*case "0A"// FX0A - LD VX, K - Wait for a key to press, store value of key into VX
-            break;*/
+          case "0A":
+          case "0a":// FX0A - LD VX, K - Wait for a key to press, store value of key into VX
+            for(let i=0; i< 16; i++){
+              if(this.keyInput[i.toString(16)]){
+                this.pushUndo(ins,{registersV:this.registersV[x].slice(0)});
+                this.setRegistersV(x, i.toString(16));
+                return 1;
+              }
+            }
+            return 2;
 
           case "15":// FX15 - LD DT, VX - Set delay timer = VX
             this.setRegisterDelay(this.registersV[x]);
