@@ -86,17 +86,8 @@ class emulator{
 
     //delay (60Hz)
     if(!this.paused){
-      setTimeout(function(){chip.emulationLoop()},(50/3)*this.speed); //I'm not sure if theres a way to do it without using chip object by name
-    }
-  }
-
-
-  testInstructions(){// this function is for the purpose of automated testing NOT FINISHED
-    chip.loadProgram("7014")
-    if(chip.regitersV[0] == "14"){
-      console.log("7014 - PASS")
-    }else{
-      console.log("7014 - FAIL")
+      setTimeout( () => {this.emulationLoop();}, (50/3)*this.speed);
+      //setTimeout(function(){chip.emulationLoop()},(50/3)*this.speed); //old method
     }
   }
 
@@ -718,4 +709,3 @@ class emulator{
   }
 
 }
-let chip = new emulator();

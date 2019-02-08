@@ -20,7 +20,7 @@ function retTest(){
 
 }
 
-function testInstructions(){
+function testInstructions(){// this function is for the purpose of automated testing NOT FINISHED
   //7xkk - Set VX = VX + KK
   chip.loadProgram("7014")
   if(chip.regitersV[0] == "14"){
