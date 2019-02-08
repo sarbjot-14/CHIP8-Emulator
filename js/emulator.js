@@ -207,13 +207,63 @@ class emulator{
     }
 
   }
-  pushUndo(ins, data){
-    this.undoStack.push([ins, data]);
-  }
   clearUndo(){
     this.undoStack = [];
   }
 
+  pushUndo(ins = "Error"){
+    this.undoStack.push([ins, {
+      "pixels": this.pixels.slice(0),
+      "registersV": this.registersV.slice(0),
+      "registerI": this.registerI.slice(0),
+      "registerDelay": this.registerDelay.slice(0),
+      "registerSoundTimer": this.registerSoundTimer.slice(0),
+      "programCounter": this.programCounter.slice(0),
+      "stackPointer": (this.stackPointer + 0),
+      "stack": this.stack.slice(0),
+      "memory": this.memory.slice(0),
+      "VF": (this.VF + 0)
+    }]);
+  }
+  undo(){
+    if(this.undoStack.length > 0){
+      let popped = this.undoStack.pop();
+      let ins = popped[0];
+      let data = popped[1];
+
+      //pixels
+      this.updateScreen(data.pixels, 0, {fill: true});
+      //registersV
+      for(let i=0; i< data.registersV.length; i++){
+        this.setRegistersV(i, data.registersV[i]);
+      }
+      //registerI
+      this.setRegisterI(data.registerI);
+      //registerDelay
+      this.setRegisterDelay(data.registerDelay);
+      //registerSoundTimer
+      this.setRegisterSoundTimer(data.registerSoundTimer);
+      //programCounter
+      this.setProgramCounter(data.programCounter);
+      //stackPointer
+      this.setStackPointer(this.stackPointer);
+      //stack
+      for(let i=0; i< data.stack.length; i++){
+        this.setStack(i, data.stack[i])
+      }
+      //memory
+      for(let i=0; i<data.memory.length; i++){
+        this.setMemory(i, data.memory[i]);
+      }
+      //VF
+      this.setVF(data.VF);
+
+    }
+  }
+
+  /*pushUndo(ins, data){
+    this.undoStack.push([ins, data]);
+  }
   undo(){// uses this.undoStack to undo the last instruction
     if(this.undoStack.length > 0){
       let popped = this.undoStack.pop();
@@ -315,7 +365,7 @@ class emulator{
       }
 
     }
-  }
+  }*/
 
   //returns 0 on invalid instruction, 1 on executed instructions with undo stack push, and 2 if program counter shouldn't increment (for instructions that wait)
   //returns 1 if instruction was valid (ie pushUndo() was called) and 0 otherwise
@@ -331,7 +381,7 @@ class emulator{
         switch(ins.substring(1,4)){
           case "0E0":// 00E0 - CLS - Clear the display
           case "0e0":
-            this.pushUndo(ins, {pixels:this.pixels.slice(0)} );
+            this.pushUndo(ins);
             this.updateScreen(new Array(64*32), 0, {fill: true});
             return 1;
 
@@ -340,7 +390,7 @@ class emulator{
           case "0Ee":
           case "0eE":
             if(this.stackPointer > 0){
-              this.pushUndo(ins,{programCounter:this.programCounter.slice(0), stackData:this.stack[this.stackPointer].slice(0)});
+              this.pushUndo(ins);
               this.setProgramCounter(this.popStack());
             }
             return 1;
@@ -352,49 +402,49 @@ class emulator{
         break;
 
       case "1":// 1NNN - JP addr - Jump to location NNN
-        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
+        this.pushUndo(ins);
         this.setProgramCounter((parseInt(nnn,16)-2).toString(16)); //minus two so it doesnt skip first instruction
         return 1;
 
       case "2":// 2NNN - CALL addr - Call subroutine at NNN
-        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)}); ////****not sure if this is correct ****////
+        this.pushUndo(ins); ////****not sure if this is correct ****////
         this.pushStack(this.programCounter.slice(0));
         this.setProgramCounter(nnn);
         return 1;
 
       case "3":// 3XKK - SE Vx, byte - Skip next instruction if VX = KK
-        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
+        this.pushUndo(ins);
         if(this.registersV[x] == kk){
           this.setProgramCounter((parseInt(this.programCounter, 16) + 2).toString(16));
         }
         return 1;
 
       case "4":// 4XKK - Skip next instruction if VX != KK
-        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
+        this.pushUndo(ins);
         if(this.registersV[x] != kk){
           this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
         }
         return 1;
 
       case "5":// 5XY0 - Skip next instruction if VX = VY
-        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
+        this.pushUndo(ins);
         if(this.registersV[x] == this.registersV[y]){
           this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
         }
         return 1;
 
       case "6":// 6XKK - Set VX == KK
-        this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); ////**** not sure if this is correct****////
+        this.pushUndo(ins); ////**** not sure if this is correct****////
         this.setRegistersV(x, kk);
         return 1;
 
       case "7":// 7XKK - Set VX = VX + KK
-        this.pushUndo(ins,{registersV:this.registersV[x].slice(0)}); ////**** not sure if this is correct****////
+        this.pushUndo(ins); ////**** not sure if this is correct****////
         this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(kk, 16)).toString(16) );
         return 1;
 
       case "8":
-        this.pushUndo(ins,{registersVX:this.registersV[x].slice(0), registersVY:this.registersV[y].slice(0), flagV:this.VF});// push to undo stacks: VX, VY, VF(carry flag)
+        this.pushUndo(ins);// push to undo stacks: VX, VY, VF(carry flag)
         switch(ins[3]){
           case "0":// 8XY0 - Set VX = VY
             this.setRegistersV(x, this.registersV[y]);
@@ -461,7 +511,7 @@ class emulator{
         return 1;
 
       case "9":// 9XY0 - Skip next instruction if VX != VY
-        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
+        this.pushUndo(ins);
 
         if(this.registersV[x] != this.registersV[y]){
           this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
@@ -470,25 +520,25 @@ class emulator{
 
       case "a":
       case "A":// ANNN - Set I = nnn.
-        this.pushUndo(ins,{registerI:this.registerI.slice(0)});
+        this.pushUndo(ins);
         this.setRegisterI(ins.substring(1,4));
         return 1;
 
       case "b":
       case "B":// BNNN - Jump to location nnn + V0.
-        this.pushUndo(ins,{programCounter:this.programCounter.slice(0)});
+        this.pushUndo(ins);
         this.setProgramCounter( (parseInt(nnn, 16) + parseInt(registersV[0], 16)).toString(16) );
         return 1;
 
       case "c":
       case "C":// CXKK - Set VX = random byte AND KK
-        this.pushUndo(ins, {registersV: this.registersV[parseInt(ins[1], 16)]});
+        this.pushUndo(ins);
         this.setRegistersV( parseInt(ins[1], 16) ,(Match.round(Match.random()*255) & parseInt(ins.substring(2,4), 16)).toString(16) );
         return 1;
 
       case "d":
       case "D": //DXYN - display n-byte sprite at memory location I at (VX, VY), set VF = collision
-        this.pushUndo(ins,{vf:this.VF, pixels:this.pixels.slice(0)});
+        this.pushUndo(ins);
         let size = parseInt(ins[3], 16);
         let pixelStart = parseInt(this.registerI,16);
 
@@ -505,7 +555,7 @@ class emulator{
 
       case "e":
       case "E":
-        this.pushUndo(ins, {programCounter:this.programCounter.slice(0)});
+        this.pushUndo(ins);
         switch(ins.substring(2, 4)){
           case "9E":
           case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
@@ -536,7 +586,7 @@ class emulator{
           case "0a":// FX0A - LD VX, K - Wait for a key to press, store value of key into VX
             for(let i=0; i< 16; i++){
               if(this.keyInput[i.toString(16)]){
-                this.pushUndo(ins,{registersV:this.registersV[x].slice(0)});
+                this.pushUndo(ins);
                 this.setRegistersV(x, i.toString(16));
                 return 1;
               }
