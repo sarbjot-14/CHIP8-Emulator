@@ -21,6 +21,20 @@ class visualizer{
 
     document.getElementById("loadBtn").onclick = () => {this.em.loadProgram(document.getElementById('code').value); this.updatePaused(1)}
 
+    document.getElementById("loadFileBtn").onclick = () => {document.getElementById("fileInput").click()}
+    document.getElementById("fileInput").onchange = () => {
+      let reader = new FileReader();
+      //reader.readAsText(document.getElementById("fileInput").files[0]);
+      //reader.readAsBinaryString(document.getElementById("fileInput").files[0]);
+      reader.readAsArrayBuffer(document.getElementById("fileInput").files[0]);
+      reader.onloadend = (event) => {
+        let ia = new Uint8Array(reader.result);
+        let output = [...ia].map((n) => ("00" + parseInt(("00000000"+n.toString(2)).slice(-8), 2).toString(16)).slice(-2) ).join(' ')
+        console.log(output);
+        document.getElementById("code").innerHTML = output;
+      }
+    }
+
     document.getElementById("speedSlider").oninput = () => {
       let val = document.getElementById("speedSlider").value;
       if(val < 1){

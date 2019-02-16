@@ -50,12 +50,16 @@ c0c0 c0c0 c0c0 c0c0 ff80 8080 8080 8080
 8181 ffff
           </textarea>
           <div id="bottomMenu">
-            <div>
+            <div id="bottomMenuLeft">
               <button id="loadBtn">Load Program</button>
               <select id="programSelect" title="Select Program">
                 <option>Game 1</option>
                 <option>Game 2</option>
               </select>
+              <div>
+                <input type="file" id="fileInput" hidden="hidden"/>
+                <button id="loadFileBtn">Import Binary</button>
+              </div>
             </div>
             <div id="lineSteps">
               <button title="Step Back" id="stepBackBtn"></button>
