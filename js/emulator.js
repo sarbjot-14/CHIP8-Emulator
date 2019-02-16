@@ -604,8 +604,9 @@ class emulator{
             return 1;
 
           case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX ////**** this case isn't finished ****////
-
-            break;
+            this.pushUndo(ins);
+            this.setRegisterI((x*5).toString(16))
+            return 1;
 
           case "33":// FX33 - Store Binary Coded Decimal VX in memory location I, I+1, I+2
             this.pushUndo(ins);
