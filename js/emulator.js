@@ -713,7 +713,7 @@ class emulator{
     ];
     for(let i=0; i<fontArray.length; i++){
       for(let j=0; j<5; j++){
-        this.setMemory(i, fontArray[i][j]);
+        this.setMemory(5*i +j, fontArray[i][j]);
       }
     }
   }
