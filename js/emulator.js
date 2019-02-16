@@ -74,6 +74,7 @@ class emulator{
       //do nothing
     }else if(!parseInt(this.registerSoundTimer, 16) && !parseInt(this.registerDelay, 16)){
       this.togglePause();
+      console.log("invalid")
     }
 
     //decrement timers
@@ -142,7 +143,7 @@ class emulator{
 
   fixHexLength(val, len){
     if(val.length > len){
-      console.log("Error in fixHexLength()")
+      val = val.slice((-1)*len)
     }
     while(val.length < len){
       val = "0"+val;
@@ -366,7 +367,7 @@ class emulator{
     let y = parseInt(ins[2],16);
     let kk = ins.substring(2,4);
     let nnn = ins.substring(1,4);
-    //console.log(ins) //enable this line to get opcode readouts
+    console.log(ins) //enable this line to get opcode readouts
     switch(ins[0]){
       case "0":
         switch(ins.substring(1,4)){
@@ -524,7 +525,7 @@ class emulator{
       case "c":
       case "C":// CXKK - Set VX = random byte AND KK
         this.pushUndo(ins);
-        this.setRegistersV( parseInt(ins[1], 16) ,(Match.round(Match.random()*255) & parseInt(ins.substring(2,4), 16)).toString(16) );
+        this.setRegistersV( parseInt(ins[1], 16) ,(Math.round(Math.random()*255) & parseInt(ins.substring(2,4), 16)).toString(16) );
         return 1;
 
       case "d":
@@ -546,21 +547,22 @@ class emulator{
 
       case "e":
       case "E":
-        this.pushUndo(ins);
         switch(ins.substring(2, 4)){
           case "9E":
           case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
+            this.pushUndo(ins);
             if(this.keyInput == x){
                this.setProgramCounter((parseInt(this.programCounter, 16) + 2).toString(16));
             }
-            break;
+            return 1;
 
           case "A1":
           case "a1":// EXA1 - SKNP - Skip next instruction if key with the value VX is not pressed
+            this.pushUndo(ins);
             if(this.keyInput !== x){
                this.setProgramCounter((parseInt(this.programCounter, 16) + 2).toString(16));
             }
-            break;
+            return 1;
         }
         break;
 
@@ -570,8 +572,9 @@ class emulator{
         let regI = parseInt(this.registerI, 16);
         switch(ins.substring(2,4)){
           case "07":// FX07 - LD VX, DT - Set VX = delay timer value
+            this.pushUndo(ins);
             this.setRegistersV(x, this.registerDelay);
-            break;
+            return 1;
 
           case "0A":
           case "0a":// FX0A - LD VX, K - Wait for a key to press, store value of key into VX
@@ -585,23 +588,27 @@ class emulator{
             return 2;
 
           case "15":// FX15 - LD DT, VX - Set delay timer = VX
+            this.pushUndo(ins);
             this.setRegisterDelay(this.registersV[x]);
-            break;
+            return 1;
 
           case "18":// FX18 - LD ST, VX - Set sound timer = VX
+            this.pushUndo(ins);
             this.setRegisterSoundTimer(this.registersV[x]);
-            break;
+            return 1;
 
           case "1E":
           case "1e":// FX1E - ADD I, VX - Set I = I + VX
+            this.pushUndo(ins);
             this.setRegisterI((parseInt(this.registerI, 16) + parseInt(this.registersV[x], 16)).toString(16));
-            break;
+            return 1;
 
           case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX ////**** this case isn't finished ****////
 
             break;
 
           case "33":// FX33 - Store Binary Coded Decimal VX in memory location I, I+1, I+2
+            this.pushUndo(ins);
             let registerVX = parseInt(this.regitersV[x], 16).toString(10);
 
             if(registerVX.length == 3){
@@ -613,23 +620,26 @@ class emulator{
               this.setMemory(this.registerI + 1, registerVX[0]);
               this.setMemory(this.registerI + 2, registerVX[1]);
             }
-            else
+            else{
               this.setMemory(this.registerI + 2, registerVX[0]);
-            break;
+            }
+            return 1;
 
           case "55":// FX55 - LD [I], VX - Store registers V0 through VX in memory starting at location I
+              this.pushUndo(ins);
               for(let i = 0; i <= maxReg; i++){
                 this.setMemory(regI, this.registersV[i]);
                 regI += 2;
               }
-              break;
+              return 1;
 
           case "65":// FX65 - LD VX, [I] - Read registers V0 through VX from memory starting at location I
+            this.pushUndo(ins);
             for(let i = 0; i <= maxReg; i++){
               this.setRegistersV(i, this.memory[regI]);
               regI += 2;
             }
-            break;
+            return 1;
         }
         break;
     }
