@@ -25,10 +25,13 @@ class visualizer{
     document.getElementById("fileInput").onchange = () => {
       let reader = new FileReader();
       //reader.readAsText(document.getElementById("fileInput").files[0]);
-      reader.readAsBinaryString(document.getElementById("fileInput").files[0]);
+      //reader.readAsBinaryString(document.getElementById("fileInput").files[0]);
+      reader.readAsArrayBuffer(document.getElementById("fileInput").files[0]);
       reader.onloadend = (event) => {
-        document.getElementById("code").innerHTML = reader.result;
-        console.log(reader.result[0], 10);
+        let ia = new Uint8Array(reader.result);
+        let output = [...ia].map((n) => ("00" + parseInt(("00000000"+n.toString(2)).slice(-8), 2).toString(16)).slice(-2) ).join(' ')
+        console.log(output);
+        document.getElementById("code").innerHTML = output;
       }
     }
 
