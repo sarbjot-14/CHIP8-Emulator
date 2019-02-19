@@ -24,21 +24,25 @@ LD V6, 32; set initial x value to 32 (mid-way)
 LD V7, 16; set initial y value to 16 (mid-way)
 LD V8, 1; set initial x dir to 1 (right)
 LD V9, 1; set initial y dir to 1 (down)
+LD VB, 2
+LD VC, 14
+LD VD, 61
+LD VE, 14
 DRW V6, V7, 1; draw the ball
+LD i, paddle
+DRW VB, VC, 5
+DRW VD, VE, 5
 
 ; main game loop
 loop	
-	call draw_ball
+	call update_ball
+	call update_paddles
 	jp loop
 
 ; function to draw and update the position of the ball
-draw_ball
+update_ball
 	
-	LD V0, 1 ; load the value to delay by into the empty register (to pass to delay timer)
-	LD DT, V0 ; pass the above value into the delay timer "register"
-	CALL delay ; loops until delay timer is 0
-		
-
+	LD i, ball
 	; erase the ball, move it, then redraw it at new position
 	DRW V6, V7, 1; erase the ball
 	ADD V6, V8; add the x dir of ball to x coord of ball
@@ -65,6 +69,42 @@ draw_ball
 	LD V8, 1; change x dir of ball
 	RET
 
+; function to draw the left and right paddles
+update_paddles
+	LD i, paddle
+
+	;erase
+	DRW VB, VC, 5
+	DRW VD, VE, 5
+
+	;get input and update
+	call get_input
+
+	;draw
+	DRW VB, VC, 5
+	DRW VD, VE, 5
+	RET
+
+; function to get input from user
+get_input
+	LD V0, 1
+	SKNP V0
+	ADD VC, #FE
+
+	LD V0, 4
+	SKNP V0
+	ADD VC, 2
+
+	LD V0, #0C
+	SKNP V0
+	ADD VE, #FE
+
+	LD V0, #0D
+	SKNP V0
+	ADD VE, 2
+	RET
+
+
 ; function to delay the drawing of the ball
 delay
 	LD V0, DT ; get the value for the delay timer
@@ -74,6 +114,13 @@ delay
 
 ball
 	byte 	%10000000
+
+paddle
+	byte	%10000000
+	byte	%10000000
+	byte	%10000000
+	byte	%10000000
+	byte	%10000000
 
 
 
