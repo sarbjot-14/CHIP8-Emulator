@@ -30,13 +30,13 @@ LD VD, 61
 LD VE, 14
 DRW V6, V7, 1; draw the ball
 LD i, paddle
-DRW VB, VC, 5
-DRW VD, VE, 5
+DRW VB, VC, 6
+DRW VD, VE, 6
 
 ; main game loop
-loop	
-	call update_ball
+loop
 	call update_paddles
+	call update_ball
 	jp loop
 
 ; function to draw and update the position of the ball
@@ -49,6 +49,8 @@ update_ball
 	ADD V7, V9; add the y dir of ball to y coord of ball
  	DRW V6, V7, 1; draw the ball at its new position
 
+ 	SNE VF, 1
+ 	CALL undo_ball_move;
 
 	; handle collisions with the walls of the screen
 
@@ -69,27 +71,60 @@ update_ball
 	LD V8, 1; change x dir of ball
 	RET
 
+; different depending on v8
+undo_ball_move
+
+	LD i, ball
+	DRW V6, V7, 1
+
+	; this part works
+	SUB V6, V8
+	SUB V7, V9
+
+	DRW V6, V7, 1
+
+	SE V8, 1
+	call leftToRight
+
+	SE V8, -1
+	call rightToLeft
+
+	RET
+
+
+rightToLeft
+	SE V1, 1
+	LD V8, -1
+	LD V1, 0
+	RET
+
+leftToRight
+	LD V8, 1
+	LD V1, 1;
+	RET
+
+
 ; function to draw the left and right paddles
 update_paddles
 	LD i, paddle
 
 	;erase
-	DRW VB, VC, 5
-	DRW VD, VE, 5
+	DRW VB, VC, 6
+	DRW VD, VE, 6
 
 	;get input and update
 	call get_input
 
 	;draw
-	DRW VB, VC, 5
-	DRW VD, VE, 5
+	DRW VB, VC, 6
+	DRW VD, VE, 6
 	RET
 
 ; function to get input from user
 get_input
 	LD V0, 1
 	SKNP V0
-	ADD VC, #FE
+	ADD VC, -2
 
 	LD V0, 4
 	SKNP V0
@@ -97,7 +132,7 @@ get_input
 
 	LD V0, #0C
 	SKNP V0
-	ADD VE, #FE
+	ADD VE, -2
 
 	LD V0, #0D
 	SKNP V0
@@ -116,6 +151,7 @@ ball
 	byte 	%10000000
 
 paddle
+	byte	%10000000
 	byte	%10000000
 	byte	%10000000
 	byte	%10000000
