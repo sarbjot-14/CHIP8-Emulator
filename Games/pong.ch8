@@ -91,6 +91,10 @@ undo_ball_move
 
 	RET
 
+leftToRight
+	LD V8, 1
+	LD V1, 1;
+	RET
 
 rightToLeft
 	SE V1, 1
@@ -98,10 +102,7 @@ rightToLeft
 	LD V1, 0
 	RET
 
-leftToRight
-	LD V8, 1
-	LD V1, 1;
-	RET
+
 
 
 ; function to draw the left and right paddles
@@ -122,22 +123,45 @@ update_paddles
 
 ; function to get input from user
 get_input
+
+	SE VC, 0
+	CALL moveRightPaddleUp
+
+	SE VC, 26; convert this to hex
+	CALL moveRightPaddleDown
+
+	SE VE, 0;
+	CALL moveLeftPaddleUp
+
+	SE VE, 26; convert to hex
+	CALL moveLeftPaddleDown
+	RET
+
+
+moveRightPaddleUp
 	LD V0, 1
 	SKNP V0
 	ADD VC, -2
+	RET
 
+moveRightPaddleDown
 	LD V0, 4
 	SKNP V0
 	ADD VC, 2
+	RET
 
+moveLeftPaddleUp
 	LD V0, #0C
 	SKNP V0
 	ADD VE, -2
+	RET
 
+moveLeftPaddleDown
 	LD V0, #0D
 	SKNP V0
 	ADD VE, 2
 	RET
+
 
 
 ; function to delay the drawing of the ball
