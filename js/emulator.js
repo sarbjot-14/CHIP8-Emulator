@@ -79,10 +79,10 @@ class emulator{
 
     //decrement timers
     if(parseInt(this.registerDelay, 16)){
-      this.setRegisterDelay((parseInt(this.registerDelay) -1).toString(16));
+      this.setRegisterDelay((parseInt(this.registerDelay, 16) -1).toString(16));
     }
     if(parseInt(this.registerSoundTimer, 16)){
-      this.setRegisterSoundTimer((parseInt(this.registerSoundTimer) -1).toString(16));
+      this.setRegisterSoundTimer((parseInt(this.registerSoundTimer, 16) -1).toString(16));
     }
 
     //delay (60Hz)
@@ -137,7 +137,11 @@ class emulator{
     this.vis.updateMemory();
   }
   setVF(data){
-    this.VF = data;
+    if(data){
+      this.VF = 1;
+    }else{
+      this.VF = 0;
+    }
     this.vis.updateVF();
   }
 
@@ -401,7 +405,7 @@ class emulator{
       case "2":// 2NNN - CALL addr - Call subroutine at NNN
         this.pushUndo(ins); ////****not sure if this is correct ****////
         this.pushStack(this.programCounter.slice(0));
-        this.setProgramCounter(nnn);
+        this.setProgramCounter((parseInt(nnn,16)-2).toString(16)); //minus two so it doesnt skip first instruction
         return 1;
 
       case "3":// 3XKK - SE Vx, byte - Skip next instruction if VX = KK
@@ -456,10 +460,11 @@ class emulator{
 
           case "4":// 8XY4 - Set VX = VX + VY, VF = 1 =
             if( (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)) > parseInt("FF", 16)){
-              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)).toString(16).substring(0,4));
+              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)).toString(16).substring(1,4));
               this.setVF(1);
             }else{
               this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)).toString(16)  );
+              this.setVF(0);
             }
 
             break;
@@ -467,6 +472,8 @@ class emulator{
           case "5":// 8XY5 - Set VX = VX - VY, VF = 1 = not borrow
             if(parseInt(this.registersV[x], 16) > parseInt(this.registersV[y], 16)){
               this.setVF(1);
+            }else{
+              this.setVF(0);
             }
 
             this.setRegistersV(x, (parseInt(this.registersV[x], 16) - parseInt(this.registersV[y], 16)).toString(16) );
@@ -475,6 +482,8 @@ class emulator{
           case "6":// 8XY6 - Set VX = VX >> 1
             if(( parseInt(this.registersV[x], 16) % 2) != 0){
               this.setVF(1);
+            }else{
+              this.setVF(0);
             }
 
             this.setRegistersV(x, (parseInt(this.registersV[x], 16) / 2).toString(16) );
@@ -534,13 +543,13 @@ class emulator{
         let size = parseInt(ins[3], 16);
         let pixelStart = parseInt(this.registerI,16);
 
-        this.VF = 0;
+        this.setVF(0)
         for(let i=0; i<size; i++){
           let pixelByte = this.hexToBin(this.memory[pixelStart+i]);
           let posX = parseInt(this.registersV[x],16);
           let posY = parseInt(this.registersV[y],16);
           if(this.updateScreen(pixelByte,64*(this.mod((posY+i),32))+posX)){
-            this.VF = 1;
+            this.setVF(1);
           }
         }
         return 1;
