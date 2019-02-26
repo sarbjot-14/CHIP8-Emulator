@@ -71,7 +71,7 @@ update_ball
 	LD V8, 1; change x dir of ball
 	RET
 
-; different depending on v8
+; if the ball ends up in the paddle, this moves the ball and sets its direction to the appropriate direction based on the collision
 undo_ball_move
 
 	LD i, ball
@@ -116,7 +116,7 @@ update_paddles
 	;get input and update
 	call get_input
 
-	;draw
+	;re-draw
 	DRW VB, VC, 6
 	DRW VD, VE, 6
 	RET
@@ -124,42 +124,42 @@ update_paddles
 ; function to get input from user
 get_input
 
-	SE VC, 0
+	SE VC, 0; if the paddle is at the top, don't let the user move the paddle up
 	CALL moveRightPaddleUp
 
-	SE VC, 26; convert this to hex
+	SE VC, 26; if the paddle is at the bottom, don't let the user move the paddle down
 	CALL moveRightPaddleDown
 
-	SE VE, 0;
+	SE VE, 0; if the paddle is at the top, don't let the user move the paddle up
 	CALL moveLeftPaddleUp
 
-	SE VE, 26; convert to hex
+	SE VE, 26; if the paddle is at the bottom, don't let the user move the paddle down
 	CALL moveLeftPaddleDown
 	RET
 
 
 moveRightPaddleUp
-	LD V0, 1
-	SKNP V0
-	ADD VC, -2
+	LD V0, 1; put the key value into the register
+	SKNP V0; check if the key value in the register was pressed
+	ADD VC, -2; move the paddle up
 	RET
 
 moveRightPaddleDown
-	LD V0, 4
-	SKNP V0
-	ADD VC, 2
+	LD V0, 4; put the key value into the register
+	SKNP V0; check if the key value in the register was pressed
+	ADD VC, 2; move the paddle down
 	RET
 
 moveLeftPaddleUp
-	LD V0, #0C
-	SKNP V0
-	ADD VE, -2
+	LD V0, #0C; put the key value into the register
+	SKNP V0; check if the key value in the register was pressed
+	ADD VE, -2; move the paddle up
 	RET
 
 moveLeftPaddleDown
-	LD V0, #0D
-	SKNP V0
-	ADD VE, 2
+	LD V0, #0D; put the key value into the register
+	SKNP V0; check if the key value in the register was pressed
+	ADD VE, 2; move the paddle down
 	RET
 
 
