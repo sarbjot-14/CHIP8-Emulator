@@ -492,6 +492,8 @@ class emulator{
           case "7":// 8XY7 - Set VX = VY - VX, VF = 1 = not borrow
             if(parseInt(this.registersV[y], 16) > parseInt(this.registersV[x], 16)){
               this.setVF(1);
+            }else{
+              this.setVF(0);
             }
 
             this.setRegistersV(x, (parseInt(this.registersV[x], 16) - parseInt(this.registersV[y], 16)).toString(16) );
@@ -501,6 +503,8 @@ class emulator{
           case "e":
             if(parseInt(this.registersV[x], 16) >= 128){
               this.setVF(1);
+            }else{
+              this.setVF(0);
             }
 
             this.setRegistersV(x, (parseInt(this.registersV[x]) * 2).toString(16) );
