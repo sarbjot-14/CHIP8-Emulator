@@ -184,6 +184,7 @@ textarea {
   width: 800px;
   display: flex;
   flex-direction: row;
+
 }
 #registers p{
   color: white;
@@ -191,7 +192,7 @@ textarea {
   margin: 0;
   font-weight: bold;
 }
-.registerV{
+.registerValContainer{
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -202,7 +203,17 @@ textarea {
 #registersV{
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
+  background-color: #262933;
 }
 #registers .regVal{
   color: rgb(150,150,255);
+}
+#regCol2, #delayCol{
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+}
+
+#delayCol {
+    background-color: #262933;
 }

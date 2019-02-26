@@ -304,13 +304,25 @@ class visualizer{
       registerDoms.children[i].children[1].innerHTML = this.em.registersV[i]
     }
   }
-  updateRegisterI(){}
-  updateRegisterDelay(){}
-  updateRegisterSoundTimer(){}
-  updateProgramCounter(){}
-  updateStackPointer(){}
+  updateRegisterI(){
+    document.getElementById("registerI").children[0].children[1].innerHTML = this.em.registerI
+  }
+  updateRegisterDelay(){
+    document.getElementById("registerDelay").children[0].children[1].innerHTML = this.em.registerDelay
+  }
+  updateRegisterSoundTimer(){
+    document.getElementById("registerSoundTimer").children[0].children[1].innerHTML = this.em.registerSoundTimer
+  }
+  updateProgramCounter(){
+    document.getElementById("programCounter").children[0].children[1].innerHTML = this.em.programCounter
+  }
+  updateStackPointer(){
+    document.getElementById("stackPointer").children[0].children[1].innerHTML = this.em.stackPointer.toString(16)
+  }
   updateStack(){}
   updateMemory(){}
-  updateVF(){}
+  updateVF(){
+    document.getElementById("VF").children[0].children[1].innerHTML = this.em.VF.toString()
+  }
 
 }
