@@ -30,7 +30,7 @@ class visualizer{
       reader.onloadend = (event) => {
         let ia = new Uint8Array(reader.result);
         let output = [...ia].map((n) => ("00" + parseInt(("00000000"+n.toString(2)).slice(-8), 2).toString(16)).slice(-2) ).join(' ');
-        output = this.fixHexCodeSpacing(output);
+      //  output = this.fixHexCodeSpacing(output);
         console.log(output);
         document.getElementById("code").innerHTML = output;
       }
