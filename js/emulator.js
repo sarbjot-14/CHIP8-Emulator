@@ -505,7 +505,7 @@ class emulator{
             this.setRegistersV(x, (parseInt(this.registersV[x], 16) - parseInt(this.registersV[y], 16)).toString(16) );
             break;
 
-          case "E":// 8XY5 - Set VX = VX << 1
+          case "E":// 8XYe - Set VX = VX << 1
           case "e":
             if(parseInt(this.registersV[x], 16) >= 128){
               this.setVF(1);
@@ -513,7 +513,7 @@ class emulator{
               this.setVF(0);
             }
 
-            this.setRegistersV(x, (parseInt(this.registersV[x]) * 2).toString(16) );
+            this.setRegistersV(x, (parseInt(this.registersV[x], 16) * 2).toString(16) );
             break;
 
           default:// Print error if doesn't regconize instruction
