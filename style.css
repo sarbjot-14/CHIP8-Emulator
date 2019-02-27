@@ -18,11 +18,16 @@
   flex-direction: row;
   flex-grow: 1;
 }
-#wrapper{
+#wrapperLeft{
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+#wrapper{
+  display: flex;
+  flex-direction: row;
+}
+
 #topMenu {
   display: flex;
   flex-direction: row;
@@ -184,7 +189,6 @@ textarea {
   width: 800px;
   display: flex;
   flex-direction: row;
-
 }
 #registers p{
   color: white;
@@ -223,11 +227,30 @@ textarea {
 #history > p{
   margin-left: 5px;
 }
-#registers #nextIntruction {
+#history h3{
+  color: white;
+}
+#historyCol{
+  height: 100%;
+  background-color: #22252B;
+  border-radius: 0 5px 5px 0;
+}
+body #nextIntruction {
   color: rgb(250,100,100);
   font-weight: 900;
+  font-family: 'Roboto', sans-serif;
 }
-#registers .historyIns{
+body .historyIns{
   color: rgb(150,100,100);
   font-weight: 300;
+  font-family: 'Roboto', sans-serif;
 }
+.historyInsWrapper{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+ .historyInsLabel{
+   color: white;
+   font-family: 'Roboto', sans-serif;
+ }

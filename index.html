@@ -15,6 +15,7 @@
 </head>
 <body>
   <div id="wrapper">
+  <div id="wrapperLeft">
     <!-- <h1>CHIP-8 EMULATOR</h1> -->
     <div id="topMenu">
       <div id="colourMenu">
@@ -181,28 +182,28 @@ c0c0 c0c0 c0c0 c0c0 ff80 8080 8080 8080
 
         <div id="regCol2">
           <div id="registerI">
-            <div class = registerValContainer>
+            <div class="registerValContainer">
               <p>I:</p>
               <p class="regVal">0000</p>
             </div>
           </div>
 
           <div id="programCounter">
-            <div class = registerValContainer>
+            <div class="registerValContainer">
               <p>PC:</p>
               <p class="regVal">0200</p>
             </div>
           </div>
 
           <div id="stackPointer">
-            <div class = registerValContainer>
+            <div class="registerValContainer">
               <p>SP:</p>
               <p class="regVal">00</p>
             </div>
           </div>
 
           <div id="VF">
-            <div class = registerValContainer>
+            <div class="registerValContainer">
               <p>VF:</p>
               <p class="regVal">0</p>
             </div>
@@ -211,44 +212,88 @@ c0c0 c0c0 c0c0 c0c0 ff80 8080 8080 8080
         </div>
         <div id="delayCol">
           <div id="registerDelay">
-            <div class = registerValContainer>
+            <div class="registerValContainer">
               <p>Delay Timer:</p>
               <p class="regVal">00</p>
             </div>
           </div>
           <div id="registerSoundTimer">
-            <div class = registerValContainer>
+            <div class="registerValContainer">
               <p>Sound Timer:</p>
               <p class="regVal">00</p>
             </div>
           </div>
         </div>
 
-        <div id="historyCol">
-          <div id="history">
-            <p>History:</p>
-            <div class = registerValContainer>
-              <p>Next:</p>
-              <p id="nextIntruction">0000</p>
-            </div>
-            <div class = registerValContainer>
-              <p>Last:</p>
-              <p class="historyIns">0001</p>
-            </div>
-            <div class = registerValContainer>
-              <p>Prev:</p>
-              <p class="historyIns">0002</p>
-            </div>
-            <div class = registerValContainer>
-              <p>Prev:</p>
-              <p class="historyIns">0003</p>
-            </div>
 
-          </div>
-        </div>
 
       </div>
     </div>
+  </div>
+
+  <div id="historyCol">
+    <div id="history">
+      <h3>Instruction History</h3>
+
+      <div class="historyInsWrapper" id="nextInsWrapper">
+        <h4 class="historyInsLabel">Next:</h4>
+        <h4 id="nextIntruction">0000</h4>
+      </div>
+
+      <div class="historyInsWrapper">
+        <h4 class="historyInsLabel">Previous:</h4>
+        <h4 class="historyIns">0000</h4>
+      </div>
+
+      <div class="historyInsWrapper">
+        <h4 class="historyInsLabel">----></h4>
+        <h4 class="historyIns">0000</h4>
+      </div>
+
+      <div class="historyInsWrapper">
+        <h4 class="historyInsLabel">----></h4>
+        <h4 class="historyIns">0000</h4>
+      </div>
+
+      <div class="historyInsWrapper">
+        <h4 class="historyInsLabel">----></h4>
+        <h4 class="historyIns">0000</h4>
+      </div>
+
+      <div class="historyInsWrapper">
+        <h4 class="historyInsLabel">----></h4>
+        <h4 class="historyIns">0000</h4>
+      </div>
+
+      <div class="historyInsWrapper">
+        <h4 class="historyInsLabel">----></h4>
+        <h4 class="historyIns">0000</h4>
+      </div>
+
+      <div class="historyInsWrapper">
+        <h4 class="historyInsLabel">----></h4>
+        <h4 class="historyIns">0000</h4>
+      </div>
+
+      <div class="historyInsWrapper">
+        <h4 class="historyInsLabel">----></h4>
+        <h4 class="historyIns">0000</h4>
+      </div>
+
+      <div class="historyInsWrapper">
+        <h4 class="historyInsLabel">----></h4>
+        <h4 class="historyIns">0000</h4>
+      </div>
+
+      <div class="historyInsWrapper">
+        <h4 class="historyInsLabel">----></h4>
+        <h4 class="historyIns">0000</h4>
+      </div>
+
+
+    </div>
+  </div>
+
   </div>
 </body>
 </html>
