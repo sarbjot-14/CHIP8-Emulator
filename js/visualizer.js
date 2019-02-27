@@ -367,6 +367,11 @@ class visualizer{
         h[i].innerHTML = this.em.undoStack[usLen-1-i][0]
         //console.log("h:"+ this.em.undoStack[usLen-1-i][0].toString())
       }
+      for(let i = Math.min(h.length, this.em.undoStack.length); i < h.length; i++){
+        h[i].innerHTML = "0000"
+        //console.log("h:"+ this.em.undoStack[usLen-1-i][0].toString())
+      }
+
     }
     //console.log(parseInt(this.em.programCounter, 16))
     document.getElementById("nextIntruction").innerHTML = this.em.memory[parseInt(this.em.programCounter, 16) ] + this.em.memory[parseInt(this.em.programCounter, 16)+1 ]
