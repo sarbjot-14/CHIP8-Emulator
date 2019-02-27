@@ -29,7 +29,8 @@ class visualizer{
       reader.readAsArrayBuffer(document.getElementById("fileInput").files[0]);
       reader.onloadend = (event) => {
         let ia = new Uint8Array(reader.result);
-        let output = [...ia].map((n) => ("00" + parseInt(("00000000"+n.toString(2)).slice(-8), 2).toString(16)).slice(-2) ).join(' ')
+        let output = [...ia].map((n) => ("00" + parseInt(("00000000"+n.toString(2)).slice(-8), 2).toString(16)).slice(-2) ).join(' ');
+        output = fixHexCodeSpacing(output);
         console.log(output);
         document.getElementById("code").innerHTML = output;
       }
@@ -280,6 +281,32 @@ class visualizer{
         pixelDom.style.backgroundColor = document.getElementById("secondaryColour").value;
       }
     }
+  }
+
+  fixHexCodeSpacing(string){//joining bytes together to result sets of 2 bytes
+    let deleteSpace = true;
+    let output = "";
+    let lastPosition = 0;
+    for(let i = 0; i < string.length; i++){
+      if(string[i] == ' '){
+        if(deleteSpace == true){
+          let currentByte = string.slice(lastPosition, i);
+          output += currentByte;
+          deleteSpace = false;
+          lastPosition = i+1;
+        }else{
+          let currentByte = string.slice(lastPosition, i+1);
+          output = output + currentByte.toString();
+          deleteSpace = true;
+          lastPosition = i+1;
+        }
+      }
+      else if(i == string.length - 1){
+        let currentByte = string.slice(lastPosition, i+1);
+        output = output + currentByte.toString();
+      }
+    }
+    return output;
   }
 
   runCode(){
