@@ -61,6 +61,7 @@ class emulator{
       this,this.setMemory(i, "00");
     }
     this.setupFont();
+    this.vis.updateHistory();
   }
 
   emulationLoop(){
@@ -90,6 +91,8 @@ class emulator{
       setTimeout( () => {this.emulationLoop();}, (50/3)*this.speed);
       //setTimeout(function(){chip.emulationLoop()},(50/3)*this.speed); //old method
     }
+
+    this.vis.updateHistory();
   }
 
   loadProgram(program){ //program must be a hex string
@@ -205,6 +208,7 @@ class emulator{
   }
   clearUndo(){
     this.undoStack = [];
+    this.vis.updateHistory();
   }
 
   pushUndo(ins = "Error"){
@@ -220,6 +224,7 @@ class emulator{
       "memory": this.memory.slice(0),
       "VF": (this.VF + 0)
     }]);
+    this.vis.updateHistory();
   }
   undo(){
     if(this.undoStack.length > 0){
@@ -255,6 +260,7 @@ class emulator{
       this.setVF(data.VF);
 
     }
+    this.vis.updateHistory();
   }
 
   /*pushUndo(ins, data){

@@ -217,3 +217,17 @@ textarea {
 #delayCol {
     background-color: #262933;
 }
+#history {
+  margin: 5px;
+}
+#history > p{
+  margin-left: 5px;
+}
+#registers #nextIntruction {
+  color: rgb(250,100,100);
+  font-weight: 900;
+}
+#registers .historyIns{
+  color: rgb(150,100,100);
+  font-weight: 300;
+}

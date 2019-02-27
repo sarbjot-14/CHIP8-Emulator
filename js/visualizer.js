@@ -19,7 +19,11 @@ class visualizer{
     document.getElementById("stepForwardBtn").onclick = () => {this.em.emulationLoop();}
     document.getElementById("playPauseBtn").onclick = () => {this.em.togglePause()}
 
-    document.getElementById("loadBtn").onclick = () => {this.em.loadProgram(document.getElementById('code').value); this.updatePaused(1)}
+    document.getElementById("loadBtn").onclick = () => {
+      this.em.loadProgram(document.getElementById('code').value);
+      this.updatePaused(1);
+      this.updateHistory();
+    }
 
     document.getElementById("loadFileBtn").onclick = () => {document.getElementById("fileInput").click()}
     document.getElementById("fileInput").onchange = () => {
@@ -323,6 +327,22 @@ class visualizer{
   updateMemory(){}
   updateVF(){
     document.getElementById("VF").children[0].children[1].innerHTML = this.em.VF.toString()
+  }
+  updateHistory(){
+    let h = document.getElementsByClassName("historyIns");
+    if(this.em.undoStack.length == 0){ //fill with 0000
+      for(let i=0; i< h.length; i++){
+        h[i].innerHTML = "0000"
+      }
+    }else{
+      let usLen = this.em.undoStack.length
+      for(let i = 0; i < Math.min(h.length, this.em.undoStack.length); i++){
+        h[i].innerHTML = this.em.undoStack[usLen-1-i][0]
+        //console.log("h:"+ this.em.undoStack[usLen-1-i][0].toString())
+      }
+    }
+    //console.log(parseInt(this.em.programCounter, 16))
+    document.getElementById("nextIntruction").innerHTML = this.em.memory[parseInt(this.em.programCounter, 16) ] + this.em.memory[parseInt(this.em.programCounter, 16)+1 ]
   }
 
 }
