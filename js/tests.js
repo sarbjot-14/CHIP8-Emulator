@@ -24,9 +24,9 @@ function retTest(){
 function loadTestInstruction(instruction)
 {
     console.log("-Executing instruction- ")
-    //this.totalInstruction += " " + instruction
-    chip.loadProgram("0000")
-    chip.loadProgram(instruction)
+    totalInstruction += instruction
+  //  chip.loadProgram("0000")
+    chip.loadProgram(totalInstruction)
     chip.emulationLoop();
 }
 
