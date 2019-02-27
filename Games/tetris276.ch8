@@ -1,6 +1,6 @@
 ; Registers
 ; ---------
-; V0 free
+; V0 delay timer
 ; V1 free
 ; V2 free
 ; V3 free
@@ -8,12 +8,12 @@
 ; V5 
 ; V6 x coord of shape
 ; V7 y coord of shape
-; V8 x dir of shape
-; V9 y dir of shape
+; V8 dir of shape (1 = left, 2 = right, 3 = down)
+; V9 
 ; VA score
 ; VB
 ; VC
-; VD
+; VD will be used for key inputs
 ; VE used to determine most current shape (1=T, 2=S, 3=reverseL, 4=L, 5=I, 6=Z)
 ; VF collision
 
@@ -39,6 +39,7 @@ Init
 	LD V1, 39; set right border's x value because this game of tetris played on 10 x 24 between pixels 28 and 38
 	LD V2, 0; set y value to 0 top of screen
 	LD V3, 31; set y value to 31 bottom of screen
+	LD V8, 3 ;initial direction of block is down
 	call drawVerticalBorder
 	call drawHorizBorder
 	jp gameLoop
@@ -121,9 +122,13 @@ drawBlock
 ; function to draw and update the position of the shape
 draw_shape
 	
+	call getInput
+
 	call drawBlock
 
-	SNE VF, 1; check if there is a collision with another block or with the border
+	;SNE VF, 1; check if there is a collision with another block or with the border
+	;LD V9, 1
+	SNE VF, 1
 	call undoDrop ; if shape landed on something undo the collision and redraw on top
 	
 	SNE VF, 1; check the collision
@@ -136,18 +141,60 @@ draw_shape
 
 	; erase the shape, move it, then redraw it at new position
 	call drawBlock; erase the shape
+	;SNE V7, 30
+	;LD V7, 0 ;reset y val if it hits the bottom
+	SE V8, 3;if block dir is not down, set it to down
+ 	LD V8, 3
 	ADD V7, 1; add 1  y coord of shape - want to go striaght down
  	
+ 	
+
  	RET
 
 undoDrop
 	call drawBlock; undo mistake
-	LD V8, 1 ; set up V8 register
-	SUB V7, V8; subtract 1 to go back up one
+	LD V1, 1
+	SNE V8, 3
+	SUB V7, V1; subtract 1 to go back up one
+	SNE V8, 1 ;if the direction of shape is left
+	ADD V6, 1 ;push back to the right
+	SNE V8, 2 ;if the direction of shape is right
+	SUB V6, V1 ;push back to the left
+
 	call drawBlock; draw in right place
+
+	SNE V8, 3
 	LD V7, 0; set y value to top of screen
+	SNE V8, 3
+	LD V6, 29; set x value to middle
+	;LD V8, 3
 	RET
 	
+; get inputs from user
+getInput
+
+	LD VD, 4; put the key value into the register
+	SKNP VD; check if the key value in the register was pressed, if not pressed, skip the call
+	CALL moveLeft
+
+	LD VD, 6; put the key value into the register
+	SKNP VD; check if the key value in the register was pressed, if not pressed, skip the call
+	CALL moveRight
+
+	RET
+
+
+moveLeft
+	LD VD, 4; put the key value into the register
+	LD V1, 1
+	LD V8, 1; set block direction to left
+	SUB V6, V1; move shape left
+	RET
+
+moveRight
+	LD V8, 2;set block direction to right
+	ADD V6, 1; move shape right
+	RET
 
 ; function to delay the drawing of the shape
 delay
