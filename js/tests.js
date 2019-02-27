@@ -21,6 +21,14 @@ function retTest(){
 }
 
 function testInstructions(){// this function is for the purpose of automated testing NOT FINISHED
+  ///0NNN
+  console.log("Instruction 00E0")
+  chip.loadProgram("00E0")
+  console.log("Cleared display")
+  //00EE
+  console.log("Instruction 00EE")
+  chip.loadProgram("00EE")
+  console.log("Old programCounter size: " + this.programCounter)
   //7xkk - Set VX = VX + KK
   chip.loadProgram("7014")
   if(chip.regitersV[0] == "14"){
@@ -28,4 +36,5 @@ function testInstructions(){// this function is for the purpose of automated tes
   }else{
     console.log("7014 - FAIL")
   }
+
 }
