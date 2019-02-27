@@ -1,3 +1,4 @@
+let totalInstruction = "";
 function drawTesting(){
   chip.setRegistersV(0,"03");
   chip.setRegistersV(1,"01");
@@ -20,18 +21,63 @@ function retTest(){
 
 }
 
-function testInstructions(){// this function is for the purpose of automated testing NOT FINISHED
+function loadTestInstruction(instruction)
+{
+    console.log("-Executing instruction- ")
+    //this.totalInstruction += " " + instruction
+    chip.loadProgram("0000")
+    chip.loadProgram(instruction)
+    chip.emulationLoop();
+}
+
+function testInstructions(){// this function is for the purpose of automated testing
   ///0NNN
-  console.log("Instruction 00E0")
-  chip.loadProgram("00E0")
+  console.log("\nInstruction 00E0")
+  loadTestInstruction("00E0")
   console.log("Cleared display")
+  console.log("Instruction 00E0 END\n")
   //00EE
-  console.log("Instruction 00EE")
-  chip.loadProgram("00EE")
-  console.log("Old programCounter size: " + this.programCounter)
+  console.log("\nInstruction 00EE START")
+  console.log("Old programCounter: " + chip.programCounter)
+  loadTestInstruction("00EE")
+  console.log("Current programCounter: " + chip.programCounter)
+  console.log("Instruction 00EE END\n")
+  //1NNN
+  console.log("\nInstruction 1NNN")
+  console.log("Old programCounter: " + chip.programCounter)
+  loadTestInstruction("1CA1")
+  console.log("Current programCounter: " + chip.programCounter)
+  console.log("Instruction 1NNN END\n")
+  //2NNN
+  console.log("\nInstruction 2NNN")
+  console.log("Old programCounter: " + chip.programCounter)
+  console.log("Old stackPointer: " + chip.stackPointer)
+  loadTestInstruction("13BC")
+  console.log("Current programCounter: " + chip.programCounter)
+  console.log("Current stackPointer: " + chip.stackPointer)
+  console.log("Instruction 2NNN END\n")
+  //3XKK
+  console.log("\nInstruction 3XKK")
+  console.log("Old programCounter: " + chip.programCounter)
+  loadTestInstruction("3401")
+  console.log("Current programCounter: " + chip.programCounter)
+  console.log("Register V3: " + chip.registersV[4])
+  console.log("Instruction 3XKK END\n")
+  //3XKK
+  console.log("\nInstruction 3XKK")
+  console.log("Old programCounter: " + chip.programCounter)
+  loadTestInstruction("3400")
+  console.log("Current programCounter: " + chip.programCounter)
+  console.log("Register V4: " + chip.registersV[4])
+  console.log("Instruction 3XKK END\n")
+
+
+
+
+
   //7xkk - Set VX = VX + KK
   chip.loadProgram("7014")
-  if(chip.regitersV[0] == "14"){
+  if(chip.registersV[0] == "14"){
     console.log("7014 - PASS")
   }else{
     console.log("7014 - FAIL")
