@@ -30,7 +30,7 @@ class visualizer{
       reader.onloadend = (event) => {
         let ia = new Uint8Array(reader.result);
         let output = [...ia].map((n) => ("00" + parseInt(("00000000"+n.toString(2)).slice(-8), 2).toString(16)).slice(-2) ).join(' ');
-        output = fixHexCodeSpacing(output);
+        output = this.fixHexCodeSpacing(output);
         console.log(output);
         document.getElementById("code").innerHTML = output;
       }
@@ -289,9 +289,9 @@ class visualizer{
     let lastPosition = 0;
     for(let i = 0; i < string.length; i++){
       if(string[i] == ' '){
-        if(deleteSpace == true){
+        if(deleteSpace == true{
           let currentByte = string.slice(lastPosition, i);
-          output += currentByte;
+          output = output + currentByte;
           deleteSpace = false;
           lastPosition = i+1;
         }else{
