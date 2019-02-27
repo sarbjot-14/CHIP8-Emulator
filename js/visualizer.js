@@ -293,7 +293,7 @@ class visualizer{
     let lastPosition = 0;
     for(let i = 0; i < string.length; i++){
       if(string[i] == ' '){
-        if(deleteSpace == true{
+        if(deleteSpace == true){
           let currentByte = string.slice(lastPosition, i);
           output = output + currentByte;
           deleteSpace = false;
