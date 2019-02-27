@@ -32,44 +32,44 @@ function loadTestInstruction(instruction)
 
 function testInstructions(){// this function is for the purpose of automated testing
   ///0NNN
-  console.log("\nInstruction 00E0")
+  console.log("\n>Instruction 00E0")
   loadTestInstruction("00E0")
   console.log("Cleared display")
-  console.log("Instruction 00E0 END\n")
+  console.log(">Instruction 00E0 END\n")
   //00EE
-  console.log("\nInstruction 00EE START")
+  console.log("\n>Instruction 00EE START")
   console.log("Old programCounter: " + chip.programCounter)
   loadTestInstruction("00EE")
   console.log("Current programCounter: " + chip.programCounter)
-  console.log("Instruction 00EE END\n")
+  console.log(">Instruction 00EE END\n")
   //1NNN
-  console.log("\nInstruction 1NNN")
+  console.log("\n>Instruction 1NNN")
   console.log("Old programCounter: " + chip.programCounter)
   loadTestInstruction("1CA1")
   console.log("Current programCounter: " + chip.programCounter)
-  console.log("Instruction 1NNN END\n")
+  console.log(">Instruction 1NNN END\n")
   //2NNN
-  console.log("\nInstruction 2NNN")
+  console.log("\n>Instruction 2NNN")
   console.log("Old programCounter: " + chip.programCounter)
   console.log("Old stackPointer: " + chip.stackPointer)
   loadTestInstruction("13BC")
   console.log("Current programCounter: " + chip.programCounter)
   console.log("Current stackPointer: " + chip.stackPointer)
-  console.log("Instruction 2NNN END\n")
+  console.log(">Instruction 2NNN END\n")
   //3XKK
-  console.log("\nInstruction 3XKK")
+  console.log("\n>Instruction 3XKK")
   console.log("Old programCounter: " + chip.programCounter)
   loadTestInstruction("3401")
   console.log("Current programCounter: " + chip.programCounter)
   console.log("Register V3: " + chip.registersV[4])
-  console.log("Instruction 3XKK END\n")
+  console.log(">Instruction 3XKK END\n")
   //3XKK
-  console.log("\nInstruction 3XKK")
+  console.log("\n>Instruction 3XKK")
   console.log("Old programCounter: " + chip.programCounter)
   loadTestInstruction("3400")
   console.log("Current programCounter: " + chip.programCounter)
   console.log("Register V4: " + chip.registersV[4])
-  console.log("Instruction 3XKK END\n")
+  console.log(">Instruction 3XKK END\n")
 
 
 
