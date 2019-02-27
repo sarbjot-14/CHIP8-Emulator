@@ -14,7 +14,7 @@
 ; VB
 ; VC
 ; VD will be used for key inputs
-; VE used to determine most current shape (1=T, 2=S, 3=reverseL, 4=L, 5=I, 6=Z)
+; VE used to determine current shape (1=T, 2=S, 3=reverseL, 4=L, 5=I, 6=Z)
 ; VF collision
 
 ; keyboard stuff for input later
@@ -40,8 +40,8 @@ Init
 	LD V2, 0; set y value to 0 top of screen
 	LD V3, 31; set y value to 31 bottom of screen
 	LD V8, 3 ;initial direction of block is down
-	call drawVerticalBorder
-	call drawHorizBorder
+	CALL drawVerticalBorder
+	CALL drawHorizBorder
 	jp gameLoop
 	RET
 
@@ -65,51 +65,51 @@ drawHorizBorder
 ; main game loop
 gameLoop
 	SNE VE, 1 ; if the block ID is 1, spawn Z block
-	call drawZ
+	CALL drawZ
 	SNE VE, 2 ; if block ID is 2, spawn L block 
-	call drawI
+	CALL drawI
 	SNE VE, 3 ; if block ID is 3, spawn reverse L block
-	call drawReverseL
+	CALL drawReverseL
 	SNE VE, 4 ; if block ID is 4, spawn L block
-	call drawL
+	CALL drawL
 	SNE VE, 5 ; if block ID is not 5, spawn S block
-	call drawS
+	CALL drawS
 	SNE VE, 6 ; if block ID is 6, spawn T block
-	call drawT
-	SNE VE, 6 ; if block ID is 6, loop back around to 1
-	LD VE, 1
+	CALL drawT
+	SNE VE, 7 ; if block ID is 6, loop back around to 1
+	LD VE, 0
 	SNE V7, 0; if the block (y val) is not at the top, dont have to change the block ID, otherwise, keep adding 1
 	ADD VE, 1
 	jp gameLoop
 
 drawT
 	LD I, shapeT; set I to memory address of shape
-	call draw_shape
+	CALL draw_shape
 	RET
 
 drawS
 	LD I, shapeS; set I to memory address of shape
-	call draw_shape
+	CALL draw_shape
 	RET
 
 drawReverseL
 	LD I, shapeReverseL; set I to memory address of shape
-	call draw_shape
+	CALL draw_shape
 	RET
 
 drawL
 	LD I, shapeL; set I to memory address of shape
-	call draw_shape
+	CALL draw_shape
 	RET
 
 drawI
 	LD I, shapeI; set I to memory address of shape
-	call draw_shape
+	CALL draw_shape
 	RET
 
 drawZ
 	LD I, shapeZ; set I to memory address of shape
-	call draw_shape
+	CALL draw_shape
 	RET
 
 drawBlock
@@ -122,15 +122,16 @@ drawBlock
 ; function to draw and update the position of the shape
 draw_shape
 	
-	call getInput
+	CALL getInput
 
-	call drawBlock
+	CALL drawBlock
 
-	;SNE VF, 1; check if there is a collision with another block or with the border
-	;LD V9, 1
-	SNE VF, 1
-	call undoDrop ; if shape landed on something undo the collision and redraw on top
+	SNE VF, 1; check if there is a collision with another block or with the border
+	CALL checkUndo ; if shape landed on something undo the collision and redraw on top
 	
+	SE V8, 3;if block dir is not down, set it to down
+ 	LD V8, 3
+
 	SNE VF, 1; check the collision
 	RET
 
@@ -140,11 +141,10 @@ draw_shape
 	CALL delay ; loops until delay timer is 0
 
 	; erase the shape, move it, then redraw it at new position
-	call drawBlock; erase the shape
-	;SNE V7, 30
-	;LD V7, 0 ;reset y val if it hits the bottom
-	SE V8, 3;if block dir is not down, set it to down
- 	LD V8, 3
+	CALL drawBlock; erase the shape
+	SNE V7, 30
+	LD V7, 0 ;reset y val if it hits the bottom
+	
 	ADD V7, 1; add 1  y coord of shape - want to go striaght down
  	
  	
@@ -152,24 +152,37 @@ draw_shape
  	RET
 
 undoDrop
-	call drawBlock; undo mistake
+	CALL drawBlock; undo mistake
 	LD V1, 1
-	SNE V8, 3
 	SUB V7, V1; subtract 1 to go back up one
-	SNE V8, 1 ;if the direction of shape is left
-	ADD V6, 1 ;push back to the right
-	SNE V8, 2 ;if the direction of shape is right
-	SUB V6, V1 ;push back to the left
-
-	call drawBlock; draw in right place
-
+	
+	CALL drawBlock; draw in right place
 	SNE V8, 3
 	LD V7, 0; set y value to top of screen
 	SNE V8, 3
 	LD V6, 29; set x value to middle
-	;LD V8, 3
 	RET
 	
+undoDropHoriz
+	CALL drawBlock; undo mistake
+	LD V1, 1
+	SNE V8, 1 ;if the direction of shape is left
+	ADD V6, 1 ;push back to the right
+	SNE V8, 2 ;if the direction of shape is right
+	SUB V6, V1 ;push back to the left
+	
+	CALL drawBlock; draw in right place
+	RET
+
+checkUndo
+	CALL undoDropHoriz
+	;SNE V8, 3
+	CALL undoDrop
+	;SNE V8, 1
+	;CALL undoDropHoriz
+	;SNE V8, 2
+	;CALL undoDropHoriz
+	RET
 ; get inputs from user
 getInput
 
