@@ -32,7 +32,7 @@ D672 4700 8914 471E 8915 463F 8815 4600
 _For instructions with pictures, see the ExternalEmulatorInstructions document, located in Games folder_
 
 ## Automated Testing
-_Automated testing is currently not working in the version of this release_
+_To run automated testing, turn on console and use function testInstructions() to run the test. The test will automatically output all the instructions that are loaded into the memory. Every test case starts at the a new state of the emulator. For every test case, the output will be values of every variable before, and after executing an instruction._
 
 ## Chip-8 testing
 _For testing, opcodes(instruction) can be entered into the "Text field" that is below the "Display screen". After entering the opcodes, the user then has to press the "Load program" button in order for the emulator to initialize the data. Then the user proceed to press the "Play"/"Pause" button to run the program. The program can be stopped, or resumed, when pressing the "Play"/"Pause" button. The user can slow down or speed up the execution of the opcodes by sliding the "Speed slider" bar. The user can use backward or forward button to move to the closest instruction in the stack. Lastly, below the "Text field" displays all the registers and values of them after in the current state. Each opcode includes of 4 hexadecimal characters, separating opcodes can be recognize by the emulator through a space or a new line. For reference, a list of opcodes can be looked up into Wikipedia, Cowgod's Chip-8 specification that was cited in this project_

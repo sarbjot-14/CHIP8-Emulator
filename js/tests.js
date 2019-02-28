@@ -35,7 +35,7 @@ function printAllRegistersV(){
 }
 
 function loadTestInstruction(instruction){
-    console.log("\n\n\t-----Instruction " + instruction + " START-----")
+    console.log("\n\n\t---------------Instruction " + instruction + " START---------------")
     console.log("Old registers: ")
     printAllRegistersV()
     console.log("\tI: " + chip.registerI)
@@ -59,7 +59,7 @@ function loadTestInstruction(instruction){
     console.log("New programCounter: " + chip.programCounter)
     console.log("New stackPointer: " + chip.stackPointer)
     console.log("New VF: " + chip.VF)
-    console.log("\t-----Instruction " + instruction + " END-----\n\n")
+    console.log("\t---------------Instruction " + instruction + " END---------------\n\n")
     chip.initializeData()
 }
 
@@ -76,7 +76,8 @@ function testInstructions(){// this function is for the purpose of automated tes
   loadTestInstruction("4400")
   loadTestInstruction("5400")
   loadTestInstruction("64FF")
-  loadTestInstruction("64FF54FF")
+  loadTestInstruction("7419")
+  loadTestInstruction("8400")
 }
 
 
