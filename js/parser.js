@@ -1,5 +1,6 @@
 //Feel free to rename str to something better
 
+
 class chipParser{
 
   //Pre-Conditions:
@@ -8,8 +9,10 @@ class chipParser{
   //Post-Conditions:
   //  -returns parsed result as a hex string
   //  -throws error on invalid commands
+  //var x = "joe";
   parse(str){
-    //...
+
+
 
   }
 
