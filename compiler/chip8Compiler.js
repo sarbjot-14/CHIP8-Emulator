@@ -9,15 +9,15 @@ class chip8Compiler{
     result = this.removeEmptyLines(result);
     let assemblyArray = this.splitAssembly(result);
 
+
+    //convert assembly to opcode one line at a time
     for(let x=0 ; x< assemblyArray.size ; x++){
-      //var index = assemblyArray.indexOf(command);
 
       command = this.replaceAssemblyWithOpcode(command);
-
       assemblyArray[x] = command;
       console.log(command);
     }
-
+    //final opcodes is the good version of the opcodes
     let finalOpcodes = "";
     assemblyArray.forEach(function(command) {
       finalOpcodes += command + "\n";
@@ -38,10 +38,8 @@ class chip8Compiler{
 
   }
   removeEmptyLines(code){
-
     let result = code.replace(/\t+/g,"");
     result = result.replace(/^\s*\n/gm, "");
-
     return result;
   }
 
