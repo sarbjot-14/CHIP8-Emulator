@@ -9,11 +9,8 @@ class chip8Compiler{
     result = this.removeEmptyLines(result);
     let assemblyArray = result.split("\n");
     //convert assembly to opcode one line at a time
-    //console.log("calling loop " + assemblyArray.size);
-    //console.log("size = " + assemblyArray.length);
-
+    assemblyArray = this.compileFunctionCallsAndJumps(assemblyArray);
     assemblyArray = this.assemblyToOpcode(assemblyArray);
-    //assemblyArray = this.replaceAssemblyWithOpcode(assemblyArray);
 
     //final opcodes is the good version of the opcodes
     let finalOpcodes = "";
@@ -37,7 +34,7 @@ class chip8Compiler{
     return result;
   }
   assemblyToOpcode(assemblyArray){
-    console.log("wtf");
+
     console.log(assemblyArray);
 
     for(var x=0 ; x< assemblyArray.length ; x++){
@@ -110,7 +107,8 @@ class chip8Compiler{
 
 
       //Annn - LD I, addr
-      //Bnnn - JP V0, addr
+      //Bnnn - JP V0, addr //TAKE CARE OF THIS IN NEXT STEP/////
+
       //Cxkk - RND Vx, byte
       //Dxyn - DRW Vx, Vy, nibble
       r = /\b^DRW\sV[0-9a-f],\sV[0-9a-f],\s[0-9a-f]\b/i;
@@ -156,5 +154,61 @@ class chip8Compiler{
     }
 
     return assemblyArray;
+  }
+
+  compileFunctionCallsAndJumps(assemblyArray){
+
+
+    //var addressOfMemory = 512;
+    for(var x=0 ; x< assemblyArray.length ; x++){
+      let code = assemblyArray[x];
+
+
+
+        let r = /^\bjp\b\s\b[a-z1-9]+\b/i;
+        if(r.test(code)){
+          let jumpNameLocation = code.match(/[a-z1-9]+$/im)[0]; //name of location where to jump to
+          let addressOfJump = this.findJumpLocation(jumpNameLocation, assemblyArray);
+          addressOfJump = parseInt(addressOfJump);
+          let addressOfJumpInHex = addressOfJump.toString(16); //convert to hexidecimal
+          //1nnn - JP addr
+          assemblyArray[x] = "1" + addressOfJumpInHex;
+        }
+
+
+    }
+
+    return assemblyArray;
+  }
+  isChip8Instruction(code){
+    let r = /\b(?:CLS|BYTE|RET|SYS|JP|LD|SE|CALL|SNE|ADD|OR|AND|XOR|SUB|SHR|SUBN|SHL|RND|DRW|SKP|SKNP|SCD|SCR|SCL|EXIT|LOW|HIGH)\b/i;
+    if(r.test(code)){
+      //console.log("this is a intruction: "+ code);
+      return true;
+    }
+    else{
+      //console.log("this is not an instruction "+ code);
+      return false;
+    }
+  }
+  findJumpLocation(jumpNameLocation, assemblyArray){
+    var addressOfMemory = 512;
+    var r = new RegExp("^"+jumpNameLocation+"$","im");
+    for(var x=0 ; x< assemblyArray.length ; x++){
+      let code = assemblyArray[x];
+      //console.log("hey"+code);
+      if(!this.isChip8Instruction(code)){
+        console.log("hey"+code+ jumpNameLocation);
+        if(r.test(code)){
+          //console.log("jumpNameLocation: " + jumpNameLocation + "is located at mem " + addressOfMemory);
+          console.log("returingin: " + addressOfMemory);
+          return addressOfMemory;
+        }
+      }
+      else{
+        addressOfMemory= addressOfMemory+2;
+      }
+    }
+
   }
 }
