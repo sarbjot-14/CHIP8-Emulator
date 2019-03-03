@@ -157,13 +157,9 @@ class chip8Compiler{
   }
 
   compileFunctionCallsAndJumps(assemblyArray){
-
-
     //var addressOfMemory = 512;
     for(var x=0 ; x< assemblyArray.length ; x++){
       let code = assemblyArray[x];
-
-
 
         let r = /^\bjp\b\s\b[a-z1-9]+\b/i;
         if(r.test(code)){
@@ -174,8 +170,6 @@ class chip8Compiler{
           //1nnn - JP addr
           assemblyArray[x] = "1" + addressOfJumpInHex;
         }
-
-
     }
 
     return assemblyArray;
@@ -201,6 +195,7 @@ class chip8Compiler{
         console.log("hey"+code+ jumpNameLocation);
         if(r.test(code)){
           //console.log("jumpNameLocation: " + jumpNameLocation + "is located at mem " + addressOfMemory);
+          assemblyArray.splice(x, 1); //remove the jumpNameLocation from the array
           console.log("returingin: " + addressOfMemory);
           return addressOfMemory;
         }

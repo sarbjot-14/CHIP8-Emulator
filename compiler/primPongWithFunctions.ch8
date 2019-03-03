@@ -10,7 +10,19 @@ LD V7, 10; set initial y value to 16 (mid-way)
 LD V8, 1; set initial x dir to 1 (right)
 LD V9, 1; set initial y dir to 1 (down)
 LD V1, 2; need to add and subtract 
+LD V0, 27; set left border's x value
+LD V3, 31; set y value to 31 bottom of screen
+LD V5, 39;
 DRW V6, V7, 2; 
+CALL drawVerticalBorder
+
+drawHorizBorder
+	DRW V0, V3, 1 ; draw horizontal border pixel
+	ADD V0, 1 ; keep adding one to x location
+	SE V0, V5
+	jp drawHorizBorder
+	DRW V0, V3, 1; draws last corner pixel
+	RET
 
 loop
 
