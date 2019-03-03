@@ -10,7 +10,7 @@ LD V7, 10; set initial y value to 16 (mid-way)
 LD V8, 1; set initial x dir to 1 (right)
 LD V9, 1; set initial y dir to 1 (down)
 LD V1, 2; need to add and subtract 
-	DRW V6, V7, 2; draw the ball  WHY ARE WE DRAWING TWICE AND WHY 2BYTES WHEN BALL IS 1 BYTE
+	DRW V6, V7, 2; 
 
 loop
 
