@@ -168,7 +168,7 @@ moveLeftPaddleDown
 delay
 	LD V0, DT ; get the value for the delay timer
 	SE V0, 0 ; if the value of the "delay timer" is 0, skip the next instruction
-	JP delay; jump to the start of the function, repeating until the delay timer is 0
+	JP delay ; jump to the start of the function, repeating until the delay timer is 0
 	RET
 
 ball
