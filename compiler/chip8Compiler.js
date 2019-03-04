@@ -11,6 +11,7 @@ class chip8Compiler{
     //convert assembly to opcode one line at a time
     assemblyArray = this.compileJumps(assemblyArray);
     assemblyArray = this.compileFunctionCalls(assemblyArray);
+    assemblyArray = this.compileSprites(assemblyArray);
     assemblyArray = this.assemblyToOpcode(assemblyArray);
 
     //final opcodes is the good version of the opcodes
@@ -21,11 +22,9 @@ class chip8Compiler{
       finalOpcodes += memmoryAddresses.toString(16)+ " " + command + "\n";
     });
 
-    console.log(finalOpcodes);
     return finalOpcodes;
   }
   removeComments(code){
-    console.log("removing comments");
     let result = code.replace(/;.*\n*/g, "\n");
     console.log(result);
     return result;
@@ -34,11 +33,12 @@ class chip8Compiler{
   removeEmptyLines(code){
     let result = code.replace(/\t+/g,"");
     result = result.replace(/^\s*\n/gm, "");
+    result = result.replace(/^ /img,"");
+    console.log(result);
     return result;
   }
   assemblyToOpcode(assemblyArray){
 
-    console.log(assemblyArray);
 
     for(var x=0 ; x< assemblyArray.length ; x++){
       let opcode= "";
@@ -100,7 +100,7 @@ class chip8Compiler{
         if(code.substring(0,3)=="SUB"){
           number = 5;
         }
-        //console.log(" register is " + code + "and "+ register +" " + byte);
+
         opcode = code.replace(r, "8"+ register1+ regester2 +number);
       }
       //8xy6 - SHR Vx {, Vy}
@@ -121,7 +121,7 @@ class chip8Compiler{
 
 
         let nibble = code.match(/\d+\s*$/)[0];
-        //console.log(" register is " + code + "and "+ register +" " + byte);
+
         opcode = code.replace(r, "D"+ register1+ regester2 + nibble);
       }
       //Ex9E - SKP Vx
@@ -162,14 +162,15 @@ class chip8Compiler{
   }
 
   compileJumps(assemblyArray){
+    console.log("compiling jumps");
     //var addressOfMemory = 512;
     var jumpNameArray= [];
     for(var x=0 ; x< assemblyArray.length ; x++){
       let code = assemblyArray[x];
-        let r = /^\bjp\b\s\b[a-z1-9]+\b/i;
+        let r = /^\bjp\b\s\b[a-z1-9_]+\b/i;
         if(r.test(code)){
           console.log("found the jp lo000000op "+ code);
-          let nameLocation = code.match(/[a-z1-9]+$/im)[0]; //name of location where to jump to
+          let nameLocation = code.match(/[a-z1-9_]+\s*$/im)[0]; //name of location where to jump to
           jumpNameArray.push(nameLocation);
           let addressOfJump = this.findNameLocation(nameLocation, assemblyArray);
           addressOfJump = parseInt(addressOfJump);
@@ -179,23 +180,39 @@ class chip8Compiler{
           assemblyArray[x] = "1" + addressOfJumpInHex;
         }
     }
+    console.log(assemblyArray);
+    console.log(jumpNameArray);
+    var reg;
     for(var m=0 ; m< jumpNameArray.length ; m++){
       for(var n=0 ; n< assemblyArray.length ; n++){
-        if(assemblyArray[n].includes(jumpNameArray[m])){
+        //console.log("tryying to removeeeeeeeeeeeeee "+ jumpNameArray[m]);
+        reg = new RegExp("^"+jumpNameArray[m]+ " *","im");
+        console.log("testing for " +jumpNameArray[m]);
+        if( reg.test(assemblyArray[n]) ){
+        //if(assemblyArray[n].includes(jumpNameArray[m])){
+          console.log("spliceing " + assemblyArray[n]);
           assemblyArray.splice(n,1);
         }
       }
     }
+    console.log("done compiling jumps");
     return assemblyArray;
   }
   compileFunctionCalls(assemblyArray){
     //var addressOfMemory = 512;
+    console.log("compiling functions");
+    console.log(assemblyArray);
+
     var functionNameArray= [];
     for(var x=0 ; x< assemblyArray.length ; x++){
       let code = assemblyArray[x];
-        let r = /^CALL\s[a-z1-9]+$/im;
+        let r = /^CALL\s+[a-z1-9_]+$/im;
+        if(code.includes("call get")){
+          //console.log("we got emmmmmmmmmmmmmmmmmmm: "+code);
+        }
         if(r.test(code)){
-          let nameLocation = code.match(/[a-z1-9]+$/im)[0]; //name of location where to jump to
+          //console.log("so far so good" + code);
+          let nameLocation = code.match(/[a-z1-9_]+$/im)[0]; //name of location where to jump to
           functionNameArray.push(nameLocation);
           let addressOfCall = this.findNameLocation(nameLocation, assemblyArray);
 
@@ -206,13 +223,50 @@ class chip8Compiler{
         }
     }
     //deleting function declartions
+    console.log(functionNameArray);
     for(var m=0 ; m< functionNameArray.length ; m++){
       for(var n=0 ; n< assemblyArray.length ; n++){
-        if(assemblyArray[n].includes(functionNameArray[m])){
+        let reg = new RegExp("^ *"+functionNameArray[m]+" *$","im");
+        if( reg.test(assemblyArray[n])){
+          console.log("splicing line " + n +" "+  assemblyArray[n]);
           assemblyArray.splice(n,1);
         }
       }
     }
+    console.log("done compiling functions");
+    return assemblyArray;
+  }
+  compileSprites(assemblyArray){
+    console.log("compiling sprites now");
+    //console.log(assemblyArray);
+    var spriteNamesArray= [];
+    for(var x=0 ; x< assemblyArray.length ; x++){
+      console.log("one line " + x);
+      let code = assemblyArray[x];
+        let r = /^LD\si,\s?[a-z1-9_]+$/mi;
+        //console.log("testing if Ld i, nnn " + code);
+        if(r.test(code)){
+          //console.log("found this as ld I nnn "+ code );
+          let nameLocation = code.match(/[a-z1-9_]+$/im)[0]; //name of location where to jump to
+          spriteNamesArray.push(nameLocation);
+          let addressOfCall = this.findNameLocation(nameLocation, assemblyArray);
+          console.log("nameLocation is " + nameLocation+ "and addressOfCall is " + addressOfCall.toString(16));
+          addressOfCall = parseInt(addressOfCall);
+          let addressOfCallInHex = addressOfCall.toString(16); //convert to hexidecimal
+          //1nnn - JP addr
+          assemblyArray[x] = "A" + addressOfCallInHex;
+        }
+    }
+    for(var m=0 ; m< spriteNamesArray.length ; m++){
+      for(var n=0 ; n< assemblyArray.length ; n++){
+        //if(assemblyArray[n].includes(spriteNamesArray[m])){
+        let reg = new RegExp("^ *"+spriteNamesArray[m]+" *$","im");
+        if( reg.test(assemblyArray[n])){
+          assemblyArray.splice(n,1);
+        }
+      }
+    }
+    console.log("sprites done");
     return assemblyArray;
   }
   isChip8Instruction(code){
@@ -222,8 +276,8 @@ class chip8Compiler{
       return true;
     }
     else{
-      /////////////////////////////////////////////////////////////////
-      let regexJumpOpcodes = /^(1|2|a)[1-9a-f]{3}$/im
+
+      let regexJumpOpcodes = /^(1|2|a)[0-9a-f]{3}$/im
       if(regexJumpOpcodes.test(code)){
         return true;
       }
@@ -231,32 +285,35 @@ class chip8Compiler{
         //console.log("this is not an instruction "+ code);
         return false;
       }
-      /////////////////////////////////////////////////////////////////
+
 
     }
   }
   findNameLocation(nameLocation, assemblyArray){
     var addressOfMemory = 512;
-    var r = new RegExp("^"+nameLocation+"$","im");
+    var r = new RegExp("^\\s*"+nameLocation+"\\s*$","im");
     for(var x=0 ; x< assemblyArray.length ; x++){
       let code = assemblyArray[x];
 
       let inHex = addressOfMemory.toString(16);
-      console.log(inHex+ " " + assemblyArray[x]);
-      //console.log("hey"+code);
+      if(nameLocation.includes("delay")){
+        //console.log("looking for: "+ nameLocation);
+        //console.log(inHex+ " " + code); //FOR DEBUGGING
+      }
       if(!this.isChip8Instruction(code)){
-        //console.log("hey"+code+ nameLocation);
-        if(r.test(code)){
+
+        if(r.test(code) || code == "delay"|| code == "delay "){                           //FIX THIS LINE LATER
           console.log("\nbreak\b");
 
           return addressOfMemory;
         }
       }
       else{
+        //console.log(nameLocation+" not a intruction: " +assemblyArray);
         addressOfMemory= addressOfMemory+2;
       }
     }
-
+    ///return 000;
 
   }
 }

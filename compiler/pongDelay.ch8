@@ -1,0 +1,54 @@
+; Registers
+; ---------
+; V0 empty
+; V1 empty
+; V2 empty
+; V3 empty
+; V4 x coord of score
+; V5 y coord of score
+; V6 x coord of ball
+; V7 y coord of ball
+; V8 x dir of ball
+; V9 y dir of ball
+; VA score
+; VB x coord of left paddle
+; VC y coord of left paddle
+; VD x Coord of right paddle
+; VE Y coord of right paddle
+; VF collision
+
+; initialize
+CLS
+LD i, ball; set i to memory address of ball
+LD V6, 32; set initial x value to 32 (mid-way)
+LD V7, 16; set initial y value to 16 (mid-way)
+LD V8, 1; set initial x dir to 1 (right)
+LD V9, 1; set initial y dir to 1 (down)
+LD VB, 2
+LD VC, 14
+LD VD, 61
+LD VE, 14
+
+
+; function to delay the drawing of the ball
+delay
+	LD V0, DT ; get the value for the delay timer
+	SE V0, 0 ; if the value of the "delay timer" is 0, skip the next instruction
+	JP delay ; jump to the start of the function, repeating until the delay timer is 0
+	RET
+
+ball
+	byte 	%10000000
+
+paddle
+	byte	%10000000
+	byte	%10000000
+	byte	%10000000
+	byte	%10000000
+	byte	%10000000
+	byte	%10000000
+
+
+
+
+
