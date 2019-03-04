@@ -22,15 +22,9 @@ CALL drawHorizBorder
 LD V5, 21; x value
 LD VA, 25; start y value
 LD VB, 30; end y value
-CALL drawHorizBorder
+CALL drawVertBorder
 
-drawHorizBorder
-	DRW V5, VA, 2 ; draw horizontal border pixel
-	ADD VA, 1 ; keep adding one to y location
-	DRW V5, VA, 2 ; draw horizontal border pixel
-	ADD VA, 1 ; keep adding one to y location
-	DRW V5, VA, 2 ; draw horizontal border pixel
-	RET
+
 
 loop
 
@@ -56,6 +50,21 @@ loop
 	DRW V6, V7, 2
 	jp loop
 
+drawHorizBorder
+	DRW V5, VA, 2 ; draw horizontal border pixel
+	ADD VA, 1 ; keep adding one to y location
+	DRW V5, VA, 2 ; draw horizontal border pixel
+	ADD VA, 1 ; keep adding one to y location
+	DRW V5, VA, 2 ; draw horizontal border pixel
+	RET
+
+drawVertBorder
+	DRW V5, VA, 2 ; draw horizontal border pixel
+	ADD VA, 1 ; keep adding one to y location
+	DRW V5, VA, 2 ; draw horizontal border pixel
+	ADD VA, 1 ; keep adding one to y location
+	DRW V5, VA, 2 ; draw horizontal border pixel
+	RET
 
 
 
