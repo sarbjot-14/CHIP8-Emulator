@@ -19,6 +19,10 @@ LD VB, 30; end y value
 DRW V6, V7, 2; 
 
 CALL drawHorizBorder
+LD V5, 21; x value
+LD VA, 25; start y value
+LD VB, 30; end y value
+CALL drawHorizBorder
 
 drawHorizBorder
 	DRW V5, VA, 2 ; draw horizontal border pixel
