@@ -139,7 +139,7 @@ draw_shape
 	;Delay
 	LD V0, 5 ; load the value to delay by into the empty register (to pass to delay timer)
 	LD DT, V0 ; pass the above value into the delay timer "register"
-	jp delay ; loops until delay timer is 0
+	call delay ; loops until delay timer is 0
 
 	; erase the shape, move it, then redraw it at new position
 	CALL drawBlock; erase the shape
@@ -214,7 +214,7 @@ moveRight
 delay
 	LD V0, DT ; get the value for the delay timer
 	SE V0, 0 ; if the value of the "delay timer" is 0, skip the next instruction
-	JP delay ; jump to the start of the function, repeating until the delay timer is 0
+	call delay ; jump to the start of the function, repeating until the delay timer is 0
 	RET
 
 ;sprite data

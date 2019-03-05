@@ -13,15 +13,18 @@ class chip8Compiler{
     //convert assembly to opcode one line at a time
     assemblyArray = this.compileJumps(assemblyArray);
     assemblyArray = this.compileFunctionCalls(assemblyArray);
-    assemblyArray = this.compileSprites(assemblyArray);
+    assemblyArray = this.compileSpritesLD(assemblyArray);
     assemblyArray = this.assemblyToOpcode(assemblyArray);
+    assemblyArray = this.compileSpritesBinToHex(assemblyArray);
 
     //final opcodes is the good version of the opcodes
     let finalOpcodes = "";
     let memmoryAddresses = 510;
     assemblyArray.forEach(function(command) {
       memmoryAddresses += 2;
-      finalOpcodes += memmoryAddresses.toString(16)+ " " + command + "\n";
+      //**********UN-COMMENT NEXT LINE FOR DEBUGGING********///////
+      finalOpcodes += memmoryAddresses.toString(16)+ " " + command + "\n"; //
+      //finalOpcodes += command + " ";
     });
 
     return finalOpcodes;
@@ -53,25 +56,83 @@ class chip8Compiler{
       }
 
       //00EE - RET
+      r = /^ret$/im;
+
+
+      opcode = code.replace(r, "00EE");
       //0nnn - SYS addr
       //1nnn - JP addr
       //2nnn - CALL addr
       //3xkk - SE Vx, byte
-      //4xkk - SNE Vx, byte
-      //5xy0 - SE Vx, Vy
-      //6xkk - LD Vx, byte
-      r = /\b^LD\sV[0-9A-F],\s[0-9A-F]{1,2}\b/i;
+      r = /^se\sv[0-9a-f],\s*-?[0-9a-f][0-9a-f]?$/im;
       if(r.test(code)){
         let register =code.substring(4,5);
-        let byte = code.match(/\d+$/)[0];
+        let byte = code.match(/-?[a-f0-9][a-f0-9]?$/im)[0];
+        byte = parseInt(byte);
+        byte = byte.toString(16);
         if(byte.length ==1){
           byte = "0" + byte;
         }
+        if(byte[0]=="-" && byte.length == 2){
+          byte = "0" + byte;
+        }
         //console.log(" register is " + code + "and "+ register +" " + byte);
-        opcode = code.replace(/\b^LD\sV[0-9A-F],\s[0-9A-F]{1,2}\b/i, "6"+ register + byte);
+        opcode = code.replace(r, "3"+ register + byte);
+      }
+      //4xkk - SNE Vx, byte
+      r = /^sne\sv[0-9a-f],\s*-?[0-9a-f][0-9a-f]?$/im;
+      if(r.test(code)){
+        let register =code.substring(5,6);
+        let byte = code.match(/[a-f0-9][a-f0-9]?$/im)[0];
+        byte = parseInt(byte);
+        byte = byte.toString(16);
+        if(byte.length ==1){
+          byte = "0" + byte;
+        }
+        if(byte[0]=="-" && byte.length == 2){
+          byte = "0" + byte;
+        }
+        //console.log(" register is " + code + "and "+ register +" " + byte);
+        opcode = code.replace(r, "4"+ register + byte);
+      }
+      //5xy0 - SE Vx, Vy
+
+      //6xkk - LD Vx, byte
+      r = /^LD\sV[0-9A-F],\s*-?[0-9A-F]{1,2}$/im;
+      if(r.test(code)){
+        let register =code.substring(4,5);
+        let byte = code.match(/-?[0-9a-f]{1,2}$/im)[0];
+        byte = parseInt(byte);
+        byte = byte.toString(16);
+        //byte = parseInt(byte, 2).toString(16);
+        if(byte.length ==1){
+          byte = "0" + byte;
+        }
+        //console.log("why did it not add a zero toooooo " + code);
+        if(byte[0]=="-" && byte.length == 2){
+          byte = "0" + byte;
+        }
+        //console.log(" register is " + code + "and "+ register +" " + byte);
+        opcode = code.replace(r, "6"+ register + byte);
       }
 
       //7xkk - ADD Vx, byte
+      r = /^Add\sV[0-9A-F],\s*-?[0-9A-F]{1,2}$/im;
+      if(r.test(code)){
+        let register =code.substring(5,6);
+        let byte = code.match(/-?[0-9a-f]{1,2}$/im)[0];
+        byte = parseInt(byte);
+        byte = byte.toString(16);
+        if(byte.length ==1){
+          byte = "0" + byte;
+        }
+        //console.log("why did it not add a zero toooooo " + code);
+        if(byte[0]=="-" && byte.length == 2){
+          byte = "0" + byte;
+        }
+        //console.log(" register is " + code + "and "+ register +" " + byte);
+        opcode = code.replace(r, "7"+ register + byte);
+      }
 
       /////////GROUP FROM 8xy0 TO 8xy5///////////
       //8xy0 - LD Vx, Vy
@@ -129,7 +190,18 @@ class chip8Compiler{
       }
       //Ex9E - SKP Vx
       //ExA1 - SKNP Vx
+      r = /^sknp\sv[0-9a-f]$/i;
+      if(r.test(code)){
+        let register = code.match(/[0-9a-f]$/)[0];
+        opcode = code.replace(r, "E"+ register+ "A1");
+      }
       //Fx07 - LD Vx, DT
+      r = /^LD\sV[0-9A-F],\sDT$/im;
+      if(r.test(code)){
+        let register =code.substring(4,5);
+
+        opcode = code.replace(r, "F"+ register + "07");
+      }
       //Fx0A - LD Vx, K
       //Fx15 - LD DT, Vx
       //Fx18 - LD ST, Vx
@@ -193,7 +265,7 @@ class chip8Compiler{
         //console.log("testing for " +jumpNameArray[m]);
         if( reg.test(assemblyArray[n]) ){
         //if(assemblyArray[n].includes(jumpNameArray[m])){
-          console.log("spliceing " + assemblyArray[n]);
+          //console.log("spliceing " + assemblyArray[n]);
           assemblyArray.splice(n,1);
         }
       }
@@ -212,7 +284,7 @@ class chip8Compiler{
         let r = /^CALL\s+[a-z1-9_]+$/im;
 
         if(r.test(code)){
-          console.log("so far so good " + code);
+          //console.log("so far so good " + code);
           let nameLocation = code.match(/[a-z1-9_]+$/im)[0]; //name of location where to jump to
           functionNameArray.push(nameLocation);
           let addressOfCall = this.findNameLocation(nameLocation, assemblyArray);
@@ -229,7 +301,7 @@ class chip8Compiler{
       for(var n=0 ; n< assemblyArray.length ; n++){
         let reg = new RegExp("^ *"+functionNameArray[m]+" *$","im");
         if( reg.test(assemblyArray[n])){
-          console.log("splicing line " + n +" "+  assemblyArray[n]);
+          //console.log("splicing line " + n +" "+  assemblyArray[n]);
           assemblyArray.splice(n,1);
         }
       }
@@ -237,7 +309,7 @@ class chip8Compiler{
     console.log("done compiling functions");
     return assemblyArray;
   }
-  compileSprites(assemblyArray){
+  compileSpritesLD(assemblyArray){
     console.log("compiling sprites now");
     //console.log(assemblyArray);
     var spriteNamesArray= [];
@@ -247,7 +319,7 @@ class chip8Compiler{
         let r = /^LD\si,\s?[a-z1-9_]+$/mi;
         //console.log("testing if Ld i, nnn " + code);
         if(r.test(code)){
-          console.log("dealing with this "+ code);
+          //console.log("dealing with this "+ code);
           //console.log("found this as ld I nnn "+ code );
           let nameLocation = code.match(/[a-z1-9_]+$/im)[0]; //name of location where to jump to
           spriteNamesArray.push(nameLocation);
@@ -272,26 +344,7 @@ class chip8Compiler{
     console.log("sprites done");
     return assemblyArray;
   }
-  isChip8Instruction(code){
-    let r = /\b(?:CLS|BYTE|RET|SYS|JP|LD|SE|CALL|SNE|ADD|OR|AND|XOR|SUB|SHR|SUBN|SHL|RND|DRW|SKP|SKNP|SCD|SCR|SCL|EXIT|LOW|HIGH)\b/i;
-    if(r.test(code)){
-      //console.log("this is a intruction: "+ code);
-      return true;
-    }
-    else{
 
-      let regexJumpOpcodes = /^(1|2|a)[0-9a-f]{3}$/im
-      if(regexJumpOpcodes.test(code)){
-        return true;
-      }
-      else{
-        //console.log("this is not an instruction "+ code);
-        return false;
-      }
-
-
-    }
-  }
   findNameLocation(nameLocation, assemblyArray){
     var addressOfMemory = 512;
     var r = new RegExp("^\\s*"+nameLocation+"\\s*$","im");
@@ -316,7 +369,46 @@ class chip8Compiler{
         addressOfMemory= addressOfMemory+2;
       }
     }
-    ///return 000;
+  }
+  compileSpritesBinToHex(assemblyArray){
+    console.log("turning sprites binary to hex" );
+    let r = /^byte\s*%[01]{8}$/im;
+    for(var x=0 ; x< assemblyArray.length ; x++){
+      let code= assemblyArray[x];
+      if(r.test(code)){
+        //console.log("turning "+ code+" into ......");
+        let regBin = /[10]{8}$/im;
+        let spriteBin = code.match(regBin)[0];
+        //console.log("found binary "+ spriteBin);
+        let spriteHex = parseInt(spriteBin, 2).toString(16)
+        //console.log("this is the hex version " + spriteHex);
+        while(spriteHex.length != 4){
+          spriteHex = "0"+ spriteHex;
+        }
+        assemblyArray[x]= spriteHex;
+      }
+    }
+    return assemblyArray;
+  }
 
+  isChip8Instruction(code){
+    let r = /\b(?:CLS|BYTE|RET|SYS|JP|LD|SE|CALL|SNE|ADD|OR|AND|XOR|SUB|SHR|SUBN|SHL|RND|DRW|SKP|SKNP|SCD|SCR|SCL|EXIT|LOW|HIGH)\b/i;
+    if(r.test(code)){
+      //console.log("this is a intruction: "+ code);
+      return true;
+    }
+    else{
+
+      let regexJumpOpcodes = /^(1|2|a)[0-9a-f]{3}$/im
+      if(regexJumpOpcodes.test(code)){
+        return true;
+      }
+      else{
+        //console.log("this is not an instruction "+ code);
+        return false;
+      }
+
+
+    }
   }
 }
