@@ -30,6 +30,7 @@
 
 ;THE ACTUAL GAME IS BELOW HERE
 CLS
+
 ; init
 Init
 	LD I, border; set i to memory address of shape
@@ -50,14 +51,14 @@ drawVerticalBorder
 	DRW V0, V2, 1; draw left border
 	ADD V2, 1; keep adding one to y value (drawing walls)
 	SE V2, V3; skip the jump if y value of the border is 31
-	jp drawVerticalBorder
+	call drawVerticalBorder
 	RET
 
 drawHorizBorder
 	DRW V0, V3, 1 ; draw horizontal border pixel
 	ADD V0, 1 ; keep adding one to x location
 	SE V0, V1
-	jp drawHorizBorder
+	call drawHorizBorder
 	DRW V0, V3, 1; draws last corner pixel
 	RET
 
@@ -138,7 +139,7 @@ draw_shape
 	;Delay
 	LD V0, 5 ; load the value to delay by into the empty register (to pass to delay timer)
 	LD DT, V0 ; pass the above value into the delay timer "register"
-	CALL delay ; loops until delay timer is 0
+	call delay ; loops until delay timer is 0
 
 	; erase the shape, move it, then redraw it at new position
 	CALL drawBlock; erase the shape
@@ -213,7 +214,7 @@ moveRight
 delay
 	LD V0, DT ; get the value for the delay timer
 	SE V0, 0 ; if the value of the "delay timer" is 0, skip the next instruction
-	JP delay ; jump to the start of the function, repeating until the delay timer is 0
+	call delay ; jump to the start of the function, repeating until the delay timer is 0
 	RET
 
 ;sprite data

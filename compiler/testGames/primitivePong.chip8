@@ -1,12 +1,12 @@
 ;00e0 A22A 6620 6710 6801 6901 6102 D672
-;D672 4700 8914 471E 8915 463F 8815 4600
+;D672 4700 8914 471F 8915 463F 8815 4600
 ;8814 8684 8794 D672 1210 0080
 
 CLS
 
 LD i, ball; set i to memory address of ball
-LD V6, 20; set initial x value to 32 (mid-way)
-LD V7, 10; set initial y value to 16 (mid-way)
+LD V6, 32; set initial x value to 32 (mid-way)
+LD V7, 16; set initial y value to 16 (mid-way)
 LD V8, 1; set initial x dir to 1 (right)
 LD V9, 1; set initial y dir to 1 (down)
 LD V1, 2; need to add and subtract 

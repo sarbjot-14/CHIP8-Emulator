@@ -151,13 +151,13 @@ moveRightPaddleDown
 	RET
 
 moveLeftPaddleUp
-	LD V0, #0C; put the key value into the register
+	LD V0, 12; put the key value into the register
 	SKNP V0; check if the key value in the register was pressed
 	ADD VE, -2; move the paddle up
 	RET
 
 moveLeftPaddleDown
-	LD V0, #0D; put the key value into the register
+	LD V0, 13; put the key value into the register
 	SKNP V0; check if the key value in the register was pressed
 	ADD VE, 2; move the paddle down
 	RET
