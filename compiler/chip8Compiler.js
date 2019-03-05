@@ -47,7 +47,7 @@ class chip8Compiler{
 
 
     for(var x=0 ; x< assemblyArray.length ; x++){
-      console.log("what happened "+ assemblyArray[x] );
+
       let opcode= "";
       let code = assemblyArray[x];
       //00E0 - CLS
@@ -98,6 +98,13 @@ class chip8Compiler{
         opcode = code.replace(r, "4"+ register + byte);
       }
       //5xy0 - SE Vx, Vy
+      r = /^se\sV[0-9a-f],\sv[0-9a-f]$/mi;
+      if(r.test(code)){
+        let register1 =code.substring(4,5);
+        let regester2 = code.substring(8,9);
+
+        opcode = code.replace(r, "5"+ register1+ regester2 + "0");
+      }
 
       //6xkk - LD Vx, byte
       r = /^LD\sV[0-9A-F],\s*-?[0-9A-F]{1,2}$/im;
@@ -194,7 +201,8 @@ class chip8Compiler{
       //ExA1 - SKNP Vx
       r = /^sknp\sv[0-9a-f]$/i;
       if(r.test(code)){
-        let register = code.match(/[0-9a-f]$/)[0];
+        console.log("what the problem " + code);
+        let register = code.match(/[0-9a-f]$/im)[0];
         opcode = code.replace(r, "E"+ register+ "A1");
       }
       //Fx07 - LD Vx, DT
@@ -206,6 +214,12 @@ class chip8Compiler{
       }
       //Fx0A - LD Vx, K
       //Fx15 - LD DT, Vx
+      r = /^LD\sDT,\sV[0-9a-f]$/im;
+      if(r.test(code)){
+        let register =code.substring(8,9);
+
+        opcode = code.replace(r, "F"+ register + "15");
+      }
       //Fx18 - LD ST, Vx
       //Fx1E - ADD I, Vx
       //Fx29 - LD F, Vx

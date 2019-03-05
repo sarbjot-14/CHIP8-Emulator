@@ -151,13 +151,13 @@ moveRightPaddleDown
 	RET
 
 moveLeftPaddleUp
-	LD V0, #0C; put the key value into the register
+	LD V0, 12; put the key value into the register
 	SKNP V0; check if the key value in the register was pressed
 	ADD VE, -2; move the paddle up
 	RET
 
 moveLeftPaddleDown
-	LD V0, #0D; put the key value into the register
+	LD V0, 13; put the key value into the register
 	SKNP V0; check if the key value in the register was pressed
 	ADD VE, 2; move the paddle down
 	RET
@@ -168,7 +168,7 @@ moveLeftPaddleDown
 delay
 	LD V0, DT ; get the value for the delay timer
 	SE V0, 0 ; if the value of the "delay timer" is 0, skip the next instruction
-	JP delay ; jump to the start of the function, repeating until the delay timer is 0
+	JP delay; jump to the start of the function, repeating until the delay timer is 0
 	RET
 
 ball
