@@ -23,8 +23,8 @@ class chip8Compiler{
     assemblyArray.forEach(function(command) {
       memmoryAddresses += 2;
       //**********UN-COMMENT NEXT LINE FOR DEBUGGING********///////
-      finalOpcodes += memmoryAddresses.toString(16)+ " " + command + "\n"; //
-      //finalOpcodes += command + " ";
+      //finalOpcodes += memmoryAddresses.toString(16)+ " " + command + "\n"; //
+      finalOpcodes += command + " ";
     });
 
     return finalOpcodes;
@@ -47,19 +47,21 @@ class chip8Compiler{
 
 
     for(var x=0 ; x< assemblyArray.length ; x++){
+      console.log("what happened "+ assemblyArray[x] );
       let opcode= "";
       let code = assemblyArray[x];
       //00E0 - CLS
-      let r = /CLS/;
+      let r = /CLS/im;
       if(r.test(code)){
         opcode = code.replace(/CLS/, "00E0");
       }
 
       //00EE - RET
       r = /^ret$/im;
+      if(r.test(code)){
+        opcode = code.replace(r, "00EE");
+      }
 
-
-      opcode = code.replace(r, "00EE");
       //0nnn - SYS addr
       //1nnn - JP addr
       //2nnn - CALL addr
@@ -353,13 +355,13 @@ class chip8Compiler{
 
       let inHex = addressOfMemory.toString(16);
 
-      console.log("looking for: "+ nameLocation);
-      console.log(inHex+ " " + code); //FOR DEBUGGING
+      //console.log("looking for: "+ nameLocation);
+      //console.log(inHex+ " " + code); //FOR DEBUGGING
 
       if(!this.isChip8Instruction(code)){
 
         if(r.test(code) || code == "delay"|| code == "delay "){                           //FIX THIS LINE LATER
-          console.log("\nbreak returning memory address "+ addressOfMemory);
+          //console.log("\nbreak returning memory address "+ addressOfMemory);
 
           return addressOfMemory;
         }
