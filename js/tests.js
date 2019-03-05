@@ -1,4 +1,5 @@
-let topIndex = 0;
+//let topIndex = 0;
+let program = "00E0 00E0 00EE 1CA1 23BC 3401 3400 4401 4400 5400 64FF 7419 8400";
 function drawTesting(){
   chip.setRegistersV(0,"03");
   chip.setRegistersV(1,"01");
@@ -21,43 +22,45 @@ function retTest(){
 
 }
 
+/*
 function testLoadProgram(program){
   chip.initializeData();
   program = program.replace(/\s+/g,"")
   chip.setMemory(512 , program.substring(0,2))
   chip.setMemory(513 , program.substring(2,4))
 }
-
+*/
 function printAllRegistersV(){
+  let regList = "\t"
+  let space = "  ";
   for(let i = 0; i < chip.registersV.length; i++){
-    console.log("\tV" + i.toString(16) + ": " + chip.registersV[i])
+    regList += ("V" + i.toString(16) + ": " + chip.registersV[i] + space)
   }
+  regList += "\n\tI: " + chip.registerI
+  regList += space + "Delay: " + chip.registerDelay
+  regList += space + "Sound Timer: " + chip.registerSoundTimer
+  console.log(regList)
 }
-
+function printAllVariables(){
+  printAllRegistersV()
+  console.log("\tProgramCounter: " + chip.programCounter)
+  console.log("\tStackPointer: " + chip.stackPointer)
+  console.log("\tVF: " + chip.VF)
+}
 function printOldVariables(){
-  console.log("Old registers: ")
-  printAllRegistersV()
-  console.log("\tI: " + chip.registerI)
-  console.log("\tDelay: " + chip.registerDelay)
-  console.log("\tSound Timer: " + chip.registerSoundTimer)
-  console.log("Old programCounter: " + chip.programCounter)
-  console.log("Old stackPointer: " + chip.stackPointer)
-  console.log("Old VF: " + chip.VF)
+  console.log("Old data: ")
+  printAllVariables()
 }
-
 function printNewVariables(){
-  console.log("New registers: ")
-  printAllRegistersV()
-  console.log("\tI: " + chip.registerI)
-  console.log("\tDelay: " + chip.registerDelay)
-  console.log("\tSound Timer: " + chip.registerSoundTimer)
-  console.log("New programCounter: " + chip.programCounter)
-  console.log("New stackPointer: " + chip.stackPointer)
-  console.log("New programCounter: " + chip.programCounter)
-  console.log("New stackPointer: " + chip.stackPointer)
-  console.log("New VF: " + chip.VF)
+  console.log("New data: ")
+  printAllVariables();
 }
+/*
+function printEndExecution(instruction){
+  console.log("\t---------------Instruction " + instruction + " END---------------\n\n")
+}*/
 
+/*
 function loadTestInstruction(instruction){
     console.log("\n\n\t---------------Instruction " + instruction + " START---------------")
     printOldVariables()
@@ -69,21 +72,51 @@ function loadTestInstruction(instruction){
     printnewVariables()
     console.log("\t---------------Instruction " + instruction + " END---------------\n\n")
     chip.initializeData()
+}*/
+
+function testEmulationLoop(){
+  //run code at program programCounter
+  let ins = chip.memory[parseInt(chip.programCounter, 16)] + chip.memory[parseInt(chip.programCounter, 16) + 1];
+
+  console.log("\n\n\n\t---------------Instruction " + ins + " START---------------");
+  printOldVariables();
+  console.log("******Executing instruction******");
+
+  let insResult = chip.executeInstruction(ins);
+  if(insResult == 1){
+    //increment programCounter by 2
+    chip.setProgramCounter( (parseInt(chip.programCounter, 16) + 2).toString(16) );
+  }else if(insResult == 2){
+    //do nothing
+  }else if(!parseInt(chip.registerSoundTimer, 16) && !parseInt(chip.registerDelay, 16)){
+    console.log("TogglePause should happen")
+    chip.togglePause();
+    console.log("invalid")
+  }
+
+  //decrement timers
+  if(parseInt(chip.registerDelay, 16)){
+    chip.setRegisterDelay((parseInt(chip.registerDelay, 16) -1).toString(16));
+  }
+  if(parseInt(chip.registerSoundTimer, 16)){
+    chip.setRegisterSoundTimer((parseInt(chip.registerSoundTimer, 16) -1).toString(16));
+  }
+
+  printNewVariables();
+  console.log("\t---------------Instruction " + ins + " END---------------\n\n\n");
+
+  //delay (60Hz)
+  console.log("Recursion should happen")////****
+  let nextIns = chip.memory[parseInt(chip.programCounter, 16)] + chip.memory[parseInt(chip.programCounter, 16) + 1]
+  console.log("nextIns " + nextIns)/////****
+  if(nextIns != "0000")
+    this.testEmulationLoop();//////****
+  chip.vis.updateHistory();
 }
 
-function testInstructions(){// this function is for the purpose of automated testing
-  chip.initializeData()
-
-  loadTestInstruction("00E0")
-  loadTestInstruction("00EE")
-  loadTestInstruction("1CA1")
-  loadTestInstruction("23BC")
-  loadTestInstruction("3401")
-  loadTestInstruction("3400")
-  loadTestInstruction("4401")
-  loadTestInstruction("4400")
-  loadTestInstruction("5400")
-  loadTestInstruction("64FF")
-  loadTestInstruction("7419")
-  loadTestInstruction("8400")
+function testInstructions(){
+  chip.vis.init();
+  chip.loadProgram(program);
+  chip.togglePause();
+  testEmulationLoop();
 }
