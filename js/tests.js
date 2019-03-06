@@ -1,5 +1,5 @@
 //let topIndex = 0;
-let program = "00E0 00E0 00EE 1CA1 23BC 3401 3400 4401 4400 5400 64FF 7419 8400";
+let program = "00E0 00E0 00EE 1212 0000 0000 0000 0000 0000 23BC 3401 3400 4401 4400 5400 64FF 7419 8400";
 function drawTesting(){
   chip.setRegistersV(0,"03");
   chip.setRegistersV(1,"01");
@@ -79,8 +79,8 @@ function testEmulationLoop(){
   let ins = chip.memory[parseInt(chip.programCounter, 16)] + chip.memory[parseInt(chip.programCounter, 16) + 1];
 
   console.log("\n\n\n\t---------------Instruction " + ins + " START---------------");
-  printOldVariables();
-  console.log("******Executing instruction******");
+  /*printOldVariables();
+  console.log("******Executing instruction******");*/
 
   let insResult = chip.executeInstruction(ins);
   if(insResult == 1){
@@ -102,13 +102,15 @@ function testEmulationLoop(){
     chip.setRegisterSoundTimer((parseInt(chip.registerSoundTimer, 16) -1).toString(16));
   }
 
-  printNewVariables();
+  //printNewVariables();
+  console.log("Current Data:"); ////****
+  printAllVariables();////*****
   console.log("\t---------------Instruction " + ins + " END---------------\n\n\n");
 
   //delay (60Hz)
-  console.log("Recursion should happen")////****
+  //console.log("Recursion should happen")////****
   let nextIns = chip.memory[parseInt(chip.programCounter, 16)] + chip.memory[parseInt(chip.programCounter, 16) + 1]
-  console.log("nextIns " + nextIns)/////****
+  console.log(">nextIns " + nextIns)/////****
   if(nextIns != "0000")
     this.testEmulationLoop();//////****
   chip.vis.updateHistory();
