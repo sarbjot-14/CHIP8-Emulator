@@ -1,5 +1,5 @@
 //let topIndex = 0;
-let program = "00E0 00E0 00EE 1212 0000 0000 0000 0000 0000 23BC 3401 3400 4401 4400 5400 64FF 7419 8400";
+let program = "00E0 00E0 00EE 1212 3401 3400 4401 4400 00EE 2208 00E0 0000 3401 3400 4401 4400 5400 64FF 7419 8400";
 function drawTesting(){
   chip.setRegistersV(0,"03");
   chip.setRegistersV(1,"01");
@@ -120,5 +120,6 @@ function testInstructions(){
   chip.vis.init();
   chip.loadProgram(program);
   chip.togglePause();
+  chip.setProgramCounter("0200");
   testEmulationLoop();
 }
