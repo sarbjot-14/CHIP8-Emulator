@@ -6,9 +6,9 @@ class chip8Compiler{
   }
   compileMneonicToOpcodes(code){
     let result = this.removeComments(code);
-    result = this.removeEmptyLines(result);
+    result = this.removeEmptyLines(result); //including spaces in front and end of line
     console.log("WORKING WITH THIS: \n"+ result);
-    let assemblyArray = result.split("\n");
+    let assemblyArray = result.split("\n"); //split the commands into array
 
     //convert assembly to opcode one line at a time
     assemblyArray = this.compileJumps(assemblyArray);
@@ -19,12 +19,12 @@ class chip8Compiler{
 
     //final opcodes is the good version of the opcodes
     let finalOpcodes = "";
-    let memmoryAddresses = 510;
+    let memmoryAddresses = 510; //this is memory address 200 in decimal
     assemblyArray.forEach(function(command) {
       memmoryAddresses += 2;
       //**********UN-COMMENT NEXT LINE FOR DEBUGGING********///////
-      //finalOpcodes += memmoryAddresses.toString(16)+ " " + command + "\n"; //
-      finalOpcodes += command + " ";
+      finalOpcodes += memmoryAddresses.toString(16)+ " " + command + "\n"; //
+      //finalOpcodes += command + " ";
     });
 
     return finalOpcodes;
@@ -44,7 +44,6 @@ class chip8Compiler{
     return result;
   }
   assemblyToOpcode(assemblyArray){
-
 
     for(var x=0 ; x< assemblyArray.length ; x++){
 
@@ -255,7 +254,7 @@ class chip8Compiler{
   compileJumps(assemblyArray){
     console.log("compiling jumps");
     //var addressOfMemory = 512;
-    var jumpNameArray= [];
+    var jumpNameArray= []; //need to store the names of places to jump in order to delete later
     for(var x=0 ; x< assemblyArray.length ; x++){
       let code = assemblyArray[x];
         let r = /^\bjp\b\s\b[a-z1-9_]+\b/i;
@@ -268,21 +267,22 @@ class chip8Compiler{
           let addressOfJumpInHex = addressOfJump.toString(16); //convert to hexidecimal
           //1nnn - JP addr
           //console.log("replacing "+assemblyArray[x]+" with " +"1" + addressOfJumpInHex)
-          assemblyArray[x] = "1" + addressOfJumpInHex;
+          assemblyArray[x] = "1" + addressOfJumpInHex; //replace with opcode
         }
     }
     console.log(assemblyArray);
     console.log(jumpNameArray);
     var reg;
+    //removing all the places we jumped to
     for(var m=0 ; m< jumpNameArray.length ; m++){
       for(var n=0 ; n< assemblyArray.length ; n++){
-        //console.log("tryying to removeeeeeeeeeeeeee "+ jumpNameArray[m]);
+        //console.log("tryying to remove "+ jumpNameArray[m]);
         reg = new RegExp("^"+jumpNameArray[m]+ " *","im");
         //console.log("testing for " +jumpNameArray[m]);
         if( reg.test(assemblyArray[n]) ){
         //if(assemblyArray[n].includes(jumpNameArray[m])){
           //console.log("spliceing " + assemblyArray[n]);
-          assemblyArray.splice(n,1);
+          assemblyArray.splice(n,1); //removing
         }
       }
     }
@@ -301,14 +301,14 @@ class chip8Compiler{
 
         if(r.test(code)){
           //console.log("so far so good " + code);
-          let nameLocation = code.match(/[a-z1-9_]+$/im)[0]; //name of location where to jump to
+          let nameLocation = code.match(/[a-z1-9_]+$/im)[0]; //name of location where function declaration to
           functionNameArray.push(nameLocation);
-          let addressOfCall = this.findNameLocation(nameLocation, assemblyArray);
+          let addressOfCall = this.findNameLocation(nameLocation, assemblyArray); //finding where the function is located
 
           addressOfCall = parseInt(addressOfCall);
           let addressOfCallInHex = addressOfCall.toString(16); //convert to hexidecimal
           //1nnn - JP addr
-          assemblyArray[x] = "2" + addressOfCallInHex;
+          assemblyArray[x] = "2" + addressOfCallInHex; // replacing with opcodes
         }
     }
     //deleting function declartions
@@ -337,10 +337,10 @@ class chip8Compiler{
         if(r.test(code)){
           //console.log("dealing with this "+ code);
           //console.log("found this as ld I nnn "+ code );
-          let nameLocation = code.match(/[a-z1-9_]+$/im)[0]; //name of location where to jump to
+          let nameLocation = code.match(/[a-z1-9_]+$/im)[0]; //name of location where to sprite is declared
           spriteNamesArray.push(nameLocation);
           let addressOfCall = this.findNameLocation(nameLocation, assemblyArray);
-          //console.log("name of sprite issssssss " + nameLocation);
+          //console.log("name of sprite iss " + nameLocation);
           //console.log("nameLocation is " + nameLocation+ "and addressOfCall is " + addressOfCall.toString(16));
           addressOfCall = parseInt(addressOfCall);
           let addressOfCallInHex = addressOfCall.toString(16); //convert to hexidecimal
@@ -362,19 +362,17 @@ class chip8Compiler{
   }
 
   findNameLocation(nameLocation, assemblyArray){
-    var addressOfMemory = 512;
+    //returning memory address of where nameLocation is found in the code
+    var addressOfMemory = 512; //200 in hex
     var r = new RegExp("^\\s*"+nameLocation+"\\s*$","im");
     for(var x=0 ; x< assemblyArray.length ; x++){
       let code = assemblyArray[x];
-
       let inHex = addressOfMemory.toString(16);
-
       //console.log("looking for: "+ nameLocation);
       //console.log(inHex+ " " + code); //FOR DEBUGGING
+      if(!this.isChip8Instruction(code)){ //  if not assembly then increase addressOfMemory
 
-      if(!this.isChip8Instruction(code)){
-
-        if(r.test(code) || code == "delay"|| code == "delay "){                           //FIX THIS LINE LATER
+        if(r.test(code)){       //if the address of the name is found then return
           //console.log("\nbreak returning memory address "+ addressOfMemory);
 
           return addressOfMemory;
@@ -414,7 +412,8 @@ class chip8Compiler{
       return true;
     }
     else{
-
+      //need to also return true if it is jump, call , or LD i because we did these steps simaltaniously and are still considered instruction
+      //can improve this making changes in another array instead of original.
       let regexJumpOpcodes = /^(1|2|a)[0-9a-f]{3}$/im
       if(regexJumpOpcodes.test(code)){
         return true;
