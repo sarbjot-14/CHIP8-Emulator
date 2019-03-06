@@ -1,5 +1,5 @@
 //let topIndex = 0;
-let program = "00E0 00E0 00EE 1212 3401 3400 4401 4400 00EE 2208 00E0 0000 3401 3400 4401 4400 5400 64FF 7419 8400";
+let program = "00E0 00E0 00EE 1216 3401 3400 0000 4401 0000 4400 00EE 2208 00E0 0000 5400 64FF 7419 8400";
 function drawTesting(){
   chip.setRegistersV(0,"03");
   chip.setRegistersV(1,"01");
