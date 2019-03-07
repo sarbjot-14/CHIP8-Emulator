@@ -4,12 +4,12 @@
 ; V1 free
 ; V2 free
 ; V3 free
-; V4 
-; V5 
+; V4
+; V5
 ; V6 x coord of shape
 ; V7 y coord of shape
 ; V8 dir of shape (1 = left, 2 = right, 3 = down)
-; V9 
+; V9
 ; VA score
 ; VB
 ; VC
@@ -32,19 +32,19 @@
 CLS
 
 ; init
-Init
-	LD I, border; set i to memory address of shape
-	LD V6, 29; set all shapes' initial x value to the middle (29) 
-	LD V7, 0; set all shapes' initial y value to top (0)
-	LD V0, 27; set left border's x value
-	LD V1, 39; set right border's x value because this game of tetris played on 10 x 24 between pixels 28 and 38
-	LD V2, 0; set y value to 0 top of screen
-	LD V3, 31; set y value to 31 bottom of screen
-	LD V8, 3 ;initial direction of block is down
-	CALL drawVerticalBorder
-	CALL drawHorizBorder
-	jp gameLoop
-	RET
+
+LD I, border; set i to memory address of shape
+LD V6, 29; set all shapes' initial x value to the middle (29)
+LD V7, 0; set all shapes' initial y value to top (0)
+LD V0, 27; set left border's x value
+LD V1, 39; set right border's x value because this game of tetris played on 10 x 24 between pixels 28 and 38
+LD V2, 0; set y value to 0 top of screen
+LD V3, 31; set y value to 31 bottom of screen
+LD V8, 3 ;initial direction of block is down
+CALL drawVerticalBorder
+CALL drawHorizBorder
+jp gameLoop
+RET
 
 drawVerticalBorder
 	DRW V1, V2, 1; draw right border
@@ -67,7 +67,7 @@ drawHorizBorder
 gameLoop
 	SNE VE, 1 ; if the block ID is 1, spawn Z block
 	CALL drawZ
-	SNE VE, 2 ; if block ID is 2, spawn L block 
+	SNE VE, 2 ; if block ID is 2, spawn L block
 	CALL drawI
 	SNE VE, 3 ; if block ID is 3, spawn reverse L block
 	CALL drawReverseL
@@ -122,14 +122,14 @@ drawBlock
 
 ; function to draw and update the position of the shape
 draw_shape
-	
+
 	CALL getInput
 
 	CALL drawBlock
 
 	SNE VF, 1; check if there is a collision with another block or with the border
 	CALL checkUndo ; if shape landed on something undo the collision and redraw on top
-	
+
 	SE V8, 3;if block dir is not down, set it to down
  	LD V8, 3
 
@@ -145,10 +145,10 @@ draw_shape
 	CALL drawBlock; erase the shape
 	SNE V7, 30
 	LD V7, 0 ;reset y val if it hits the bottom
-	
+
 	ADD V7, 1; add 1  y coord of shape - want to go striaght down
- 	
- 	
+
+
 
  	RET
 
@@ -156,14 +156,14 @@ undoDrop
 	CALL drawBlock; undo mistake
 	LD V1, 1
 	SUB V7, V1; subtract 1 to go back up one
-	
+
 	CALL drawBlock; draw in right place
 	SNE V8, 3
 	LD V7, 0; set y value to top of screen
 	SNE V8, 3
 	LD V6, 29; set x value to middle
 	RET
-	
+
 undoDropHoriz
 	CALL drawBlock; undo mistake
 	LD V1, 1
@@ -171,7 +171,7 @@ undoDropHoriz
 	ADD V6, 1 ;push back to the right
 	SNE V8, 2 ;if the direction of shape is right
 	SUB V6, V1 ;push back to the left
-	
+
 	CALL drawBlock; draw in right place
 	RET
 
