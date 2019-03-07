@@ -41,7 +41,7 @@ loop
 
 ; function to draw and update the position of the ball
 update_ball
-	
+
 	LD i, ball
 	; erase the ball, move it, then redraw it at new position
 	DRW V6, V7, 1; erase the ball
@@ -56,7 +56,7 @@ update_ball
 
 	; if the ball is at the top of the screen, change y dir to 1 (bounce off top)
 	SNE V7, 0; check if the y value of the ball is 0 (top), skip next if not 0
-	LD V9, 1; change y dir of ball 
+	LD V9, 1; change y dir of ball
 
 	; if the ball is at the bottom of the screen, change y dir to -1
 	SNE V7, 31; check if the y value of the ball is 31 (bottom), skip next if not 31
@@ -181,8 +181,3 @@ paddle
 	byte	%10000000
 	byte	%10000000
 	byte	%10000000
-
-
-
-
-
