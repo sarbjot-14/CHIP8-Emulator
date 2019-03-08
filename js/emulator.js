@@ -4,7 +4,7 @@ class emulator{
     this.vis = new visualizer(this);
     this.undoStack = []; //stack used for undoing instructions. each value is in the form [instruction, {data}]
 
-    this.registersV = new Array(16); //16 1byte registers Vx, each is from 00-FF
+    this.registersV = new Array(15); //16 1byte registers Vx, each is from 00-FF
     this.registerI; //16bit register that holds addresses (0000-FFFF)
     this.registerDelay; //8bit register. Decrements at a rate of 60Hz if non-zero
     this.registerSoundTimer; //8bit register. Decrements at a rate of 60Hz if non-zero
@@ -49,7 +49,7 @@ class emulator{
     this.undoStack = [];
     this.setRegisterI("0000");
     this.setVF(0)
-    for(let i=0; i< 16; i++){
+    for(let i=0; i< this.registersV.length; i++){
       this.setRegistersV(i,"00");
       this.setStack(i, "0000");
     }
@@ -108,8 +108,12 @@ class emulator{
   }
 
   setRegistersV(index,data){
-    this.registersV[index] = this.fixHexLength(data, 2);
-    this.vis.updateRegistersV();
+    if(index < this.registersV.length){
+      this.registersV[index] = this.fixHexLength(data, 2);
+      this.vis.updateRegistersV();
+    }else{
+      console.log("Error: Register doesn't exist");
+    }
   }
   setRegisterI(data){
     this.registerI = this.fixHexLength(data, 4);
@@ -136,8 +140,12 @@ class emulator{
     this.vis.updateStack();
   }
   setMemory(index, data){
-    this.memory[index] = this.fixHexLength(data, 2);
-    this.vis.updateMemory();
+    if(index < this.memory.length){
+      this.memory[index] = this.fixHexLength(data, 2);
+      this.vis.updateMemory();
+    }else {
+      console.log("Error: Memory out of bound");
+    }
   }
   setVF(data){
     if(data){
@@ -387,7 +395,7 @@ class emulator{
               this.setVF(0);
             }
 
-            this.setRegistersV(x, (parseInt(this.registersV[x], 16) / 2).toString(16) );
+            this.setRegistersV(x, (Math.floor(parseInt(this.registersV[x], 16) / 2)).toString(16) );
             break;
 
           case "7":// 8XY7 - Set VX = VY - VX, VF = 1 = not borrow
@@ -557,6 +565,7 @@ class emulator{
             return 1;
         }
         break;
+
     }
     return 0;
   }//end of executeInstruction()

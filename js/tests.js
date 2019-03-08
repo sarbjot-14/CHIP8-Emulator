@@ -1,5 +1,4 @@
-//let topIndex = 0;
-let program = "00E0 00EE 1214 3401 3400 0000 4401 0000 4400 00EE 2206 62F0 63FF 5230 720F 5230 0000 8030 8121 8312 8342 8323 8343 8333 0000";
+let program = "";
 function drawTesting(){
   chip.setRegistersV(0,"03");
   chip.setRegistersV(1,"01");
@@ -8,7 +7,6 @@ function drawTesting(){
   chip.setMemory(1,"6D");
   chip.setMemory(2,"65");
 }
-
 function retTest(){
   chip.setStack(0,"001");
   chip.setStack(1,"01F");
@@ -22,14 +20,6 @@ function retTest(){
 
 }
 
-/*
-function testLoadProgram(program){
-  chip.initializeData();
-  program = program.replace(/\s+/g,"")
-  chip.setMemory(512 , program.substring(0,2))
-  chip.setMemory(513 , program.substring(2,4))
-}
-*/
 function printAllRegistersV(){
   let regList = "\t"
   let space = "  ";
@@ -55,25 +45,6 @@ function printNewVariables(){
   console.log("New data: ")
   printAllVariables();
 }
-/*
-function printEndExecution(instruction){
-  console.log("\t---------------Instruction " + instruction + " END---------------\n\n")
-}*/
-
-/*
-function loadTestInstruction(instruction){
-    console.log("\n\n\t---------------Instruction " + instruction + " START---------------")
-    printOldVariables()
-
-    console.log("******Executing instruction******");
-    chip.loadProgram(instruction)
-    chip.emulationLoop()
-
-    printnewVariables()
-    console.log("\t---------------Instruction " + instruction + " END---------------\n\n")
-    chip.initializeData()
-}*/
-
 function testEmulationLoop(){
   //run code at program programCounter
   let ins = chip.memory[parseInt(chip.programCounter, 16)] + chip.memory[parseInt(chip.programCounter, 16) + 1];
@@ -116,7 +87,17 @@ function testEmulationLoop(){
   chip.vis.updateHistory();
 }
 
+function giveTestProgram(){
+  let testProgram = "";
+  testProgram += "00E0 00EE"
+  testProgram += "1214 3401 3400 0000 4401 0000 4400 00EE 2206"
+  testProgram += "62F0 63FF 5230 720F 5230 0000"
+  testProgram += "8030 8121 8312 8342 8323 8343 8333 8324 8334 8434 8355 8345 8245 8245 8336 8446 8226";
+  return testProgram;
+}
+
 function testInstructions(){
+  program = giveTestProgram();
   chip.vis.init();
   chip.loadProgram(program);
   chip.paused = false;
