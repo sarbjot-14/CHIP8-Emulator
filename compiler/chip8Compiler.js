@@ -77,9 +77,10 @@ class chip8Compiler{
         ///////
 
         //3xkk - SE Vx, byte
-        r = /^se\s*v[0-9a-f]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
+        //r = /^se\s*v[0-9a-f]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
+        r = /^(se|Sne|ld|add|rnd)\s*v[0-9a-f]\s*,\s(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
         if(r.test(code)){
-          let register = code.replace(/^se\s*v/im, "")[0];
+          let register = code.replace(/^[a-z]{2,3}\s*v/im, "")[0];
           let byte = code.match(/(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im)[0];
           byte = parseInt(byte);
           byte = byte.toString(16);
@@ -90,8 +91,26 @@ class chip8Compiler{
             byte = "0" + byte;
           }
           //console.log(" register is " + code + "and "+ register +" " + byte);
-          opcode = code.replace(r, "3"+ register + byte);
+          //3xkk - SE Vx, byte
+          if(/^se/im.test(code)){
+            opcode = code.replace(r, "3"+ register + byte);
+          }
+          else if(/^sne/im.test(code)){//4xkk - SNE Vx, byte
+            opcode = code.replace(r, "4"+ register + byte);
+          }
+          else if(/^ld/im.test(code)){//6xkk - LD Vx, byte
+              opcode = code.replace(r, "6"+ register + byte);
+          }
+          else if(/^add/im.test(code)){//7xkk - ADD Vx, byte
+            opcode = code.replace(r, "7"+ register + byte);
+          }
+          else if(/^rnd/im.test(code)){  //Cxkk - RND Vx, byte
+            opcode = code.replace(r, "C"+ register + byte);
+          }
+
+
         }
+        /*
         //4xkk - SNE Vx, byte
         r = /^sne\s*v[0-9a-f]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
         if(r.test(code)){
@@ -108,15 +127,6 @@ class chip8Compiler{
           //console.log(" register is " + code + "and "+ register +" " + byte);
           opcode = code.replace(r, "4"+ register + byte);
         }
-        //5xy0 - SE Vx, Vy
-        r = /^se\s*V[0-9a-f]\s*,\s*v[0-9a-f]$/mi;
-        if(r.test(code)){
-          let register1 =code.replace(/^se\s*v/im, "")[0];
-          let regester2 = code.replace(/^se\s*v.\s*,\s*v/im, "")[0];
-
-          opcode = code.replace(r, "5"+ register1+ regester2 + "0");
-        }
-
         //6xkk - LD Vx, byte
         r = /^ld\s*v[0-9a-f]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
         if(r.test(code)){
@@ -154,14 +164,21 @@ class chip8Compiler{
           opcode = code.replace(r, "7"+ register + byte);
         }
 
-        /////////GROUP FROM 8xy0 TO 8xy5///////////
+        //Cxkk - RND Vx, byte
+        */
+
+        /////////GROUP TOGETHER///////////
         //8xy0 - LD Vx, Vy
         //8xy1 - OR Vx, Vy
         //8xy2 - AND Vx, Vy
         //8xy3 - XOR Vx, Vy
         //8xy4 - ADD Vx, Vy
         //8xy5 - SUB Vx, Vy
-        r = /^(LD|OR|AND|XOR|ADD|SUB)\s*v[0-9a-f]\s*,\s*v[0-9a-f]$/im;
+        //5xy0 - SE Vx, Vy
+        //8xy7 - SUBN Vx, Vy
+        //9xy0 - SNE Vx, Vy
+
+        r = /^(LD|OR|AND|XOR|ADD|SUB|SE|SUBN|SNE)\s*v[0-9a-f]\s*,\s*v[0-9a-f]$/im;
         if(r.test(code)){
           //let firstTerm = code.match(/^[a-z_]+/im)[0]);
           let register1 =  code.replace(/^[a-z0-9_]+\s*v/im, "")[0];
@@ -173,30 +190,46 @@ class chip8Compiler{
           }
           if(/^OR/im.test(code)){
             number = 1;
+            opcode = code.replace(r, "8"+ register1+ regester2 +number);
           }
           if(/^AND/im.test(code)){
             number = 2;
+            opcode = code.replace(r, "8"+ register1+ regester2 +number);
           }
           if(/^XOR/im.test(code)){
             number = 3;
+            opcode = code.replace(r, "8"+ register1+ regester2 +number);
           }
           if(/^ADD/im.test(code)){
             number = 4;
+            opcode = code.replace(r, "8"+ register1+ regester2 +number);
           }
           if(/^SUB/im.test(code)){
             number = 5;
+            opcode = code.replace(r, "8"+ register1+ regester2 +number);
           }
+          if(/^SUBN/im.test(code)){
+            number = 5;
+            opcode = code.replace(r, "8"+ register1+ regester2 +number);
+          }
+          if(/^SE/im.test(code)){
+            number = 0;
+            opcode = code.replace(r, "5"+ register1+ regester2 +number);
+          }
+          if(/^SNE/im.test(code)){
+            number = 0;
+            opcode = code.replace(r, "9"+ register1+ regester2 +number);
+          }
+        
 
-          opcode = code.replace(r, "8"+ register1+ regester2 +number);
+
         }
-        //8xy6 - SHR Vx {, Vy}
-        //8xy7 - SUBN Vx, Vy
-        //8xyE - SHL Vx {, Vy}
-        //9xy0 - SNE Vx, Vy
 
 
 
-        //Cxkk - RND Vx, byte
+
+
+
         //Dxyn - DRW Vx, Vy, nibble
         r = /^drw\s*v[0-9a-f]\s*,\s*v[0-9a-f]\s*,\s*[1-9]$/im;
         if(r.test(code)){
