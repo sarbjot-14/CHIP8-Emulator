@@ -34,7 +34,7 @@ CLS
 ; init
 
 LD I, border; set i to memory address of shape
-LD V6, 29; set all shapes' initial x value to the middle (29)
+LD V6  ,  29; set all shapes' initial x value to the middle (29)
 LD V7, 0; set all shapes' initial y value to top (0)
 LD V0, 27; set left border's x value
 LD V1, 39; set right border's x value because this game of tetris played on 10 x 24 between pixels 28 and 38
@@ -50,7 +50,7 @@ drawVerticalBorder
 	DRW V1, V2, 1; draw right border
 	DRW V0, V2, 1; draw left border
 	ADD V2, 1; keep adding one to y value (drawing walls)
-	SE V2, V3; skip the jump if y value of the border is 31
+	SE V2,  V3; skip the jump if y value of the border is 31
 	call drawVerticalBorder
 	RET
 
@@ -116,7 +116,7 @@ drawZ
 drawBlock
 	SNE VE, 2 ;If it is an I block, draw it (needs more number of bytes to represent it)
 	DRW V6, V7, 4
-	SE VE, 2 ; otherwise, draw the blocks (rest of block need the same number of bytes needed to represent it)
+	SE VE, 255 ; otherwise, draw the blocks (rest of block need the same number of bytes needed to represent it)
 	DRW V6, V7, 3
 	RET
 
@@ -131,7 +131,7 @@ draw_shape
 	CALL checkUndo ; if shape landed on something undo the collision and redraw on top
 
 	SE V8, 3;if block dir is not down, set it to down
- 	LD V8, 3
+ 	LD  V8,  3
 
 	SNE VF, 1; check the collision
 	RET

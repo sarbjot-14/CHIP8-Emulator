@@ -27,8 +27,8 @@ class chip8Compiler{
       if(!regEmptyLine.test(command)){ //skip empty lines
         memmoryAddresses += 2;
         //**********UN-COMMENT NEXT LINE FOR DEBUGGING********///////
-        finalOpcodes += memmoryAddresses.toString(16)+ " " + command + "\n"; //
-        //finalOpcodes += command + " ";
+        //finalOpcodes += memmoryAddresses.toString(16)+ " " + command + "\n"; //
+        finalOpcodes += command + " ";
       }
     }
 
@@ -68,19 +68,19 @@ class chip8Compiler{
         if(r.test(code)){
           opcode = code.replace(r, "00EE");
         }
-        //******all opcodes with addr ******8
+        //******all opcodes with addr ****** //taken care with
         //0nnn - SYS addr
         //1nnn - JP addr  //this is delt with in seperate function
         //2nnn - CALL addr //this is delt with in a seperate function
         //Annn - LD I, addr //delt with this in seperate function/////
         //Bnnn - JP V0, addr
-
+        ///////
 
         //3xkk - SE Vx, byte
-        r = /^se\sv[0-9a-f],\s*-?[0-9a-f][0-9a-f]?$/im;
+        r = /^se\s*v[0-9a-f]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
         if(r.test(code)){
-          let register =code.substring(4,5);
-          let byte = code.match(/-?[a-f0-9][a-f0-9]?$/im)[0];
+          let register = code.replace(/^se\s*v/im, "")[0];
+          let byte = code.match(/(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im)[0];
           byte = parseInt(byte);
           byte = byte.toString(16);
           if(byte.length ==1){
@@ -93,10 +93,10 @@ class chip8Compiler{
           opcode = code.replace(r, "3"+ register + byte);
         }
         //4xkk - SNE Vx, byte
-        r = /^sne\sv[0-9a-f],\s*-?[0-9a-f][0-9a-f]?$/im;
+        r = /^sne\s*v[0-9a-f]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
         if(r.test(code)){
-          let register =code.substring(5,6);
-          let byte = code.match(/[a-f0-9][a-f0-9]?$/im)[0];
+          let register =  code.replace(/^sne\s*v/im, "")[0];
+          let byte = code.match(/(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im)[0];
           byte = parseInt(byte);
           byte = byte.toString(16);
           if(byte.length ==1){
@@ -109,19 +109,19 @@ class chip8Compiler{
           opcode = code.replace(r, "4"+ register + byte);
         }
         //5xy0 - SE Vx, Vy
-        r = /^se\sV[0-9a-f],\sv[0-9a-f]$/mi;
+        r = /^se\s*V[0-9a-f]\s*,\s*v[0-9a-f]$/mi;
         if(r.test(code)){
-          let register1 =code.substring(4,5);
-          let regester2 = code.substring(8,9);
+          let register1 =code.replace(/^se\s*v/im, "")[0];
+          let regester2 = code.replace(/^se\s*v.\s*,\s*v/im, "")[0];
 
           opcode = code.replace(r, "5"+ register1+ regester2 + "0");
         }
 
         //6xkk - LD Vx, byte
-        r = /^LD\sV[0-9A-F],\s*-?[0-9A-F]{1,2}$/im;
+        r = /^ld\s*v[0-9a-f]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
         if(r.test(code)){
-          let register =code.substring(4,5);
-          let byte = code.match(/-?[0-9a-f]{1,2}$/im)[0];
+          let register =code.replace(/^ld\s*v/im, "")[0];
+          let byte = code.match(/(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im)[0];
           byte = parseInt(byte);
           byte = byte.toString(16);
           //byte = parseInt(byte, 2).toString(16);
@@ -137,10 +137,10 @@ class chip8Compiler{
         }
 
         //7xkk - ADD Vx, byte
-        r = /^Add\sV[0-9A-F],\s*-?[0-9A-F]{1,2}$/im;
+        r = /^Add\s*V[0-9A-F]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
         if(r.test(code)){
-          let register =code.substring(5,6);
-          let byte = code.match(/-?[0-9a-f]{1,2}$/im)[0];
+          let register = code.replace(/^add\s*v/im, "")[0];
+          let byte = code.match(/(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im)[0];
           byte = parseInt(byte);
           byte = byte.toString(16);
           if(byte.length ==1){
@@ -161,27 +161,29 @@ class chip8Compiler{
         //8xy3 - XOR Vx, Vy
         //8xy4 - ADD Vx, Vy
         //8xy5 - SUB Vx, Vy
-        r = /\b(LD|OR|AND|XOR|ADD|SUB)\sV[1-9a-f],\sV[1-9a-f]\b/i;
+        r = /^(LD|OR|AND|XOR|ADD|SUB)\s*v[0-9a-f]\s*,\s*v[0-9a-f]$/im;
         if(r.test(code)){
-          let register1 =code.substring(5,6);
-          let regester2 = code.substring(9,10);
+          //let firstTerm = code.match(/^[a-z_]+/im)[0]);
+          let register1 =  code.replace(/^[a-z0-9_]+\s*v/im, "")[0];
+          let regester2 = code.replace(/^[a-z_]+\s*v[0-9a-f]\s*,\s*v/im,"")[0];
           let number = 0;
-          if(code.substring(0,2)=="LD"){
+
+          if(/^LD/im.test(code)){
             number = 0;
           }
-          if(code.substring(0,2)=="OR"){
+          if(/^OR/im.test(code)){
             number = 1;
           }
-          if(code.substring(0,3)=="AND"){
+          if(/^AND/im.test(code)){
             number = 2;
           }
-          if(code.substring(0,3)=="XOR"){
+          if(/^XOR/im.test(code)){
             number = 3;
           }
-          if(code.substring(0,3)=="ADD"){
+          if(/^ADD/im.test(code)){
             number = 4;
           }
-          if(code.substring(0,3)=="SUB"){
+          if(/^SUB/im.test(code)){
             number = 5;
           }
 
@@ -193,38 +195,37 @@ class chip8Compiler{
         //9xy0 - SNE Vx, Vy
 
 
-        //Annn - LD I, addr //delt with this in seperate function/////
-        //Bnnn - JP V0, addr
 
         //Cxkk - RND Vx, byte
         //Dxyn - DRW Vx, Vy, nibble
-        r = /\b^DRW\sV[0-9a-f],\sV[0-9a-f],\s[0-9a-f]\b/i;
+        r = /^drw\s*v[0-9a-f]\s*,\s*v[0-9a-f]\s*,\s*[1-9]$/im;
         if(r.test(code)){
-          let register1 =code.substring(5,6);
-          let regester2 = code.substring(9,10);
-          let nibble = code.match(/\d+\s*$/)[0];
+          let register1 =  code.replace(/^[a-z0-9_]+\s*v/im, "")[0];
+          let regester2 = code.replace(/^[a-z0-9_]+\s*v[0-9a-f]\s*,\s*v/im,"")[0];
+
+          let nibble = code.match(/[1-9]$/)[0];
 
           opcode = code.replace(r, "D"+ register1+ regester2 + nibble);
         }
         //Ex9E - SKP Vx
         //ExA1 - SKNP Vx
-        r = /^sknp\sv[0-9a-f]$/i;
+        r = /^sknp\s*v[0-9a-f]$/im;
         if(r.test(code)){
           let register = code.match(/[0-9a-f]$/im)[0];
           opcode = code.replace(r, "E"+ register+ "A1");
         }
         //Fx07 - LD Vx, DT
-        r = /^LD\sV[0-9A-F],\sDT$/im;
+        r = /^ld\s*v[0-9a-f]\s*,\s*dt$/im;
         if(r.test(code)){
-          let register =code.substring(4,5);
+          let register =  code.replace(/^ld\s*v/im, "")[0];
 
           opcode = code.replace(r, "F"+ register + "07");
         }
         //Fx0A - LD Vx, K
         //Fx15 - LD DT, Vx
-        r = /^LD\sDT,\sV[0-9a-f]$/im;
+        r = /ld\s*dt\s*,\s*v[0-9a-f]$/im;
         if(r.test(code)){
-          let register =code.substring(8,9);
+          let register =  code.replace(/ld\s*dt\s*,\s*v/im, "")[0];
 
           opcode = code.replace(r, "F"+ register + "15");
         }
@@ -267,11 +268,11 @@ class chip8Compiler{
   compileSYS_JP_CALL_LDI(assemblyArray){
     //0nnn - SYS addr
     //1nnn - JP addr
-    let regJP = /^\bjp\b\s\b[a-z1-9_]+\b/i;
+    let regJP = /^jp\s*[a-z0-9_]+$/im;
     //2nnn - CALL addr
-    let regCALL = /^CALL\s+[a-z1-9_]+$/im;
+    let regCALL = /^call\s*[a-z0-9_]+$/im;
     //Annn - LD I, addr
-    let regLDI = /^LD\si,\s?[a-z1-9_]+$/mi;
+    let regLDI = /^ld\s*i\s*,\s*[a-z0-9_]+$/mi;
     //Bnnn - JP V0, addr
     console.log("compiling SYS, JP, CALL, LD I, and JP V0");
     //var addressOfMemory = 512;
