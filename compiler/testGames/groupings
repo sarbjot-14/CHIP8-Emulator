@@ -1,0 +1,22 @@
+//3xkk - SE Vx, byte
+//4xkk - SNE Vx, byte
+//6xkk - LD Vx, byte
+//7xkk - ADD Vx, byte
+//Cxkk - RND Vx, byte
+
+//5xy0 - SE Vx, Vy
+//8xy7 - SUBN Vx, Vy
+//9xy0 - SNE Vx, Vy
+
+
+//Ex9E - SKP Vx
+//ExA1 - SKNP Vx
+
+//8xy6 - SHR Vx {, Vy}
+//8xyE - SHL Vx {, Vy}
+
+//Fx07 - LD Vx, DT
+
+//Fx0A - LD Vx, K
+
+//Fx15 - LD DT, Vx
