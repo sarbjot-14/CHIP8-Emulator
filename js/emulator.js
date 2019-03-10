@@ -16,6 +16,7 @@ class emulator{
 
     this.paused; //true if paused (step forward still avsilable)
     this.speed = 1; //speed multiplier
+    this.shiftingFixed; //true enables the shifting instructions to set shifted value of register VY into register VX, false uses only register VX
 
     this.keyInput = {
       "0": false,
@@ -44,6 +45,7 @@ class emulator{
   }
   initializeData(){
     this.paused = true;
+    this.shiftingFixed = true;
     this.pixels = this.separatePixels(title);
     this.updateScreen();
     this.undoStack = [];
@@ -388,14 +390,22 @@ class emulator{
             this.setRegistersV(x, (parseInt(this.registersV[x], 16) - parseInt(this.registersV[y], 16)).toString(16) );
             break;
 
-          case "6":// 8XY6 - Set VX = VX >> 1
+          case "6":// 8XY6 - Set VX = shiftingValue >> 1 (shiftingValue = register VY if shiftingFixed is true, shiftingValue = register VX otherwise)
+            var shiftingValue;
+            if(this.shiftingFixed){
+              shiftingValue = this.registersV[y];
+            }else{
+              shiftingValue = this.registersV[x];
+            }
+
             if(( parseInt(this.registersV[x], 16) % 2) != 0){
               this.setVF(1);
             }else{
               this.setVF(0);
             }
 
-            this.setRegistersV(x, (Math.floor(parseInt(this.registersV[x], 16) / 2)).toString(16) );
+            shiftingValue = (Math.floor(parseInt(shiftingValue, 16) / 2)).toString(16)
+            this.setRegistersV(x, shiftingValue);
             break;
 
           case "7":// 8XY7 - Set VX = VY - VX, VF = 1 = not borrow
@@ -408,15 +418,23 @@ class emulator{
             this.setRegistersV(x, (parseInt(this.registersV[x], 16) - parseInt(this.registersV[y], 16)).toString(16) );
             break;
 
-          case "E":// 8XYe - Set VX = VX << 1
+          case "E":// 8XYe - Set VX = shiftingValue << 1 (shiftingValue = register VY if shiftingFixed is true, shiftingValue = register VX otherwise)
           case "e":
+            var shiftingValue;
+            if(shiftingFixed){
+              shiftingValue = this.registersV[y];
+            }else{
+              shiftingValue = this.registersV[x];
+            }
+
             if(parseInt(this.registersV[x], 16) >= 128){
               this.setVF(1);
             }else{
               this.setVF(0);
             }
 
-            this.setRegistersV(x, (parseInt(this.registersV[x], 16) * 2).toString(16) );
+            shiftingValue = (Math.floor(parseInt(shiftingValue, 16) / 2)).toString(16)
+            this.setRegistersV(x, shiftingValue);
             break;
 
           default:// Print error if doesn't regconize instruction
