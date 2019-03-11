@@ -94,9 +94,23 @@ function giveTestProgram(){
   testProgram += "62F0 63FF 5230 720F 5230 0000 "
   testProgram += "8030 8121 8312 8342 8323 8343 8333 8324 8334 8434 8355 8345 8245 8245 8336 8446 8346 8447 8327 83E7 8237 844E 845E 6501 845E 843E ";
   //VF doesn't update itself after modifying, since ins 8
-  testProgram += "A000 AAAA "
+  testProgram += "A000 A000 "
   testProgram += "6002 B25C 6000 B262 "
   testProgram += "CAAC "
+
+  //Test Fonts
+  //increase X = 7C05
+  //increase Y = 7D05
+  //from 0-4
+  testProgram += "DCD5 A005 7C05 DCD5 A00A 7C05 DCD5 A00F 7C05 DCD5 A014 7C05 DCD5 "
+  //from 5-9
+  testProgram += "A019 7C05 DCD5 A01E 7C05 DCD5 A023 7C05 DCD5 A028 7C05 DCD5 A02D 7C05 DCD5 "
+  //from A-C
+  testProgram += "A032 7C05 DCD5 A037 7C05 DCD5 A03C 7C05 DCD5 "
+  //increase Y, reset X
+  testProgram += "7D05 7C04"
+  //from D-F
+  testProgram += "A041 DCD5 A046 7C05 DCD5 A04B 7C05 DCD5"
   return testProgram;
 }
 
