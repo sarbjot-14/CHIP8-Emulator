@@ -49,7 +49,7 @@ function testEmulationLoop(){
   //run code at program programCounter
   let ins = chip.memory[parseInt(chip.programCounter, 16)] + chip.memory[parseInt(chip.programCounter, 16) + 1];
   let separator = "-------------------"
-  console.log("\n\n\n\t" + separator + "Instruction " + ins + " START" + separator);
+  console.log("\n\n\t" + separator + "Executing " + ins + separator);
   /*printOldVariables();
   console.log("******Executing instruction******");*/
 
@@ -89,10 +89,14 @@ function testEmulationLoop(){
 
 function giveTestProgram(){
   let testProgram = "";
-  testProgram += "00E0 00EE"
-  testProgram += "1214 3401 3400 0000 4401 0000 4400 00EE 2206"
-  testProgram += "62F0 63FF 5230 720F 5230 0000"
-  testProgram += "8030 8121 8312 8342 8323 8343 8333 8324 8334 8434 8355 8345 8245 8245 8336 8446 8346";
+  testProgram += "00E0 00EE "
+  testProgram += "1214 3401 3400 0000 4401 0000 4400 00EE 2206 "
+  testProgram += "62F0 63FF 5230 720F 5230 0000 "
+  testProgram += "8030 8121 8312 8342 8323 8343 8333 8324 8334 8434 8355 8345 8245 8245 8336 8446 8346 8447 8327 83E7 8237 844E 845E 6501 845E 843E ";
+  //VF doesn't update itself after modifying, since ins 8
+  testProgram += "A000 AAAA "
+  testProgram += "6002 B25C 6000 B262 "
+  testProgram += "CAAC "
   return testProgram;
 }
 
@@ -105,4 +109,5 @@ function testInstructions(){
   console.log("Starting data: ");
   printAllVariables();
   testEmulationLoop();
+  console.log("End testing")
 }

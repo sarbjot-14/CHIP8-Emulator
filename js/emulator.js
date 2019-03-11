@@ -77,7 +77,7 @@ class emulator{
       //do nothing
     }else if(!parseInt(this.registerSoundTimer, 16) && !parseInt(this.registerDelay, 16)){
       this.togglePause();
-      console.log("invalid")
+      console.log("Invalid")
     }
 
     //decrement timers
@@ -278,14 +278,20 @@ class emulator{
   //returns 1 if instruction was valid (ie pushUndo() was called) and 0 otherwise
   executeInstruction(ins){ //ins is a 4-character string with each character beteen 0-1 or a-f/A-F
     ins = ins.toLowerCase();
-    let x = parseInt(ins[1],16);
-    let y = parseInt(ins[2],16);
-    let kk = ins.substring(2,4);
-    let nnn = ins.substring(1,4);
+    let x = parseInt(ins[1], 16);
+    let y = parseInt(ins[2], 16);
+    let kk = ins.substring(2, 4);
+    let nnn = ins.substring(1, 4);
+
+    let regX = parseInt(this.registersV[x], 16);
+    let regY = parseInt(this.registersV[y], 16);
+    let value = parseInt(kk, 16);
+    let addr = parseInt(nnn, 16);
+    let pc = parseInt(this.programCounter, 16);
     console.log(ins) //enable this line to get opcode readouts
     switch(ins[0]){
       case "0":
-        switch(ins.substring(1,4)){
+        switch(ins.substring(1, 4)){
           case "0E0":// 00E0 - CLS - Clear the display
           case "0e0":
             this.pushUndo(ins);
@@ -310,33 +316,33 @@ class emulator{
 
       case "1":// 1NNN - JP addr - Jump to location NNN
         this.pushUndo(ins);
-        this.setProgramCounter((parseInt(nnn,16)-2).toString(16)); //minus two so it doesnt skip first instruction
+        this.setProgramCounter((addr - 2).toString(16)); //minus two so it doesnt skip first instruction
         return 1;
 
       case "2":// 2NNN - CALL addr - Call subroutine at NNN
         this.pushUndo(ins); ////****not sure if this is correct ****////
         this.pushStack(this.programCounter.slice(0));
-        this.setProgramCounter((parseInt(nnn,16)-2).toString(16)); //minus two so it doesnt skip first instruction
+        this.setProgramCounter((addr - 2).toString(16)); //minus two so it doesnt skip first instruction
         return 1;
 
       case "3":// 3XKK - SE Vx, byte - Skip next instruction if VX = KK
         this.pushUndo(ins);
         if(this.registersV[x] == kk){
-          this.setProgramCounter((parseInt(this.programCounter, 16) + 2).toString(16));
+          this.setProgramCounter((pc + 2).toString(16));
         }
         return 1;
 
       case "4":// 4XKK - Skip next instruction if VX != KK
         this.pushUndo(ins);
         if(this.registersV[x] != kk){
-          this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
+          this.setProgramCounter( (pc + 2).toString(16) );
         }
         return 1;
 
       case "5":// 5XY0 - Skip next instruction if VX = VY
         this.pushUndo(ins);
         if(this.registersV[x] == this.registersV[y]){
-          this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
+          this.setProgramCounter( (pc + 2).toString(16) );
         }
         return 1;
 
@@ -347,7 +353,7 @@ class emulator{
 
       case "7":// 7XKK - Set VX = VX + KK
         this.pushUndo(ins); ////**** not sure if this is correct****////
-        this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(kk, 16)).toString(16) );
+        this.setRegistersV(x, (regX + value).toString(16));
         return 1;
 
       case "8":
@@ -358,82 +364,82 @@ class emulator{
             break;
 
           case "1":// 8XY1 - Set VX = VX OR VY
-            this.setRegistersV(x, (parseInt(this.registersV[x], 16) | parseInt(this.registersV[y], 16)).toString(16) );
+            this.setRegistersV(x, (regX | regY).toString(16));
             break;
 
           case "2":// 8XY2 - Set VX = VX AND VY
-            this.setRegistersV(x, (parseInt(this.registersV[x], 16) & parseInt(this.registersV[y], 16)).toString(16) );
+            this.setRegistersV(x, (regX & regY).toString(16));
             break;
 
           case "3":// 8XY3 - Set VX = VX XOR VY
-            this.setRegistersV(x, (parseInt(this.registersV[x], 16) ^ parseInt(this.registersV[y], 16)).toString(16) );
+            this.setRegistersV(x, (regX ^ regY).toString(16));
             break;
 
           case "4":// 8XY4 - Set VX = VX + VY, VF = 1 =
-            if( (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)) > parseInt("FF", 16)){
-              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)).toString(16).substring(1,4));
+            if((regX + regY) > parseInt("FF", 16)){
+              this.setRegistersV(x, (regX + regY).toString(16).substring(1, 4));
               this.setVF(1);
             }else{
-              this.setRegistersV(x, (parseInt(this.registersV[x], 16) + parseInt(this.registersV[y], 16)).toString(16)  );
+              this.setRegistersV(x, (regX + regY).toString(16));
               this.setVF(0);
             }
 
             break;
 
           case "5":// 8XY5 - Set VX = VX - VY, VF = 1 = not borrow
-            if(parseInt(this.registersV[x], 16) > parseInt(this.registersV[y], 16)){
+            if(regX > regY){
               this.setVF(1);
             }else{
               this.setVF(0);
             }
 
-            this.setRegistersV(x, (parseInt(this.registersV[x], 16) - parseInt(this.registersV[y], 16)).toString(16) );
+            this.setRegistersV(x, (regX - regY).toString(16));
             break;
 
           case "6":// 8XY6 - Set VX = shiftingValue >> 1 (shiftingValue = register VY if shiftingFixed is true, shiftingValue = register VX otherwise)
             var shiftingValue;
             if(this.shiftingFixed){
-              shiftingValue = this.registersV[y];
+              shiftingValue = regY;
             }else{
-              shiftingValue = this.registersV[x];
+              shiftingValue = regX;
             }
 
-            if(( parseInt(this.registersV[x], 16) % 2) != 0){
+            if(( shiftingValue  % 2) != 0){
               this.setVF(1);
             }else{
               this.setVF(0);
             }
 
-            shiftingValue = (Math.floor(parseInt(shiftingValue, 16) / 2)).toString(16)
+            shiftingValue = (Math.floor(shiftingValue / 2)).toString(16);
             this.setRegistersV(x, shiftingValue);
             break;
 
           case "7":// 8XY7 - Set VX = VY - VX, VF = 1 = not borrow
-            if(parseInt(this.registersV[y], 16) > parseInt(this.registersV[x], 16)){
+            if(regY > regX){
               this.setVF(1);
             }else{
               this.setVF(0);
             }
 
-            this.setRegistersV(x, (parseInt(this.registersV[x], 16) - parseInt(this.registersV[y], 16)).toString(16) );
+            this.setRegistersV(x, (regX - regY).toString(16));
             break;
 
           case "E":// 8XYe - Set VX = shiftingValue << 1 (shiftingValue = register VY if shiftingFixed is true, shiftingValue = register VX otherwise)
           case "e":
             var shiftingValue;
-            if(shiftingFixed){
-              shiftingValue = this.registersV[y];
+            if(this.shiftingFixed){
+              shiftingValue = regY;
             }else{
-              shiftingValue = this.registersV[x];
+              shiftingValue = regX;
             }
 
-            if(parseInt(this.registersV[x], 16) >= 128){
+            if(shiftingValue >= 128){
               this.setVF(1);
             }else{
               this.setVF(0);
             }
 
-            shiftingValue = (Math.floor(parseInt(shiftingValue, 16) / 2)).toString(16)
+            shiftingValue = (Math.floor(shiftingValue * 2)).toString(16);
             this.setRegistersV(x, shiftingValue);
             break;
 
@@ -446,26 +452,27 @@ class emulator{
         this.pushUndo(ins);
 
         if(this.registersV[x] != this.registersV[y]){
-          this.setProgramCounter( (parseInt(this.programCounter, 16) + 2).toString(16) );
+          this.setProgramCounter( (pc + 2).toString(16) );
         }
         return 1;
 
       case "a":
       case "A":// ANNN - Set I = nnn.
         this.pushUndo(ins);
-        this.setRegisterI(ins.substring(1,4));
+        this.setRegisterI(addr.toString(16));
         return 1;
 
       case "b":
       case "B":// BNNN - Jump to location nnn + V0.
         this.pushUndo(ins);
-        this.setProgramCounter( (parseInt(nnn, 16) + parseInt(registersV[0], 16)).toString(16) );
+        this.setProgramCounter((addr + parseInt(this.registersV[0], 16) - 2).toString(16)); //Minus to prevent skipping an instruction after jump
         return 1;
 
       case "c":
       case "C":// CXKK - Set VX = random byte AND KK
         this.pushUndo(ins);
-        this.setRegistersV( parseInt(ins[1], 16) ,(Math.round(Math.random()*255) & parseInt(ins.substring(2,4), 16)).toString(16) );
+        var randNum = Math.round(Math.random()*255);
+        this.setRegistersV(x, (randNum & value).toString(16));
         return 1;
 
       case "d":
@@ -477,9 +484,7 @@ class emulator{
         this.setVF(0)
         for(let i=0; i<size; i++){
           let pixelByte = this.hexToBin(this.memory[pixelStart+i]);
-          let posX = parseInt(this.registersV[x],16);
-          let posY = parseInt(this.registersV[y],16);
-          if(this.updateScreen(pixelByte,64*(this.mod((posY+i),32))+posX)){
+          if(this.updateScreen(pixelByte,64*(this.mod((regY+i),32))+regX)){
             this.setVF(1);
           }
         }
@@ -492,7 +497,7 @@ class emulator{
           case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
             this.pushUndo(ins);
             if(this.keyInput == x){
-               this.setProgramCounter((parseInt(this.programCounter, 16) + 2).toString(16));
+               this.setProgramCounter((pc + 2).toString(16));
             }
             return 1;
 
@@ -500,7 +505,7 @@ class emulator{
           case "a1":// EXA1 - SKNP - Skip next instruction if key with the value VX is not pressed
             this.pushUndo(ins);
             if(this.keyInput !== x){
-               this.setProgramCounter((parseInt(this.programCounter, 16) + 2).toString(16));
+               this.setProgramCounter((pc + 2).toString(16));
             }
             return 1;
         }
@@ -508,8 +513,6 @@ class emulator{
 
       case "f":
       case "F": ////**** missing pushUndo ****////
-        let maxReg = parseInt(ins[1], 16);
-        let regI = parseInt(this.registerI, 16);
         switch(ins.substring(2,4)){
           case "07":// FX07 - LD VX, DT - Set VX = delay timer value
             this.pushUndo(ins);
@@ -540,7 +543,7 @@ class emulator{
           case "1E":
           case "1e":// FX1E - ADD I, VX - Set I = I + VX
             this.pushUndo(ins);
-            this.setRegisterI((parseInt(this.registerI, 16) + parseInt(this.registersV[x], 16)).toString(16));
+            this.setRegisterI((regI + regX).toString(16));
             return 1;
 
           case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX ////**** this case isn't finished ****////
@@ -550,25 +553,25 @@ class emulator{
 
           case "33":// FX33 - Store Binary Coded Decimal VX in memory location I, I+1, I+2
             this.pushUndo(ins);
-            let registerVX = parseInt(this.regitersV[x], 16).toString(10);
+            let regXDec = regX.toString(10);///////******
 
             if(registerVX.length == 3){
-              this.setMemory(this.registerI, registerVX[0]);
-              this.setMemory(this.registerI + 1, registerVX[1]);
-              this.setMemory(this.registerI + 2, registerVX[2]);
+              this.setMemory(this.registerI, regXDec[0]);
+              this.setMemory(this.registerI + 1, regXDec[1]);
+              this.setMemory(this.registerI + 2, regXDec[2]);
             }
             else if(registerVX.length == 2){
-              this.setMemory(this.registerI + 1, registerVX[0]);
-              this.setMemory(this.registerI + 2, registerVX[1]);
+              this.setMemory(this.registerI + 1, regXDec[0]);
+              this.setMemory(this.registerI + 2, regXDec[1]);
             }
             else{
-              this.setMemory(this.registerI + 2, registerVX[0]);
+              this.setMemory(this.registerI + 2, regXDec[0]);
             }
             return 1;
 
           case "55":// FX55 - LD [I], VX - Store registers V0 through VX in memory starting at location I
               this.pushUndo(ins);
-              for(let i = 0; i <= maxReg; i++){
+              for(let i = 0; i <= regX; i++){
                 this.setMemory(regI, this.registersV[i]);
                 regI += 2;
               }
@@ -576,7 +579,7 @@ class emulator{
 
           case "65":// FX65 - LD VX, [I] - Read registers V0 through VX from memory starting at location I
             this.pushUndo(ins);
-            for(let i = 0; i <= maxReg; i++){
+            for(let i = 0; i <= regX; i++){
               this.setRegistersV(i, this.memory[regI]);
               regI += 2;
             }
