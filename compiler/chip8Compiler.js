@@ -175,12 +175,15 @@ class chip8Compiler{
         }
 
         //Dxyn - DRW Vx, Vy, nibble
-        r = /^drw\s*v[0-9a-f]\s*,\s*v[0-9a-f]\s*,\s*[1-9]$/im;
+        r = /^drw\s*v[0-9a-f]\s*,\s*v[0-9a-f]\s*,\s*(1[0-5]|[1-9])$/im;
         if(r.test(code)){
           let register1 =  code.replace(/^[a-z0-9_]+\s*v/im, "")[0];
           let regester2 = code.replace(/^[a-z0-9_]+\s*v[0-9a-f]\s*,\s*v/im,"")[0];
 
-          let nibble = code.match(/[1-9]$/)[0];
+          let nibble = code.match(/(1[0-5]|[1-9])$$/)[0];
+          nibble = parseInt(nibble).toString(16);
+          console.log("nibble is " + nibble);
+
 
           opcode = code.replace(r, "D"+ register1+ regester2 + nibble);
         }
