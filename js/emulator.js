@@ -145,7 +145,7 @@ class emulator{
     if(index < this.memory.length){
       this.memory[index] = this.fixHexLength(data, 2);
       this.vis.updateMemory();
-    }else {
+    }else{
       console.log("Error: Memory out of bound");
     }
   }
@@ -181,7 +181,7 @@ class emulator{
       }
     }else{ //traditional Chip method
       let vfFlag = 0;
-      let rowNum = Math.floor( (start)/64);;
+      let rowNum = Math.floor((start)/64);;
       for(let i=0; (i<pix.length)&&(i+start < 64*32); i++){
         if(this.pixels[(i+start)%64 + rowNum*64] ^ !pix[i]){ // a ^ !b is the same as a == b but allows for undefined and zero to count as false
           if(pix[i]==1){
@@ -288,6 +288,7 @@ class emulator{
     let value = parseInt(kk, 16);
     let addr = parseInt(nnn, 16);
     let pc = parseInt(this.programCounter, 16);
+    let regIDec = parseInt(this.registerI, 16);
     console.log(ins) //enable this line to get opcode readouts
     switch(ins[0]){
       case "0":
@@ -479,12 +480,10 @@ class emulator{
       case "D": //DXYN - display n-byte sprite at memory location I at (VX, VY), set VF = collision
         this.pushUndo(ins);
         let size = parseInt(ins[3], 16);
-        let pixelStart = parseInt(this.registerI,16);
-
         this.setVF(0)
-        for(let i=0; i<size; i++){
-          let pixelByte = this.hexToBin(this.memory[pixelStart+i]);
-          if(this.updateScreen(pixelByte,64*(this.mod((regY+i),32))+regX)){
+        for(let i = 0; i < size; i++){
+          let pixelByte = this.hexToBin(this.memory[regIDec + i]);
+          if(this.updateScreen(pixelByte, 64 * (this.mod((regY + i), 32)) + regX)){
             this.setVF(1);
           }
         }
@@ -513,6 +512,7 @@ class emulator{
 
       case "f":
       case "F": ////**** missing pushUndo ****////
+        //console.log("x: " + x)////****
         switch(ins.substring(2,4)){
           case "07":// FX07 - LD VX, DT - Set VX = delay timer value
             this.pushUndo(ins);
@@ -543,45 +543,58 @@ class emulator{
           case "1E":
           case "1e":// FX1E - ADD I, VX - Set I = I + VX
             this.pushUndo(ins);
-            this.setRegisterI((regI + regX).toString(16));
+            this.setRegisterI((regIDec + regX).toString(16));
             return 1;
 
           case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX ////**** this case isn't finished ****////
             this.pushUndo(ins);
-            this.setRegisterI((x*5).toString(16))
+            this.setRegisterI((x * 5).toString(16))
             return 1;
 
           case "33":// FX33 - Store Binary Coded Decimal VX in memory location I, I+1, I+2
             this.pushUndo(ins);
-            let regXDec = regX.toString(10);///////******
+            //let regXDec = regX.toString(10);///////******
+            let hunDigit = Math.floor(regX / 100);
+            let tenDigit = Math.floor((regX % 100) / 10);
+            let oneDigit = Math.floor(regX % 10);
+            this.setMemory(regIDec, hunDigit.toString(16));
+            this.setMemory(regIDec + 1, tenDigit.toString(16));
+            this.setMemory(regIDec + 2, oneDigit.toString(16));
 
-            if(registerVX.length == 3){
-              this.setMemory(this.registerI, regXDec[0]);
-              this.setMemory(this.registerI + 1, regXDec[1]);
-              this.setMemory(this.registerI + 2, regXDec[2]);
-            }
-            else if(registerVX.length == 2){
-              this.setMemory(this.registerI + 1, regXDec[0]);
-              this.setMemory(this.registerI + 2, regXDec[1]);
-            }
-            else{
-              this.setMemory(this.registerI + 2, regXDec[0]);
-            }
+            /*console.log("regX: " + regX);
+            console.log("hunDigit: " + hunDigit);
+            console.log("tenDigit: " + tenDigit);
+            console.log("oneDigit: " + oneDigit);
+            console.log("regIDec: " + regIDec);*/
             return 1;
 
           case "55":// FX55 - LD [I], VX - Store registers V0 through VX in memory starting at location I
               this.pushUndo(ins);
-              for(let i = 0; i <= regX; i++){
-                this.setMemory(regI, this.registersV[i]);
-                regI += 2;
+              //console.log("regIDec: " + regIDec)///****
+              for(let i = 0; i <= x; i++){
+                //console.log("this.registersV[" + i + "]: " + this.registersV[i])////****
+                this.setMemory(regIDec, this.registersV[i]);
+                regIDec += 1;
               }
+
+              /*
+              for(let tempI = start; tempI < size; tempI++)
+              console.log(tempI + ". " + this.memory[tempI])
+
+              console.log();
+              console.log("x: " + x)
+              console.log();
+              for(let tempI = start; tempI < size; tempI++)
+                console.log(tempI + ". " + this.memory[tempI])
+                */
               return 1;
 
           case "65":// FX65 - LD VX, [I] - Read registers V0 through VX from memory starting at location I
             this.pushUndo(ins);
-            for(let i = 0; i <= regX; i++){
-              this.setRegistersV(i, this.memory[regI]);
-              regI += 2;
+            for(let i = 0; i <= x; i++){
+              this.setRegistersV(i, this.memory[regIDec]);
+              //console.log("this.registersV[" + i + "]: " + this.registersV[i])////****
+              regIDec += 1;
             }
             return 1;
         }

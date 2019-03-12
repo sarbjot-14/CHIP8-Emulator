@@ -37,19 +37,19 @@ function printAllVariables(){
   console.log("\tStackPointer: " + chip.stackPointer)
   console.log("\tVF: " + chip.VF)
 }
-function printOldVariables(){
+/*function printOldVariables(){
   console.log("Old data: ")
   printAllVariables()
 }
 function printNewVariables(){
   console.log("New data: ")
   printAllVariables();
-}
+}*/
 function testEmulationLoop(){
   //run code at program programCounter
   let ins = chip.memory[parseInt(chip.programCounter, 16)] + chip.memory[parseInt(chip.programCounter, 16) + 1];
   let separator = "-------------------"
-  console.log("\n\n\t" + separator + "Executing " + ins + separator);
+  console.log("\n\n\n" + separator + "Executing " + ins + separator);
   /*printOldVariables();
   console.log("******Executing instruction******");*/
 
@@ -82,35 +82,84 @@ function testEmulationLoop(){
   //console.log("Recursion should happen")////****
   let nextIns = chip.memory[parseInt(chip.programCounter, 16)] + chip.memory[parseInt(chip.programCounter, 16) + 1]
   //console.log(">nextIns " + nextIns)/////****
+  // console.log("I: " + chip.memory[1280])
+  // console.log("I + 1: " + chip.memory[1281])
+  // console.log("I + 2: " + chip.memory[1282])
+  /*for(let i = parseInt("B00", 16); i <= parseInt("B0F", 16); i++)
+  {
+    console.log(i + ". " + chip.memory[i]);
+  }*/
   if(nextIns != "0000")
     this.testEmulationLoop();//////****
   chip.vis.updateHistory();
 }
-
+/*
+function giveTestFonts(){
+  let testProgram = "";
+  //reset VC VD
+  testProgram += "6000 6100 ";
+  //increase X = 7005
+  //increase Y = 7105
+  //from 0-4
+  testProgram += "D015 A005 7005 D015 A00A 7005 D015 A00F 7005 D015 A014 7005 D015 ";
+  //from 5-9
+  testProgram += "A019 7005 D015 A01E 7005 D015 A023 7005 D015 A028 7005 D015 A02D 7005 D015 ";
+  //from A-C
+  testProgram += "A032 7005 D015 A037 7005 D015 A03C 7005 D015 ";
+  //increase Y, reset X
+  testProgram += "7004 7105";
+  //from D-F
+  testProgram += "A041 D015 A046 7005 D015 A04B 7005 D015 ";
+  return testProgram;
+}
+*/
+function giveTestFonts(){
+  let testProgram = "";
+  testProgram += "00E0";
+  //reset VC VD
+  testProgram += "6000 6100 ";
+  //increase X = 7005
+  //increase Y = 7105
+  //from 0-4
+  testProgram += "F029 D015 F129 7005 D015 F229 7005 D015 F329 7005 D015 F429 7005 D015 ";
+  //from 5-9
+  testProgram += "F529 7005 D015 F629 7005 D015 F729 7005 D015 F829 7005 D015 F929 7005 D015 ";
+  //from A-C
+  testProgram += "FA29 7005 D015 FB29 7005 D015 FC29 7005 D015 ";
+  //increase Y, reset X
+  testProgram += "7004 7105";
+  //from D-F
+  testProgram += "FD29 D015 FE29 7005 D015 FF29 7005 D015 ";
+  return testProgram;
+}
+function giveResetRegistersV(){
+  let testProgram = "";
+  let code = "8";
+  for(let i = 0; i < 15; i++){
+    testProgram += code + i.toString(16) + i.toString(16) + "3 ";
+  }
+  return testProgram;
+}
 function giveTestProgram(){
   let testProgram = "";
-  testProgram += "00E0 00EE "
-  testProgram += "1214 3401 3400 0000 4401 0000 4400 00EE 2206 "
-  testProgram += "62F0 63FF 5230 720F 5230 0000 "
-  testProgram += "8030 8121 8312 8342 8323 8343 8333 8324 8334 8434 8355 8345 8245 8245 8336 8446 8346 8447 8327 83E7 8237 844E 845E 6501 845E 843E ";
+  testProgram += "00E0 00EE ";
+  testProgram += "1214 3401 3400 0000 4401 0000 4400 00EE 2206 ";
+  testProgram += "62F0 63FF 5230 720F 5230 0000 ";
+  testProgram += "8030 8121 8312 8342 8323 8343 8333 8324 8334 8434 8355 8345 8245 8245 8336 8446 8346 8447 8327 83E7 8237 844E 845E 6501 845E 843E ";;
   //VF doesn't update itself after modifying, since ins 8
-  testProgram += "A000 A000 "
-  testProgram += "6002 B25C 6000 B262 "
-  testProgram += "CAAC "
-
-  //Test Fonts
-  //increase X = 7C05
-  //increase Y = 7D05
-  //from 0-4
-  testProgram += "DCD5 A005 7C05 DCD5 A00A 7C05 DCD5 A00F 7C05 DCD5 A014 7C05 DCD5 "
-  //from 5-9
-  testProgram += "A019 7C05 DCD5 A01E 7C05 DCD5 A023 7C05 DCD5 A028 7C05 DCD5 A02D 7C05 DCD5 "
-  //from A-C
-  testProgram += "A032 7C05 DCD5 A037 7C05 DCD5 A03C 7C05 DCD5 "
-  //increase Y, reset X
-  testProgram += "7D05 7C04"
-  //from D-F
-  testProgram += "A041 DCD5 A046 7C05 DCD5 A04B 7C05 DCD5"
+  testProgram += "A000 A000 ";
+  testProgram += "6002 B25C 6000 B262 ";
+  testProgram += "CAAC ";
+  //testProgram += giveTestFonts();
+  testProgram += "FA07 ";
+  testProgram += "F015 F215 ";
+  testProgram += "F018 F218 ";
+  testProgram += "F01E F21E ";
+  testProgram += "AA00 F033 F133 ";
+  testProgram += "AB00 F055 FE55 ";
+  //reset registers 0-E
+  //testProgram += giveResetRegistersV();
+  testProgram += "AC00 FE65 AB00 FE65 ";
   return testProgram;
 }
 
