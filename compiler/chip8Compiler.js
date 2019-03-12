@@ -9,11 +9,7 @@ class chip8Compiler{
 
     console.log("WORKING WITH THIS: \n"+ result);
     let assemblyArray = result.split("\n"); //split the commands into array
-
-    //convert assembly to opcode one line at a time
     assemblyArray = this.compileSYS_JP_CALL_LDI(assemblyArray);
-    //assemblyArray = this.compileFunctionCalls(assemblyArray);
-    //assemblyArray = this.compileSpritesLD(assemblyArray);
     assemblyArray = this.assemblyToOpcode(assemblyArray);
     assemblyArray = this.compileSpritesBinToHex(assemblyArray);
 
@@ -77,95 +73,50 @@ class chip8Compiler{
         ///////
 
         //3xkk - SE Vx, byte
-        //r = /^se\s*v[0-9a-f]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
-        r = /^(se|Sne|ld|add|rnd)\s*v[0-9a-f]\s*,\s(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
-        if(r.test(code)){
-          let register = code.replace(/^[a-z]{2,3}\s*v/im, "")[0];
-          let byte = code.match(/(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im)[0];
-          byte = parseInt(byte);
-          byte = byte.toString(16);
+        //4xkk - SNE Vx, byte
+        //6xkk - LD Vx, byte
+        //7xkk - ADD Vx, byte
+        //Cxkk - RND Vx, byte
+        let regNegOrPosByte = /^(se|Sne|ld|add|rnd)\s*v[0-9a-f]\s*,\s*-?(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im; //for catching negative bytes and positive bytes
+        //regPosByte = /^(se|Sne|ld|add|rnd)\s*v[0-9a-f]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
+        if(regNegOrPosByte.test(code)){
+          var byte;
+          let regPosByte = /^(se|Sne|ld|add|rnd)\s*v[0-9a-f]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;  //for catching positive bytes
+          let regNegByte = /^(se|Sne|ld|add|rnd)\s*v[0-9a-f]\s*,\s*-(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
+          let register = code.replace(/^[a-z]{2,3}\s*v/im, "")[0];//for catching negative bytes
+          if(regPosByte.test(code)){
+            //console.log("regPosByte " + code);
+            byte = code.match(/(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im)[0];
+            byte = parseInt(byte);
+            byte = byte.toString(16);
+
+          }
+
+          else if(regNegByte.test(code)){
+            console.log("regNegByte " + code);
+            byte = code.match(/(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im)[0];
+            byte = this.decToHexWithTwoComp(byte);
+
+          }
           if(byte.length ==1){
             byte = "0" + byte;
           }
-          if(byte[0]=="-" && byte.length == 2){
-            byte = "0" + byte;
-          }
-          //console.log(" register is " + code + "and "+ register +" " + byte);
-          //3xkk - SE Vx, byte
           if(/^se/im.test(code)){
-            opcode = code.replace(r, "3"+ register + byte);
+            opcode = code.replace(regNegOrPosByte, "3"+ register + byte);
           }
           else if(/^sne/im.test(code)){//4xkk - SNE Vx, byte
-            opcode = code.replace(r, "4"+ register + byte);
+            opcode = code.replace(regNegOrPosByte, "4"+ register + byte);
           }
           else if(/^ld/im.test(code)){//6xkk - LD Vx, byte
-              opcode = code.replace(r, "6"+ register + byte);
+              opcode = code.replace(regNegOrPosByte, "6"+ register + byte);
           }
           else if(/^add/im.test(code)){//7xkk - ADD Vx, byte
-            opcode = code.replace(r, "7"+ register + byte);
+            opcode = code.replace(regNegOrPosByte, "7"+ register + byte);
           }
           else if(/^rnd/im.test(code)){  //Cxkk - RND Vx, byte
-            opcode = code.replace(r, "C"+ register + byte);
+            opcode = code.replace(regNegOrPosByte, "C"+ register + byte);
           }
-
-
         }
-        /*
-        //4xkk - SNE Vx, byte
-        r = /^sne\s*v[0-9a-f]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
-        if(r.test(code)){
-          let register =  code.replace(/^sne\s*v/im, "")[0];
-          let byte = code.match(/(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im)[0];
-          byte = parseInt(byte);
-          byte = byte.toString(16);
-          if(byte.length ==1){
-            byte = "0" + byte;
-          }
-          if(byte[0]=="-" && byte.length == 2){
-            byte = "0" + byte;
-          }
-          //console.log(" register is " + code + "and "+ register +" " + byte);
-          opcode = code.replace(r, "4"+ register + byte);
-        }
-        //6xkk - LD Vx, byte
-        r = /^ld\s*v[0-9a-f]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
-        if(r.test(code)){
-          let register =code.replace(/^ld\s*v/im, "")[0];
-          let byte = code.match(/(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im)[0];
-          byte = parseInt(byte);
-          byte = byte.toString(16);
-          //byte = parseInt(byte, 2).toString(16);
-          if(byte.length ==1){
-            byte = "0" + byte;
-          }
-          //console.log("why did it not add a zero toooooo " + code);
-          if(byte[0]=="-" && byte.length == 2){
-            byte = "0" + byte;
-          }
-          //console.log(" register is " + code + "and "+ register +" " + byte);
-          opcode = code.replace(r, "6"+ register + byte);
-        }
-
-        //7xkk - ADD Vx, byte
-        r = /^Add\s*V[0-9A-F]\s*,\s*(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im;
-        if(r.test(code)){
-          let register = code.replace(/^add\s*v/im, "")[0];
-          let byte = code.match(/(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im)[0];
-          byte = parseInt(byte);
-          byte = byte.toString(16);
-          if(byte.length ==1){
-            byte = "0" + byte;
-          }
-          //console.log("why did it not add a zero toooooo " + code);
-          if(byte[0]=="-" && byte.length == 2){
-            byte = "0" + byte;
-          }
-          //console.log(" register is " + code + "and "+ register +" " + byte);
-          opcode = code.replace(r, "7"+ register + byte);
-        }
-
-        //Cxkk - RND Vx, byte
-        */
 
         /////////GROUP TOGETHER///////////
         //8xy0 - LD Vx, Vy
@@ -220,28 +171,37 @@ class chip8Compiler{
             number = 0;
             opcode = code.replace(r, "9"+ register1+ regester2 +number);
           }
-        
-
 
         }
 
-
-
-
-
-
         //Dxyn - DRW Vx, Vy, nibble
-        r = /^drw\s*v[0-9a-f]\s*,\s*v[0-9a-f]\s*,\s*[1-9]$/im;
+        r = /^drw\s*v[0-9a-f]\s*,\s*v[0-9a-f]\s*,\s*(1[0-5]|[1-9])$/im;
         if(r.test(code)){
           let register1 =  code.replace(/^[a-z0-9_]+\s*v/im, "")[0];
           let regester2 = code.replace(/^[a-z0-9_]+\s*v[0-9a-f]\s*,\s*v/im,"")[0];
 
-          let nibble = code.match(/[1-9]$/)[0];
+          let nibble = code.match(/(1[0-5]|[1-9])$$/)[0];
+          nibble = parseInt(nibble).toString(16);
+          console.log("nibble is " + nibble);
+
 
           opcode = code.replace(r, "D"+ register1+ regester2 + nibble);
         }
         //Ex9E - SKP Vx
         //ExA1 - SKNP Vx
+        r = /^(skp|sknp)\s*v[0-9a-f]$/im;
+        if(r.test(code)){
+          let register =  code.replace(/^(skp|sknp)\s*v/im, "")[0];
+
+          if(/^skp\s*v[0-9a-f]$/im.test(code)){
+            opcode = code.replace(r, "E"+ register + "9E");
+          }
+          if(/^sknp\s*v[0-9a-f]$/im.test(code)){
+            opcode = code.replace(r, "E"+ register + "A1");
+          }
+
+        }
+
         r = /^sknp\s*v[0-9a-f]$/im;
         if(r.test(code)){
           let register = code.match(/[0-9a-f]$/im)[0];
@@ -445,7 +405,41 @@ class chip8Compiler{
         return false;
       }
 
-
     }
+  }
+  //https://stackoverflow.com/questions/42450510/invert-unsigned-arbitrary-binary-bits-in-javascript
+  decToHexWithTwoComp(byte){ //using twos compliment
+
+    var flipbits = function flipbits(str) {
+      return str.split('').map(function (b) {
+        return (1 - b).toString();
+      }).join('');
+    };
+    //byte = "-4";
+    //console.log("byte is "+ byte);
+    byte = Math.abs(parseInt(byte));
+    byte = byte.toString(2);
+    byte = this.pad(byte,8);
+    //console.log(byte + " after absolute and to binary");
+    byte = byte.toString();
+    byte = flipbits(byte);
+    //console.log("flipped the bytes " +byte);
+
+    byte = parseInt(byte,2);
+    byte = 1+byte;
+    //turn the decimal back to binary
+    byte = byte.toString(2);
+    //console.log("answer in biary " +byte);
+    byte = parseInt(byte);
+    byte =  parseInt(byte, 2).toString(16).toUpperCase()
+    //console.log("answer in hex " +byte);
+    return byte;
+
+  }
+  //https://stackoverflow.com/questions/10073699/pad-a-number-with-leading-zeros-in-javascript
+  pad(n, width, z) {
+    z = z || '0';
+    n = n + '';
+  return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
   }
 }

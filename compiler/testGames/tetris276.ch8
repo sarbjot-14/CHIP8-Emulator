@@ -115,7 +115,7 @@ drawZ
 
 drawBlock
 	SNE VE, 2 ;If it is an I block, draw it (needs more number of bytes to represent it)
-	DRW V6, V7, 4
+	DRW V6, V7, 4 ; four into 30
 	SE VE, 255 ; otherwise, draw the blocks (rest of block need the same number of bytes needed to represent it)
 	DRW V6, V7, 3
 	RET
