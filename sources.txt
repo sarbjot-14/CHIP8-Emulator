@@ -2,4 +2,8 @@ proper modulus with negative numbers - https://dev.to/maurobringolf/a-neat-trick
 
 used as a resource - http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
 
+used for decimal to hex conversion - https://stackoverflow.com/questions/42450510/invert-unsigned-arbitrary-binary-bits-in-javascript
+
+used for padding numbers with zeros - /https://stackoverflow.com/questions/10073699/pad-a-number-with-leading-zeros-in-javascript
+
 External emulator that the games are being developed on until our emulator is working: https://github.com/massung/CHIP-8
