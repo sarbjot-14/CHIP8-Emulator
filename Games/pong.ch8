@@ -70,12 +70,81 @@ main_loop
 	LD V9, -1; change y dir of ball
 
 	SNE V6, 63; check if ball is at right
-	LD V8, -1; CHANGE THIS FOR CALLING POINTS
+	JP ballRightside;
 
 	SNE V6, 0; check if ball is at left
-	LD V8, 1; CHANGE THIS FOR CALLING POINTS
+	jp ballLeftside;
 
 	jp main_loop
+
+ballLeftside
+	;delay
+	LD V0, 64;
+	LD DT, V0;
+	call delay
+
+	;reset paddles
+	LD i, paddle
+	drw VB, VC, 6;
+	drw VD, VE, 6;
+	LD VB, 2 ; left x
+	LD VC, 14 ; left y
+	LD VD, 61 ; right x
+	LD VE, 14 ; right y
+	drw VB, VC, 6;
+	drw VD, VE, 6;
+
+	; reset ball dir / pos
+	LD i, ball
+	drw V6, V7, 1;
+	LD V6, 60;
+	LD V7, 16;
+	LD V8, -1;
+	LD V9, -1;
+	drw V6, V7, 1;
+
+	; delay
+	LD V0, 100;
+	LD DT, V0
+	call delay
+
+	; jump to main loop
+	jp main_loop
+
+ballRightside
+	;delay
+	LD V0, 64;
+	LD DT, V0;
+	call delay
+
+	;reset paddles
+	LD i, paddle
+	drw VB, VC, 6;
+	drw VD, VE, 6;
+	LD VB, 2 ; left x
+	LD VC, 14 ; left y
+	LD VD, 61 ; right x
+	LD VE, 14 ; right y
+	drw VB, VC, 6;
+	drw VD, VE, 6;
+
+	; reset ball dir / pos
+	LD i, ball
+	drw V6, V7, 1;
+	LD V6, 3;
+	LD V7, 16;
+	LD V8, 1;
+	LD V9, -1;
+	drw V6, V7, 1;
+
+	; delay
+	LD V0, 100;
+	LD DT, V0
+	call delay
+
+	; jump to main loop
+	jp main_loop
+
 
 ; if the ball ends up in the paddle, this moves the ball and sets its direction to the appropriate direction based on the collision
 undo_ball_move
@@ -139,10 +208,6 @@ getRightPadDownInput
 	ADD VE, 2
 	DRW VD, VE, 6
 	RET
-
-
-
-
 
 ; function to delay the drawing of the ball
 delay
