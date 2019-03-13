@@ -1,0 +1,183 @@
+; Registers
+; ---------
+; V0 empty
+; V1 empty
+; V2 empty
+; V3 empty
+; V4 x coord of score
+; V5 y coord of score
+; V6 x coord of ball
+; V7 y coord of ball
+; V8 x dir of ball
+; V9 y dir of ball
+; VA score
+; VB x coord of left paddle
+; VC y coord of left paddle
+; VD x Coord of right paddle
+; VE Y coord of right paddle
+; VF collision
+
+; initialize
+CLS
+LD i, ball; set i to memory address of ball
+LD V6, 32; set initial x value to 32 (mid-way)
+LD V7, 16; set initial y value to 16 (mid-way)
+LD V8, 1; set initial x dir to 1 (right)
+LD V9, 1; set initial y dir to 1 (down)
+LD VB, 2
+LD VC, 14
+LD VD, 61
+LD VE, 14
+DRW V6, V7, 1; draw the ball
+LD i, paddle
+DRW VB, VC, 6
+DRW VD, VE, 6
+
+; main game loop
+loop
+	call update_paddles
+	call update_ball
+	jp loop
+
+; function to draw and update the position of the ball
+update_ball
+
+	LD i, ball
+	; erase the ball, move it, then redraw it at new position
+	DRW V6, V7, 1; erase the ball
+	ADD V6, V8; add the x dir of ball to x coord of ball
+	ADD V7, V9; add the y dir of ball to y coord of ball
+ 	DRW V6, V7, 1; draw the ball at its new position
+
+ 	SNE VF, 1
+ 	CALL undo_ball_move;
+
+	; handle collisions with the walls of the screen
+
+	; if the ball is at the top of the screen, change y dir to 1 (bounce off top)
+	SNE V7, 0; check if the y value of the ball is 0 (top), skip next if not 0
+	LD V9, 1; change y dir of ball
+
+	; if the ball is at the bottom of the screen, change y dir to -1
+	SNE V7, 31; check if the y value of the ball is 31 (bottom), skip next if not 31
+	LD V9, -1; change y dir of ball
+
+	; if the ball is at the right of the screen, change x dir to -1
+	SNE V6, 63; check if the x value of the ball is 63 (right), skip next if not 63
+	LD V8, -1; change x dir of ball
+
+	; if the ball is at the left of the screen, change x dir to 1
+	SNE V6, 0; check if the x value of the ball is 0 (left), skip next if not 0
+	LD V8, 1; change x dir of ball
+	RET
+
+; if the ball ends up in the paddle, this moves the ball and sets its direction to the appropriate direction based on the collision
+undo_ball_move
+
+	LD i, ball
+	DRW V6, V7, 1
+
+	; this part works
+	SUB V6, V8
+	SUB V7, V9
+
+	DRW V6, V7, 1
+
+	SE V8, 1
+	call leftToRight
+
+	SE V8, -1
+	call rightToLeft
+
+	RET
+
+leftToRight
+	LD V8, 1
+	LD V1, 1;
+	RET
+
+rightToLeft
+	SE V1, 1
+	LD V8, -1
+	LD V1, 0
+	RET
+
+
+
+
+; function to draw the left and right paddles
+update_paddles
+	LD i, paddle
+
+	;erase
+	DRW VB, VC, 6
+	DRW VD, VE, 6
+
+	;get input and update
+	call get_input
+
+	;re-draw
+	DRW VB, VC, 6
+	DRW VD, VE, 6
+	RET
+
+; function to get input from user
+get_input
+
+	SE VC, 0; if the paddle is at the top, don't let the user move the paddle up
+	CALL moveRightPaddleUp
+
+	SE VC, 26; if the paddle is at the bottom, don't let the user move the paddle down
+	CALL moveRightPaddleDown
+
+	SE VE, 0; if the paddle is at the top, don't let the user move the paddle up
+	CALL moveLeftPaddleUp
+
+	SE VE, 26; if the paddle is at the bottom, don't let the user move the paddle down
+	CALL moveLeftPaddleDown
+	RET
+
+
+moveRightPaddleUp
+	LD V0, 1; put the key value into the register
+	SKNP V0; check if the key value in the register was pressed
+	ADD VC, -2; move the paddle up
+	RET
+
+moveRightPaddleDown
+	LD V0, 4; put the key value into the register
+	SKNP V0; check if the key value in the register was pressed
+	ADD VC, 2; move the paddle down
+	RET
+
+moveLeftPaddleUp
+	LD V0, 12; put the key value into the register
+	SKNP V0; check if the key value in the register was pressed
+	ADD VE, -2; move the paddle up
+	RET
+
+moveLeftPaddleDown
+	LD V0, 13; put the key value into the register
+	SKNP V0; check if the key value in the register was pressed
+	ADD VE, 2; move the paddle down
+	RET
+
+
+
+; function to delay the drawing of the ball
+delay
+	LD V0, DT ; get the value for the delay timer
+	SE V0, 0 ; if the value of the "delay timer" is 0, skip the next instruction
+	JP delay; jump to the start of the function, repeating until the delay timer is 0
+	RET
+
+ball
+	byte 	%10000000
+
+paddle
+	byte	%10000000
+	byte	%10000000
+	byte	%10000000
+	byte	%10000000
+	byte	%10000000
+	byte	%10000000
