@@ -1,0 +1,40 @@
+;00e0 A22A 6620 6710 6801 6901 6102 D672
+;D672 4700 8914 471F 8915 463F 8815 4600
+;8814 8684 8794 D672 1210 0080
+
+CLS
+
+LD i, ball; set i to memory address of ball
+LD V6, 32; set initial x value to 32 (mid-way)
+LD V7, 16; set initial y value to 16 (mid-way)
+LD V8, 1; set initial x dir to 1 (right)
+LD V9, 1; set initial y dir to 1 (down)
+LD V1, 2; need to add and subtract 
+DRW V6, V7, 2; 
+
+loop
+
+	DRW V6, V7, 2; draw the ball
+
+	SNE V7, 0; if ball is at top, change y direction (next line)
+	ADD V9, V1 ; Vx = Vx + Vy , changes -1 to +1
+
+	SNE V7, 31; if ball is at bottom, change y dirction (next line)
+	SUB V9, V1; Vx = Vx - Vy, changes +1 to -1
+
+	SNE V6, 63; if x of ball is 63 (right), skip next if not 63
+	SUB V8, V1 ; change 1 to -1
+
+	SNE V6, 00;if x value of the ball is 0 (left), skip next if not 0
+	ADD V8, V1 ; add V1 to V8
+
+	;move ball regardless if hit walls
+
+	ADD V6, V8
+	ADD V7, V9
+	;Draw again
+	DRW V6, V7, 2
+	jp loop
+
+ball
+	byte 	%10000000
