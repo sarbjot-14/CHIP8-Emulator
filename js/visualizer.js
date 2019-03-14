@@ -21,9 +21,9 @@ class visualizer{
 
     document.getElementById("legacyCheck").onchange = () => {
       if(document.getElementById("legacyCheck").checked){
-        this.em.shiftingFixed = true;
+        this.em.legacyMode = true;
       }else{
-        this.em.shiftingFixed = false;
+        this.em.legacyMode = false;
       }
     }
 
