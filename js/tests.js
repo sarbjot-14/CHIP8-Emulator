@@ -37,25 +37,15 @@ function printAllVariables(){
   console.log("\tStackPointer: " + chip.stackPointer)
   console.log("\tVF: " + chip.VF)
 }
-/*function printOldVariables(){
-  console.log("Old data: ")
-  printAllVariables()
-}
-function printNewVariables(){
-  console.log("New data: ")
-  printAllVariables();
-}*/
+
 function testEmulationLoop(){
   //run code at program programCounter
   let ins = chip.memory[parseInt(chip.programCounter, 16)] + chip.memory[parseInt(chip.programCounter, 16) + 1];
   let separator = "-------------------"
   console.log("\n\n\n" + separator + "Executing " + ins + separator);
-  /*printOldVariables();
-  console.log("******Executing instruction******");*/
 
   let insResult = chip.executeInstruction(ins);
   if(insResult == 1){
-    //increment programCounter by 2
     chip.setProgramCounter( (parseInt(chip.programCounter, 16) + 2).toString(16) );
   }else if(insResult == 2){
     //do nothing
@@ -73,10 +63,7 @@ function testEmulationLoop(){
     chip.setRegisterSoundTimer((parseInt(chip.registerSoundTimer, 16) -1).toString(16));
   }
 
-  //printNewVariables();
-//  console.log("Current Data:"); ////****
   printAllVariables();////*****
-  //console.log("\t" + separator + "Instruction " + ins + " END" + separator + "\n\n\n");
 
   //delay (60Hz)
   //console.log("Recursion should happen")////****
@@ -93,26 +80,7 @@ function testEmulationLoop(){
     this.testEmulationLoop();//////****
   chip.vis.updateHistory();
 }
-/*
-function giveTestFonts(){
-  let testProgram = "";
-  //reset VC VD
-  testProgram += "6000 6100 ";
-  //increase X = 7005
-  //increase Y = 7105
-  //from 0-4
-  testProgram += "D015 A005 7005 D015 A00A 7005 D015 A00F 7005 D015 A014 7005 D015 ";
-  //from 5-9
-  testProgram += "A019 7005 D015 A01E 7005 D015 A023 7005 D015 A028 7005 D015 A02D 7005 D015 ";
-  //from A-C
-  testProgram += "A032 7005 D015 A037 7005 D015 A03C 7005 D015 ";
-  //increase Y, reset X
-  testProgram += "7004 7105";
-  //from D-F
-  testProgram += "A041 D015 A046 7005 D015 A04B 7005 D015 ";
-  return testProgram;
-}
-*/
+
 function giveTestFonts(){
   let testProgram = "";
   testProgram += "00E0";
@@ -165,6 +133,17 @@ function giveTestProgram(){
 
 function testInstructions(){
   program = giveTestProgram();
+  chip.vis.init();
+  chip.loadProgram(program);
+  chip.paused = false;
+  console.log("Program:\n" + program);
+  console.log("Starting data: ");
+  printAllVariables();
+  testEmulationLoop();
+  console.log("End testing")
+}
+function testFonts(){
+  program = giveTestFonts();
   chip.vis.init();
   chip.loadProgram(program);
   chip.paused = false;
