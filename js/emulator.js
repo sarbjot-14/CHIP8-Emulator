@@ -16,7 +16,7 @@ class emulator{
 
     this.paused; //true if paused (step forward still avsilable)
     this.speed = 1; //speed multiplier
-    this.shiftingFixed; //true enables the shifting instructions to set shifted value of register VY into register VX, false uses only register VX
+    this.legacyMode; //true enables the shifting instructions to set shifted value of register VY into register VX, false uses only register VX
 
     this.keyInput = {
       "0": false,
@@ -45,7 +45,7 @@ class emulator{
   }
   initializeData(){
     this.paused = true;
-    this.shiftingFixed = true;
+    this.legacyMode = true;
     this.pixels = this.separatePixels(title);
     this.updateScreen();
     this.undoStack = [];
@@ -99,7 +99,11 @@ class emulator{
 
   loadProgram(program){ //program must be a hex string
     program = program.replace(/\s+/g,"")
-    this.initializeData()
+    this.initializeData();
+
+    this.pixels = this.separatePixels(new Array(64*32)); //blank page
+    this.updateScreen();
+
     for(let i=0; i < program.length; i += 2){
       if(program[i+1]){
         this.setMemory(512+(i/2), program.substring(i,i+2)); //memory starts at "0200" hex which is 512
@@ -398,9 +402,9 @@ class emulator{
             this.setRegistersV(x, (regX - regY).toString(16));
             break;
 
-          case "6":// 8XY6 - Set VX = shiftingValue >> 1 (shiftingValue = register VY if shiftingFixed is true, shiftingValue = register VX otherwise)
+          case "6":// 8XY6 - Set VX = shiftingValue >> 1 (shiftingValue = register VY if legacyMode is true, shiftingValue = register VX otherwise)
             var shiftingValue;
-            if(this.shiftingFixed){
+            if(this.legacyMode){
               shiftingValue = regY;
             }else{
               shiftingValue = regX;
@@ -426,10 +430,10 @@ class emulator{
             this.setRegistersV(x, (regX - regY).toString(16));
             break;
 
-          case "E":// 8XYe - Set VX = shiftingValue << 1 (shiftingValue = register VY if shiftingFixed is true, shiftingValue = register VX otherwise)
+          case "E":// 8XYe - Set VX = shiftingValue << 1 (shiftingValue = register VY if legacyMode is true, shiftingValue = register VX otherwise)
           case "e":
             var shiftingValue;
-            if(this.shiftingFixed){
+            if(this.legacyMode){
               shiftingValue = regY;
             }else{
               shiftingValue = regX;
@@ -495,7 +499,7 @@ class emulator{
           case "9E":
           case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
             this.pushUndo(ins);
-            if(this.keyInput == x){
+            if(this.keyInput == x.toString(16)){
                this.setProgramCounter((pc + 2).toString(16));
             }
             return 1;
@@ -503,7 +507,7 @@ class emulator{
           case "A1":
           case "a1":// EXA1 - SKNP - Skip next instruction if key with the value VX is not pressed
             this.pushUndo(ins);
-            if(this.keyInput !== x){
+            if(this.keyInput !== x.toString(16)){
                this.setProgramCounter((pc + 2).toString(16));
             }
             return 1;
