@@ -7,7 +7,7 @@ class chip8Compiler{
   compileMneonicToOpcodes(code){
      let result = this.removeComments(code); //including spaces in front and end of line
 
-    console.log("WORKING WITH THIS: \n"+ result);
+    console.log("WORKING WITH THIS CODE: \n"+ result);
     let assemblyArray = result.split("\n"); //split the commands into array
     assemblyArray = this.compileSYS_JP_CALL_LDI(assemblyArray);
     assemblyArray = this.assemblyToOpcode(assemblyArray);
@@ -93,7 +93,7 @@ class chip8Compiler{
           }
 
           else if(regNegByte.test(code)){
-            console.log("regNegByte " + code);
+            //console.log("regNegByte " + code);
             byte = code.match(/(1?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$/im)[0];
             byte = this.decToHexWithTwoComp(byte);
 
@@ -182,7 +182,7 @@ class chip8Compiler{
 
           let nibble = code.match(/(1[0-5]|[1-9])$$/)[0];
           nibble = parseInt(nibble).toString(16);
-          console.log("nibble is " + nibble);
+
 
 
           opcode = code.replace(r, "D"+ register1+ regester2 + nibble);
@@ -386,6 +386,7 @@ class chip8Compiler{
     }
     return assemblyArray;
   }
+  
 
   isChip8Instruction(code){
     let r = /\b(?:CLS|BYTE|RET|SYS|JP|LD|SE|CALL|SNE|ADD|OR|AND|XOR|SUB|SHR|SUBN|SHL|RND|DRW|SKP|SKNP|SCD|SCR|SCL|EXIT|LOW|HIGH)\b/i;
