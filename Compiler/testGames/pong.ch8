@@ -172,12 +172,13 @@ delay
 	RET
 
 ball
-	byte 	%10000000
+	byte 	%10000001 ; 81
 
 paddle
+	byte	%10000011 ;83
+	byte	%10000111 ; 87
+	byte	%10000001 ; 81
 	byte	%10000000
 	byte	%10000000
 	byte	%10000000
-	byte	%10000000
-	byte	%10000000
-	byte	%10000000
+	
