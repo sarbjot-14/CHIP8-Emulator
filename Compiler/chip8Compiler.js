@@ -7,7 +7,7 @@ class chip8Compiler{
   compileMneonicToOpcodes(code){
      let result = this.removeComments(code); //including spaces in front and end of line
 
-    console.log("WORKING WITH THIS CODE: \n"+ result);
+    console.log("WORKING WITH THIS: \n"+ result);
     let assemblyArray = result.split("\n"); //split the commands into array
     assemblyArray = this.compileSYS_JP_CALL_LDI(assemblyArray);
     assemblyArray = this.assemblyToOpcode(assemblyArray);
@@ -182,7 +182,7 @@ class chip8Compiler{
 
           let nibble = code.match(/(1[0-5]|[1-9])$$/)[0];
           nibble = parseInt(nibble).toString(16);
-
+          //console.log("nibble is " + nibble);
 
 
           opcode = code.replace(r, "D"+ register1+ regester2 + nibble);
@@ -366,27 +366,54 @@ class chip8Compiler{
     console.log("turning sprites binary to hex" );
     let r = /^byte\s*%[01]{8}$/im;
     let regEmptyLine = /^\s*\n?$/im;
+    var code;
+    var code2;
     for(var x=0 ; x< assemblyArray.length ; x++){
-
-      let code = assemblyArray[x];
+      console.log("x is ................." + x);
+      code = assemblyArray[x];
+      let m = x+1;
+      let aCode = assemblyArray[m];
+      while(regEmptyLine.test(aCode)){
+        m++;
+        aCode = assemblyArray[m];
+      }
+      code2 = assemblyArray[m];
+      //console.log("this is code" + code + " and this is code2 " + code2);
       if(!regEmptyLine.test(code)){ //skip empty lines
+        console.log(code);
         if(r.test(code)){
           //console.log("turning "+ code+" into ......");
           let regBin = /[10]{8}$/im;
           let spriteBin = code.match(regBin)[0];
-          //console.log("found binary "+ spriteBin);
-          let spriteHex = parseInt(spriteBin, 2).toString(16)
-          //console.log("this is the hex version " + spriteHex);
-          while(spriteHex.length != 4){
-            spriteHex = "0"+ spriteHex;
+          let spriteHex = parseInt(spriteBin, 2).toString(16);
+
+          console.log("this is code " + code + " and this is code2 " + code2);
+          //console.log("why wont it pass the next one "+ x+1 + " "  +code2+" "+  r.test(code2))
+          if(r.test(code2)){
+            let spriteBin = code2.match(regBin)[0];
+            let spriteHex2 = parseInt(spriteBin, 2).toString(16);
+            console.log("hex1 and 2 " + spriteHex+ " " + spriteHex2);
+            let combinedHex = spriteHex + spriteHex2;
+            console.log("combined is " + combinedHex);
+            assemblyArray[x] = combinedHex;
+            assemblyArray[m] = " ";
+            x++;
+
           }
-          assemblyArray[x]= spriteHex;
+          else{
+            console.log("stuff");
+            while(spriteHex.length != 4){
+              spriteHex = spriteHex + "0";
+            }
+            assemblyArray[x]= spriteHex;
+          }
         }
+
       }
+      //console.log(assemblyArray);
     }
     return assemblyArray;
   }
-  
 
   isChip8Instruction(code){
     let r = /\b(?:CLS|BYTE|RET|SYS|JP|LD|SE|CALL|SNE|ADD|OR|AND|XOR|SUB|SHR|SUBN|SHL|RND|DRW|SKP|SKNP|SCD|SCR|SCL|EXIT|LOW|HIGH)\b/i;
