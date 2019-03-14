@@ -18,9 +18,9 @@ Instructions
 4. Click Pixels if you wish to restart the
 
 ## Running the CHIP8 Compiler
-_Currently compiler only works with Compiler/testGames/primitivePong.chip8. We are working on debugging for other games_
+_Currently compiler only works with Compiler/Games/Pong.chip8. We are working on debugging for other games_
 1. Open Compiler/index.html in web browser
-2. Click import and open primitivePong.chip8 found in Compiler/testGames/primitivePong.chip8
+2. Click import and open pong.chip8 found in Compiler/Games/pong.chip8
 3. Copy paste the opcodes into the emulator using the index.html file found at the root of the folder_
 4. Click load then the play button
 
