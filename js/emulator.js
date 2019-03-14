@@ -90,7 +90,7 @@ class emulator{
 
     //delay (60Hz)
     if(!this.paused){
-      setTimeout( () => {this.emulationLoop();}, (50/3)*this.speed);
+      setTimeout( () => {this.emulationLoop();}, (1/100000)*this.speed);
       //setTimeout(function(){chip.emulationLoop()},(50/3)*this.speed); //old method
     }
 
@@ -289,6 +289,7 @@ class emulator{
 
     let regX = parseInt(this.registersV[x], 16);
     let regY = parseInt(this.registersV[y], 16);
+    let regF = parseInt(this.VF, 16);
     let value = parseInt(kk, 16);
     let addr = parseInt(nnn, 16);
     let pc = parseInt(this.programCounter, 16);
@@ -332,22 +333,22 @@ class emulator{
 
       case "3":// 3XKK - SE Vx, byte - Skip next instruction if VX = KK
         this.pushUndo(ins);
-        if(this.registersV[x] == kk){
-          this.setProgramCounter((pc + 2).toString(16));
+        if((x == 15 && regF == value) || (regX == value)){
+            this.setProgramCounter((pc + 2).toString(16));
         }
         return 1;
 
       case "4":// 4XKK - Skip next instruction if VX != KK
         this.pushUndo(ins);
-        if(this.registersV[x] != kk){
-          this.setProgramCounter( (pc + 2).toString(16) );
+        if((x == 15 && regF != value) || (regX != value)){
+            this.setProgramCounter((pc + 2).toString(16));
         }
         return 1;
 
       case "5":// 5XY0 - Skip next instruction if VX = VY
         this.pushUndo(ins);
-        if(this.registersV[x] == this.registersV[y]){
-          this.setProgramCounter( (pc + 2).toString(16) );
+        if((x == 15 && regF == regY) || (regX == regY)){
+          this.setProgramCounter((pc + 2).toString(16));
         }
         return 1;
 
@@ -455,9 +456,8 @@ class emulator{
 
       case "9":// 9XY0 - Skip next instruction if VX != VY
         this.pushUndo(ins);
-
-        if(this.registersV[x] != this.registersV[y]){
-          this.setProgramCounter( (pc + 2).toString(16) );
+        if((x == 15 && regF == regY) || (regX == regY)){
+            this.setProgramCounter((pc + 2).toString(16));
         }
         return 1;
 
