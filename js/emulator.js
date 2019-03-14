@@ -99,7 +99,11 @@ class emulator{
 
   loadProgram(program){ //program must be a hex string
     program = program.replace(/\s+/g,"")
-    this.initializeData()
+    this.initializeData();
+
+    this.pixels = this.separatePixels(new Array(64*32)); //blank page
+    this.updateScreen();
+
     for(let i=0; i < program.length; i += 2){
       if(program[i+1]){
         this.setMemory(512+(i/2), program.substring(i,i+2)); //memory starts at "0200" hex which is 512

@@ -19,6 +19,14 @@ class visualizer{
     document.getElementById("stepForwardBtn").onclick = () => {this.em.emulationLoop();}
     document.getElementById("playPauseBtn").onclick = () => {this.em.togglePause()}
 
+    document.getElementById("legacyCheck").onchange = () => {
+      if(document.getElementById("legacyCheck").checked){
+        this.em.shiftingFixed = true;
+      }else{
+        this.em.shiftingFixed = false;
+      }
+    }
+
     document.getElementById("loadBtn").onclick = () => {
       this.em.loadProgram(document.getElementById('code').value);
       this.updatePaused(1);
@@ -331,9 +339,10 @@ class visualizer{
   }
   updateRegistersV(){
     let registerDoms = document.getElementById("registersV");
-    for(let i=0; i<16; i++){
-      registerDoms.children[i].children[1].innerHTML = this.em.registersV[i]
+    for(let i=0; i<15; i++){
+      registerDoms.children[i].children[1].innerHTML = this.em.registersV[i];
     }
+    registerDoms.children[15].children[1].innerHTML = this.em.VF.toString();
   }
   updateRegisterI(){
     document.getElementById("registerI").children[0].children[1].innerHTML = this.em.registerI
@@ -353,7 +362,8 @@ class visualizer{
   updateStack(){}
   updateMemory(){}
   updateVF(){
-    document.getElementById("VF").children[0].children[1].innerHTML = this.em.VF.toString()
+    this.updateRegistersV();
+    //document.getElementById("VF").children[0].children[1].innerHTML = this.em.VF.toString()
   }
   updateHistory(){
     let h = document.getElementsByClassName("historyIns");
