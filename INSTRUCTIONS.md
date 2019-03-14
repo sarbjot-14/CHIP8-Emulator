@@ -5,24 +5,25 @@ Instructions
 ## Using Chip-8
 ### Run sample Chip 8 title page
 1. Open index.html or use this link : https://adamnizol.github.io/CHIP-8-Emulator/
-2. Press "Load Program" button
-3. Press "Play" button
+2. Press "Load Program" button.
+3. Press "Play" button.
 
 ### How to use additional features
-1. Speed Slider: Slide dial to change speed after starting the program
-2. Undo/Redo buttons: press undo or redo after pausing the program to undo or redo opcodes
+1. Speed Slider: Slide dial to change speed after starting the program.
+2. Undo/Redo buttons: press undo or redo after pausing the program to undo or redo opcodes.
+3. Toggle Legacy mode: tick to enable Legacy mode. Turn on Legacy mode to use value of VY for shifting instructions. Turn off Legacy mode to use only value of VX for shifting, ignoring VY.
 ## Using Sprite Editor Tool
 1. Open tool.html located in Tool folder.
-2. Draw sprite of choice by clickin on boxes in grid
-3. Click Finish Translating button get the binary and hexidecimal conversion of sprite
-4. Click Pixels if you wish to restart the
+2. Draw sprite of choice by clickin on boxes in grid.
+3. Click Finish Translating button get the binary and hexidecimal conversion of sprite.
+4. Click Pixels if you wish to restart the.
 
 ## Running the CHIP8 Compiler
 _Currently compiler only works with Compiler/testGames/primitivePong.chip8. We are working on debugging for other games_
-1. Open Compiler/index.html in web browser
-2. Click import and open primitivePong.chip8 found in Compiler/testGames/primitivePong.chip8
-3. Copy paste the opcodes into the emulator using the index.html file found at the root of the folder_
-4. Click load then the play button
+1. Open Compiler/index.html in web browser.
+2. Click import and open primitivePong.chip8 found in Compiler/testGames/primitivePong.chip8.
+3. Copy paste the opcodes into the emulator using the index.html file found at the root of the folder.
+4. Click load then the play button.
 
 ## Running basic pong sample code
 _For instructions with pictures, see the PongInstructions document, located in the Games folder_
