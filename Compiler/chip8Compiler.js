@@ -31,11 +31,12 @@ class chip8Compiler{
     return finalOpcodes;
   }
   removeComments(code){
-    code = code.replace(/\s*$/g, "\n");
-    let result = code.replace(/;.*\n*/g, "\n");
+    code = code.replace(/\s*$/g, "\n \n"); //remove line of spaces
+    let result = code.replace(/^;.*\n?$/gim, " \n"); //remove comment on entire line
+    result = result.replace(/;.*\n?$/gim,""); // commment at end of line
     //removing space before and after commands
     result = result.replace(/\t+/g,""); //remove tabs
-    result = result.replace(/\s*$/img,""); //remove spaces in front
+    result = result.replace(/\s*$/img,"\n"); //remove spaces in front
     result = result.replace(/^\s*/img,"\n"); //remove spaces in back
 
     return result;
@@ -369,7 +370,7 @@ class chip8Compiler{
     var code;
     var code2;
     for(var x=0 ; x< assemblyArray.length ; x++){
-      console.log("x is ................." + x);
+      //console.log("x is ................." + x);
       code = assemblyArray[x];
       let m = x+1;
       let aCode = assemblyArray[m];
@@ -387,21 +388,21 @@ class chip8Compiler{
           let spriteBin = code.match(regBin)[0];
           let spriteHex = parseInt(spriteBin, 2).toString(16);
 
-          console.log("this is code " + code + " and this is code2 " + code2);
+          //console.log("this is code " + code + " and this is code2 " + code2);
           //console.log("why wont it pass the next one "+ x+1 + " "  +code2+" "+  r.test(code2))
           if(r.test(code2)){
             let spriteBin = code2.match(regBin)[0];
             let spriteHex2 = parseInt(spriteBin, 2).toString(16);
-            console.log("hex1 and 2 " + spriteHex+ " " + spriteHex2);
+            //console.log("hex1 and 2 " + spriteHex+ " " + spriteHex2);
             let combinedHex = spriteHex + spriteHex2;
-            console.log("combined is " + combinedHex);
+            //console.log("combined is " + combinedHex);
             assemblyArray[x] = combinedHex;
             assemblyArray[m] = " ";
             x++;
 
           }
           else{
-            console.log("stuff");
+
             while(spriteHex.length != 4){
               spriteHex = spriteHex + "0";
             }
