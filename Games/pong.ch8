@@ -36,7 +36,7 @@ DRW VD, VE, 6; draw the right paddle
 
 ; main loop
 main_loop
-	
+
 	; paddle stuff
 	LD i, paddle
 	SE VC, 0; if the paddle is at the top, don't let the user move the paddle up
@@ -64,7 +64,7 @@ main_loop
 
 	; handle collisions with the walls of the screen
 	SNE V7, 0; check if ball is at top
-	LD V9, 1; change y dir of ball 
+	LD V9, 1; change y dir of ball
 
 	SNE V7, 31; check if ball is at bottom
 	LD V9, -1; change y dir of ball
@@ -226,8 +226,3 @@ paddle
 	byte	%10000000
 	byte	%10000000
 	byte	%10000000
-
-
-
-
-
