@@ -30,14 +30,15 @@ class chip8Compiler{
 
     return finalOpcodes;
   }
-  removeComments(code){
-    code = code.replace(/\s*$/g, "\n \n"); //remove line of spaces
-    let result = code.replace(/^;.*\n?$/gim, " \n"); //remove comment on entire line
-    result = result.replace(/;.*\n?$/gim,""); // commment at end of line
+  removeComments(result){
+
+
+    result = result.replace(/^;.*\n?$/gim, "\n"); //remove comment on entire line
+    result = result.replace(/\s*;.*\n?$/gim,""); // commment at end of line
     //removing space before and after commands
     result = result.replace(/\t+/g,""); //remove tabs
-    result = result.replace(/\s*$/img,"\n"); //remove spaces in front
-    result = result.replace(/^\s*/img,"\n"); //remove spaces in back
+    result = result.replace(/\s*$/img,"\n"); //remove spaces in back
+    result = result.replace(/^\s*/img,""); //remove spaces in front
 
     return result;
   }
@@ -387,12 +388,18 @@ class chip8Compiler{
           let regBin = /[10]{8}$/im;
           let spriteBin = code.match(regBin)[0];
           let spriteHex = parseInt(spriteBin, 2).toString(16);
+          if(spriteHex.length ==1){
+            spriteHex = "0" + spriteHex;
+          }
 
           //console.log("this is code " + code + " and this is code2 " + code2);
           //console.log("why wont it pass the next one "+ x+1 + " "  +code2+" "+  r.test(code2))
           if(r.test(code2)){
             let spriteBin = code2.match(regBin)[0];
             let spriteHex2 = parseInt(spriteBin, 2).toString(16);
+            if(spriteHex2.length ==1){
+              spriteHex = "0" + spriteHex;
+            }
             //console.log("hex1 and 2 " + spriteHex+ " " + spriteHex2);
             let combinedHex = spriteHex + spriteHex2;
             //console.log("combined is " + combinedHex);
