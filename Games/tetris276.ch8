@@ -37,7 +37,7 @@ LD V0, 27; set left border's x value
 LD V1, 39; set right border's x value because this game of tetris played on 10 x 24 between pixels 28 and 38
 LD V2, 0; set y value to 0 top of screen
 LD V3, 31; set y value to 31 bottom of screen
-LD V8, 3 ;initial direction of block is down
+LD V8, 3;initial direction of block is down
 LD VC, 1; init shape rotations
 LD VB, 5 ; load the value to delay by into the empty register (to pass to delay timer)
 LD DT, VB ; pass the above value into the delay timer "register"
