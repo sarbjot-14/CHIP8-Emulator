@@ -1,15 +1,27 @@
 
-
+var errorString = "" ;
+var isError = false;
 class chip8Compiler{
+
+
   constructor(){
 
   }
   compileMneonicToOpcodes(code){
-     let result = this.removeComments(code); //including spaces in front and end of line
 
-    console.log("WORKING WITH THIS: \n"+ result);
-    let assemblyArray = result.split("\n"); //split the commands into array
+
+
+    let assemblyArray = code.split("\n"); //split the commands into array
+    assemblyArray = this.removeComments(assemblyArray); //including spaces in front and end of line
+
     assemblyArray = this.compileSYS_JP_CALL_LDI(assemblyArray);
+    console.log("WORKING WITH THIS:" );
+    let line = 0;
+    for(var x=0 ; x< assemblyArray.length ; x++){
+      line++
+      let command = assemblyArray[x];
+      console.log(command + " and line " +line );
+    }
     assemblyArray = this.assemblyToOpcode(assemblyArray);
     assemblyArray = this.compileSpritesBinToHex(assemblyArray);
 
@@ -27,22 +39,135 @@ class chip8Compiler{
         finalOpcodes += command + " ";
       }
     }
+    if(isError){
+      isError = false;
+      return errorString;
+    }
+    else{
+      return finalOpcodes;
+    }
 
-    return finalOpcodes;
   }
-  removeComments(result){
+  removeComments(assemblyArray){
 
+    let result;
+    for(var x=0 ; x< assemblyArray.length ; x++){
+      result = assemblyArray[x];
+      result = result.replace(/\s*;.*\n?$/gim, "\n"); //remove removeComments
+      result = result.replace(/\t+/g,""); //remove tabs
+      result = result.replace(/\s*$/im,""); //remove spaces in back
+      result = result.replace(/^\s*/im,""); //remove spaces in front
 
-    result = result.replace(/^;.*\n?$/gim, "\n"); //remove comment on entire line
-    result = result.replace(/\s*;.*\n?$/gim,""); // commment at end of line
-    //removing space before and after commands
-    result = result.replace(/\t+/g,""); //remove tabs
-    result = result.replace(/\s*$/img,"\n"); //remove spaces in back
-    result = result.replace(/^\s*/img,""); //remove spaces in front
+      assemblyArray[x] = result;
+    }
 
-    return result;
+    return assemblyArray;
+  }
+  compileSYS_JP_CALL_LDI(assemblyArray){
+    //0nnn - SYS addr
+    //1nnn - JP addr
+    let regJP = /^jp\s*[a-z0-9_]+$/im;
+    //2nnn - CALL addr
+    let regCALL = /^call\s*[a-z0-9_]+$/im;
+    //Annn - LD I, addr
+    let regLDI = /^ld\s*i\s*,\s*[a-z0-9_]+$/mi;
+    //Bnnn - JP V0, addr
+    console.log("compiling SYS, JP, CALL, LD I, and JP V0");
+    //var addressOfMemory = 512;
+    var addrNameArray= []; //need to store the names of places to jump in order to delete later
+    let regEmptyLine = /^\s*\n?$/im;
+    for(var x=0 ; x< assemblyArray.length ; x++){
+
+      let code = assemblyArray[x];
+      if(!regEmptyLine.test(code)){ //skip empty lines
+
+        if(regJP.test(code)){//1nnn - JP addr
+          //console.log("found the jp lo000000op "+ code);
+          let nameLocation = code.match(/[a-z1-9_]+\s*$/im)[0]; //name of location where to jump to
+          let addressOfJump = this.findNameLocation(nameLocation, assemblyArray);
+          addrNameArray.push(nameLocation);
+          addressOfJump = parseInt(addressOfJump);
+          let addressOfJumpInHex = addressOfJump.toString(16); //convert to hexidecimal
+          //1nnn - JP addr
+          //console.log("replacing "+assemblyArray[x]+" with " +"1" + addressOfJumpInHex)
+          assemblyArray[x] = "1" + addressOfJumpInHex; //replace with opcode
+        }
+        else if(regCALL.test(code)){
+
+            //console.log("so far so good " + code);
+            let nameLocation = code.match(/[a-z1-9_]+$/im)[0]; //name of location where function declaration to
+            let addressOfCall = this.findNameLocation(nameLocation, assemblyArray); //finding where the function is located
+            addrNameArray.push(nameLocation);
+            addressOfCall = parseInt(addressOfCall);
+            let addressOfCallInHex = addressOfCall.toString(16); //convert to hexidecimal
+            //1nnn - JP addr
+            assemblyArray[x] = "2" + addressOfCallInHex; // replacing with opcodes
+          }
+          else if(regLDI.test(code)){
+            let nameLocation = code.match(/[a-z1-9_]+$/im)[0]; //name of location where to sprite is declared
+            addrNameArray.push(nameLocation);
+            let addressOfCall = this.findNameLocation(nameLocation, assemblyArray);
+            //console.log("name of sprite iss " + nameLocation);
+            //console.log("nameLocation is " + nameLocation+ "and addressOfCall is " + addressOfCall.toString(16));
+            addressOfCall = parseInt(addressOfCall);
+            let addressOfCallInHex = addressOfCall.toString(16); //convert to hexidecimal
+            //1nnn - JP addr
+            assemblyArray[x] = "A" + addressOfCallInHex;
+          }
+        }
+      }
+
+    console.log(assemblyArray);
+    console.log(addrNameArray);
+    var reg;
+    //removing all the places we jumped to
+    for(var m=0 ; m< addrNameArray.length ; m++){
+      for(var n=0 ; n< assemblyArray.length ; n++){
+        //console.log("tryying to remove "+ addrNameArray[m]);
+        reg = new RegExp("^"+addrNameArray[m]+ " *","im");
+        //console.log("testing for " +addrNameArray[m]);
+        if( reg.test(assemblyArray[n]) ){
+        //if(assemblyArray[n].includes(addrNameArray[m])){
+          //console.log("spliceing " + assemblyArray[n]);
+          //assemblyArray.splice(n,1); //removing
+          assemblyArray[n] = " " ;
+        }
+      }
+    }
+    console.log("done compiling jumps and calls and LD I");
+    return assemblyArray;
+
   }
 
+
+  findNameLocation(nameLocation, assemblyArray){
+    //returning memory address of where nameLocation is found in the code
+    var addressOfMemory = 512; //200 in hex
+    var r = new RegExp("^\\s*"+nameLocation+"\\s*$","im");
+    let regEmptyLine = /^\s*\n?$/im;
+    for(var x=0 ; x< assemblyArray.length ; x++){
+
+      let code = assemblyArray[x];
+      if(!regEmptyLine.test(code)){ //skip empty lines
+
+        let inHex = addressOfMemory.toString(16);
+        //console.log("looking for: "+ nameLocation);
+        //console.log(inHex+ " " + code); //FOR DEBUGGING
+        if(!this.isChip8Instruction(code)){ //  if not assembly then increase addressOfMemory
+
+          if(r.test(code)){       //if the address of the name is found then return
+            //console.log("\nbreak returning memory address "+ addressOfMemory);
+
+            return addressOfMemory;
+          }
+        }
+        else{
+          //console.log(nameLocation+" not a intruction: " +assemblyArray);
+          addressOfMemory= addressOfMemory+2;
+        }
+      }
+    }
+  }
   assemblyToOpcode(assemblyArray){
     let lineNumber = 0;
     let regEmptyLine = /^\s*\n?$/im;
@@ -253,6 +378,9 @@ class chip8Compiler{
         }
         else{ //if did not match with anything then its not valid
           console.log("ERROR IN LINE: " + lineNumber + "\n" + code);
+          isError = true;
+          errorString = errorString + "\nERROR IN LINE: " + lineNumber + "\n" + code;
+
         }
       }
     }
@@ -260,110 +388,7 @@ class chip8Compiler{
     return assemblyArray;
   }
 
-  compileSYS_JP_CALL_LDI(assemblyArray){
-    //0nnn - SYS addr
-    //1nnn - JP addr
-    let regJP = /^jp\s*[a-z0-9_]+$/im;
-    //2nnn - CALL addr
-    let regCALL = /^call\s*[a-z0-9_]+$/im;
-    //Annn - LD I, addr
-    let regLDI = /^ld\s*i\s*,\s*[a-z0-9_]+$/mi;
-    //Bnnn - JP V0, addr
-    console.log("compiling SYS, JP, CALL, LD I, and JP V0");
-    //var addressOfMemory = 512;
-    var addrNameArray= []; //need to store the names of places to jump in order to delete later
-    let regEmptyLine = /^\s*\n?$/im;
-    for(var x=0 ; x< assemblyArray.length ; x++){
 
-      let code = assemblyArray[x];
-      if(!regEmptyLine.test(code)){ //skip empty lines
-
-        if(regJP.test(code)){//1nnn - JP addr
-          //console.log("found the jp lo000000op "+ code);
-          let nameLocation = code.match(/[a-z1-9_]+\s*$/im)[0]; //name of location where to jump to
-          let addressOfJump = this.findNameLocation(nameLocation, assemblyArray);
-          addrNameArray.push(nameLocation);
-          addressOfJump = parseInt(addressOfJump);
-          let addressOfJumpInHex = addressOfJump.toString(16); //convert to hexidecimal
-          //1nnn - JP addr
-          //console.log("replacing "+assemblyArray[x]+" with " +"1" + addressOfJumpInHex)
-          assemblyArray[x] = "1" + addressOfJumpInHex; //replace with opcode
-        }
-        else if(regCALL.test(code)){
-
-            //console.log("so far so good " + code);
-            let nameLocation = code.match(/[a-z1-9_]+$/im)[0]; //name of location where function declaration to
-            let addressOfCall = this.findNameLocation(nameLocation, assemblyArray); //finding where the function is located
-            addrNameArray.push(nameLocation);
-            addressOfCall = parseInt(addressOfCall);
-            let addressOfCallInHex = addressOfCall.toString(16); //convert to hexidecimal
-            //1nnn - JP addr
-            assemblyArray[x] = "2" + addressOfCallInHex; // replacing with opcodes
-          }
-          else if(regLDI.test(code)){
-            let nameLocation = code.match(/[a-z1-9_]+$/im)[0]; //name of location where to sprite is declared
-            addrNameArray.push(nameLocation);
-            let addressOfCall = this.findNameLocation(nameLocation, assemblyArray);
-            //console.log("name of sprite iss " + nameLocation);
-            //console.log("nameLocation is " + nameLocation+ "and addressOfCall is " + addressOfCall.toString(16));
-            addressOfCall = parseInt(addressOfCall);
-            let addressOfCallInHex = addressOfCall.toString(16); //convert to hexidecimal
-            //1nnn - JP addr
-            assemblyArray[x] = "A" + addressOfCallInHex;
-          }
-        }
-      }
-
-    console.log(assemblyArray);
-    console.log(addrNameArray);
-    var reg;
-    //removing all the places we jumped to
-    for(var m=0 ; m< addrNameArray.length ; m++){
-      for(var n=0 ; n< assemblyArray.length ; n++){
-        //console.log("tryying to remove "+ addrNameArray[m]);
-        reg = new RegExp("^"+addrNameArray[m]+ " *","im");
-        //console.log("testing for " +addrNameArray[m]);
-        if( reg.test(assemblyArray[n]) ){
-        //if(assemblyArray[n].includes(addrNameArray[m])){
-          //console.log("spliceing " + assemblyArray[n]);
-          assemblyArray.splice(n,1); //removing
-        }
-      }
-    }
-    console.log("done compiling jumps and calls and LD I");
-    return assemblyArray;
-
-  }
-
-
-  findNameLocation(nameLocation, assemblyArray){
-    //returning memory address of where nameLocation is found in the code
-    var addressOfMemory = 512; //200 in hex
-    var r = new RegExp("^\\s*"+nameLocation+"\\s*$","im");
-    let regEmptyLine = /^\s*\n?$/im;
-    for(var x=0 ; x< assemblyArray.length ; x++){
-
-      let code = assemblyArray[x];
-      if(!regEmptyLine.test(code)){ //skip empty lines
-
-        let inHex = addressOfMemory.toString(16);
-        //console.log("looking for: "+ nameLocation);
-        //console.log(inHex+ " " + code); //FOR DEBUGGING
-        if(!this.isChip8Instruction(code)){ //  if not assembly then increase addressOfMemory
-
-          if(r.test(code)){       //if the address of the name is found then return
-            //console.log("\nbreak returning memory address "+ addressOfMemory);
-
-            return addressOfMemory;
-          }
-        }
-        else{
-          //console.log(nameLocation+" not a intruction: " +assemblyArray);
-          addressOfMemory= addressOfMemory+2;
-        }
-      }
-    }
-  }
   compileSpritesBinToHex(assemblyArray){
     console.log("turning sprites binary to hex" );
     let r = /^byte\s*%[01]{8}$/im;
