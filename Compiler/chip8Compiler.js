@@ -20,7 +20,7 @@ class chip8Compiler{
     for(var x=0 ; x< assemblyArray.length ; x++){
       line++
       let command = assemblyArray[x];
-      console.log(command + " and line " +line );
+      console.log(command );
     }
     assemblyArray = this.assemblyToOpcode(assemblyArray);
     assemblyArray = this.compileSpritesBinToHex(assemblyArray);
@@ -117,8 +117,8 @@ class chip8Compiler{
         }
       }
 
-    console.log(assemblyArray);
-    console.log(addrNameArray);
+    //console.log(assemblyArray);
+    //console.log(addrNameArray);
     var reg;
     //removing all the places we jumped to
     for(var m=0 ; m< addrNameArray.length ; m++){
@@ -191,7 +191,7 @@ class chip8Compiler{
         if(r.test(code)){
           opcode = code.replace(r, "00EE");
         }
-        //******all opcodes with addr ****** //taken care with
+        //******all opcodes with addr ****** //taken care with compileSYS_JP_CALL_LDI
         //0nnn - SYS addr
         //1nnn - JP addr  //this is delt with in seperate function
         //2nnn - CALL addr //this is delt with in a seperate function
@@ -265,6 +265,7 @@ class chip8Compiler{
 
           if(/^LD/im.test(code)){
             number = 0;
+            opcode = code.replace(r, "8"+ register1+ regester2 +number);
           }
           if(/^OR/im.test(code)){
             number = 1;
@@ -407,23 +408,28 @@ class chip8Compiler{
       code2 = assemblyArray[m];
       //console.log("this is code" + code + " and this is code2 " + code2);
       if(!regEmptyLine.test(code)){ //skip empty lines
-        console.log(code);
+        //console.log(code);
         if(r.test(code)){
           //console.log("turning "+ code+" into ......");
           let regBin = /[10]{8}$/im;
+
           let spriteBin = code.match(regBin)[0];
           let spriteHex = parseInt(spriteBin, 2).toString(16);
+          //console.log("turning spriteBin to spriteHex " + spriteBin+ " " + spriteHex);
           if(spriteHex.length ==1){
+            //console.log("length of spriteHex is " + spriteHex.length);
             spriteHex = "0" + spriteHex;
           }
+          //console.log("is sprite")
 
           //console.log("this is code " + code + " and this is code2 " + code2);
           //console.log("why wont it pass the next one "+ x+1 + " "  +code2+" "+  r.test(code2))
           if(r.test(code2)){
             let spriteBin = code2.match(regBin)[0];
             let spriteHex2 = parseInt(spriteBin, 2).toString(16);
+            //console.log("turning again spriteBin to spriteHex " + spriteBin+ " " + spriteHex2);
             if(spriteHex2.length ==1){
-              spriteHex = "0" + spriteHex;
+              spriteHex2 = "0" + spriteHex2;
             }
             //console.log("hex1 and 2 " + spriteHex+ " " + spriteHex2);
             let combinedHex = spriteHex + spriteHex2;
