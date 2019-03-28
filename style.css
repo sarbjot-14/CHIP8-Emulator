@@ -127,6 +127,7 @@ textarea {
   margin-right: 5px;
 }
 #programSelect{
+  display: none;
   background-color: #454954;
   border: 0;
   color: white;
