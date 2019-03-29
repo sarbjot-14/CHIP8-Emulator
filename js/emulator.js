@@ -215,7 +215,7 @@ class emulator{
     if(this.stackPointer > 15){
       console.log("Chip-8 ERROR: cant add to a full stack");
     }else{
-      this.setStackPointer(this.stackPointer+1);
+      this.setStackPointer(this.stackPointer + 1);
       this.setStack(this.stackPointer, val);
     }
 
@@ -264,7 +264,9 @@ class emulator{
       this.setStackPointer(this.stackPointer);
       //stack
       for(let i=0; i< data.stack.length; i++){
-        this.setStack(i, data.stack[i])
+        if(!!data.stack[i]){
+          this.setStack(i, data.stack[i])
+        }
       }
       //memory
       for(let i=0; i<data.memory.length; i++){
@@ -294,7 +296,7 @@ class emulator{
     let addr = parseInt(nnn, 16);
     let pc = parseInt(this.programCounter, 16);
     let regIDec = parseInt(this.registerI, 16);
-    console.log(ins) //enable this line to get opcode readouts
+    //console.log(ins) //enable this line to get opcode readouts
     switch(ins[0]){
       case "0":
         switch(ins.substring(1, 4)){
@@ -499,7 +501,7 @@ class emulator{
           case "9E":
           case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
             this.pushUndo(ins);
-            if(this.keyInput == x.toString(16)){
+            if(this.keyIsDown(x.toString(16))){
                this.setProgramCounter((pc + 2).toString(16));
             }
             return 1;
@@ -507,7 +509,7 @@ class emulator{
           case "A1":
           case "a1":// EXA1 - SKNP - Skip next instruction if key with the value VX is not pressed
             this.pushUndo(ins);
-            if(this.keyInput !== x.toString(16)){
+            if(!this.keyIsDown(x.toString(16))){
                this.setProgramCounter((pc + 2).toString(16));
             }
             return 1;
@@ -526,7 +528,7 @@ class emulator{
           case "0A":
           case "0a":// FX0A - LD VX, K - Wait for a key to press, store value of key into VX
             for(let i=0; i< 16; i++){
-              if(this.keyInput[i.toString(16)]){
+              if(this.keyIsDown(i.toString(16))){
                 this.pushUndo(ins);
                 this.setRegistersV(x, i.toString(16));
                 return 1;
