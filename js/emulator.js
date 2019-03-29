@@ -67,6 +67,7 @@ class emulator{
   }
 
   emulationLoop(){
+    let startTime = new Date();
     //run code at program programCounter
     let ins = this.memory[parseInt(this.programCounter, 16)] + this.memory[parseInt(this.programCounter, 16) + 1];
     let insResult = this.executeInstruction(ins);
@@ -90,7 +91,21 @@ class emulator{
 
     //delay (60Hz)
     if(!this.paused){
-      setTimeout( () => {this.emulationLoop();}, (1/100000)*this.speed);
+      let endTime = new Date();
+      let insSpeed = (endTime.getTime() - startTime.getTime());
+
+      let desiredHz = 120/this.speed;
+      let insDelay = (1000/desiredHz)-insSpeed;
+
+      //console.log("Instruction took:  " + insSpeed.toString() + "ms\n to execute" )
+      //console.log(insDelay)
+      if(insDelay < 0){
+        insDelay = 0;
+      }
+      setTimeout( () => {this.emulationLoop();}, Math.floor(insDelay));
+
+      //setTimeout( () => {this.emulationLoop();}, (1/100000)*this.speed);
+
       //setTimeout(function(){chip.emulationLoop()},(50/3)*this.speed); //old method
     }
 
@@ -238,6 +253,9 @@ class emulator{
       "memory": this.memory.slice(0),
       "VF": (this.VF + 0)
     }]);
+    if(this.undoStack.length > 1500){
+      this.undoStack = this.undoStack.slice(-1200)
+    }
     this.vis.updateHistory();
   }
   undo(){

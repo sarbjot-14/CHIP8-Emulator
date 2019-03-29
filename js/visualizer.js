@@ -48,6 +48,21 @@ class visualizer{
       }
     }
 
+    document.getElementById("loadAssemblyFileBtn").onclick = () => {document.getElementById("assemblyFileInput").click()}
+    document.getElementById("assemblyFileInput").onchange = () => {
+      let reader = new FileReader();
+      reader.readAsText(document.getElementById("assemblyFileInput").files[0]);
+      //reader.readAsBinaryString(document.getElementById("fileInput").files[0]);
+      //reader.readAsArrayBuffer(document.getElementById("fileInput").files[0]);
+      reader.onloadend = (event) => {
+        let output = reader.result;
+        let aCompiler = new chip8Compiler();
+        output = aCompiler.compileMneonicToOpcodes(output);
+        //console.log(output);
+        document.getElementById("code").innerHTML = output;
+      }
+    }
+
     document.getElementById("speedSlider").oninput = () => {
       let val = document.getElementById("speedSlider").value;
       if(val < 1){

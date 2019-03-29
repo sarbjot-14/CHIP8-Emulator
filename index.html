@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>CHIP-8 Emulator</title>
   <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+  <script src="Compiler/chip8Compiler.js"></script>
   <script src="js/parser.js"></script>
   <script src="js/Images.js"></script>
   <script src="js/visualizer.js"></script>
@@ -63,6 +64,10 @@ c0c0 c0c0 c0c0 c0c0 ff80 8080 8080 8080
                 <option>Game 1</option>
                 <option>Game 2</option>
               </select>
+              <div>
+                <input type="file" id="assemblyFileInput" hidden="hidden"/>
+                <button id="loadAssemblyFileBtn">Import Assembly</button>
+              </div>
               <div>
                 <input type="file" id="fileInput" hidden="hidden"/>
                 <button id="loadFileBtn">Import Binary</button>
