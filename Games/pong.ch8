@@ -117,7 +117,7 @@ left_side
 	; check if a paddle was hit
 	DRW V6, V7, 1;
 	SE VF, 1;
-	jp round_reset
+	jp round_reset_right
 
 	jp paddle_col
 	
@@ -129,7 +129,7 @@ right_side
 	; check if a paddle was hit
 	DRW V6, V7, 1; try and draw to trigger vf
 	SE VF, 1;
-	jp round_reset
+	jp round_reset_left
 
 	jp paddle_col
 
@@ -142,7 +142,7 @@ paddle_col
 	jp ball_loop
 
 ; reset ball to the left side
-round_reset
+round_reset_left
 	DRW V6, V7, 1;
 	LD V0, 100;
 	LD DT, V0
@@ -151,6 +151,34 @@ round_reset
 	LD V6, 3;
 	LD V7, 17;
 	LD V8, 2;
+	LD V9, -1;
+	DRW V6, V7, 1
+
+	LD i, paddle
+	DRW VB, VC, 6
+	DRW VD, VE, 6
+
+	LD VB, 0; x left
+	LD VC, 14; y left
+	LD VD, 63; x right
+	LD VE, 14; y right
+
+	; draw the paddles
+	DRW VB, VC, 6
+	DRW VD, VE, 6
+
+	jp main_loop
+
+; reset ball to the right side
+round_reset_right
+	DRW V6, V7, 1;
+	LD V0, 100;
+	LD DT, V0
+	call delay
+
+	LD V6, 62;
+	LD V7, 17;
+	LD V8, -2;
 	LD V9, -1;
 	DRW V6, V7, 1
 
