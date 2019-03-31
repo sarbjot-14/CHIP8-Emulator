@@ -19,202 +19,191 @@
 
 ; initialize
 CLS
+
+; init paddle locations
+LD VB, 0; x left
+LD VC, 14; y left
+LD VD, 63; x right
+LD VE, 14; y right
+
+; draw the paddles
+LD i, paddle
+DRW VB, VC, 6
+DRW VD, VE, 6
+
+; init ball properties
+LD V6, 3;
+LD V7, 17;
+LD V8, 2;
+LD V9, -1;
+
 LD i, ball; set i to memory address of ball
-LD V6, 32; set initial x value to 32 (mid-way)
-LD V7, 16; set initial y value to 16 (mid-way)
-LD V8, 1; set initial x dir to 1 (right)
-LD V9, 1; set initial y dir to 1 (down)
-LD VB, 2 ; set init x coord of left paddle
-LD VC, 14 ; set init y coord of left paddle
-LD VD, 61 ; set init x coord of right paddle
-LD VE, 14 ; set init y coord of right paddle
 DRW V6, V7, 1; draw the ball
-LD i, paddle ;  set i to memory address of ball
-DRW VB, VC, 6; draw the left paddle
-DRW VD, VE, 6; draw the right paddle
 
-
-; main loop
 main_loop
-
 	; paddle stuff
 	LD i, paddle
-	SE VC, 0; if the paddle is at the top, don't let the user move the paddle up
-	CALL getLeftPadUpInput
+	DRW VB, VC, 6;
+	DRW VD, VE, 6;
 
-	SE VC, 26; if the paddle is at the bottom, don't let the user move the paddle down
-	CALL getLeftPadDownInput
+	; left paddle movement
+	LD V0, 1
+	SKNP V0
+	ADD VC, -2;
 
-	SE VE, 0; if the paddle is at the top, don't let the user move the paddle up
-	CALL getRightPadUpInput
+	LD V0, 4
+	SKNP V0
+	ADD VC, 2;
 
-	SE VE, 26; if the paddle is at the bottom, don't let the user move the paddle down
-	CALL getRightPadDownInput
+	; loop the paddles
+	; if the y-coord of the paddle becomes 32 (goes out bottom), then it becomes 0
+	; if the y-coord of the paddle becomes -2 (goes out top), then it becomes 30
+	LD V0, 31
+	AND VC, V0
+	DRW VB, VC, 6
+
+	; right paddle movement
+	LD V0, 12
+	SKNP V0
+	ADD VE, -2;
+
+	LD V0, 13
+	SKNP V0
+	ADD VE, 2;
+
+	; loop the paddles
+	; if the y-coord of the paddle becomes 32 (goes out bottom), then it becomes 0
+	; if the y-coord of the paddle becomes -2 (goes out top), then it becomes 30
+	LD V0, 31
+	AND VE, V0
+	DRW VD, VE, 6
 
 	; ball stuff
 	LD i, ball
-	; move the ball
-	DRW V6, V7, 1; Draw (erase) ball
-	ADD V6, V8; get next x coord
-	ADD V7, V9; get next y coord
- 	DRW V6, V7, 1; Draw ball
 
- 	SNE VF, 1
- 	CALL undo_ball_move;
+	; erase the ball
+ 	DRW V6, V7, 1
+	
+	; find the new ball location by adding directions
+	ADD V6, V8
+	ADD V7, V9
 
-	; handle collisions with the walls of the screen
-	SNE V7, 0; check if ball is at top
-	LD V9, 1; change y dir of ball
+	; check if the ball is at the left side
+	SNE v6, 0
+	jp left_side
+	
+	; check if the ball is at the right side
+	SNE v6, 63
+	jp right_side
 
-	SNE V7, 31; check if ball is at bottom
-	LD V9, -1; change y dir of ball
-
-	SNE V6, 63; check if ball is at right
-	JP ballRightside;
-
-	SNE V6, 0; check if ball is at left
-	jp ballLeftside;
+ball_loop
+	; check if the ball is at the bottom
+	SNE V7, 31
+	LD V9, -1
+	
+	; check if the ball is at the top
+	SNE V7, 0
+	LD V9, 1
+	
+	; draw the ball
+	DRW V6, V7, 1
 
 	jp main_loop
 
-ballLeftside
-	;delay
-	LD V0, 64;
-	LD DT, V0;
-	call delay
+left_side
 
-	;reset paddles
-	LD i, paddle
-	drw VB, VC, 6;
-	drw VD, VE, 6;
-	LD VB, 2 ; left x
-	LD VC, 14 ; left y
-	LD VD, 61 ; right x
-	LD VE, 14 ; right y
-	drw VB, VC, 6;
-	drw VD, VE, 6;
+	LD V8, 2 ; update x dir
 
-	; reset ball dir / pos
-	LD i, ball
-	drw V6, V7, 1;
-	LD V6, 60;
-	LD V7, 16;
-	LD V8, -1;
-	LD V9, -1;
-	drw V6, V7, 1;
+	; check if a paddle was hit
+	DRW V6, V7, 1;
+	SE VF, 1;
+	jp round_reset_right
 
-	; delay
+	jp paddle_col
+	
+
+right_side
+
+	LD V8, -2 ; update x dir
+
+	; check if a paddle was hit
+	DRW V6, V7, 1; try and draw to trigger vf
+	SE VF, 1;
+	jp round_reset_left
+
+	jp paddle_col
+
+paddle_col
+	; shift the ball so it will hit the other side properly
+	DRW V6, V7, 1; fix the draw if the paddle collided
+	ADD V6, 1
+	SNE V6, 64
+	ADD V6, -2
+	jp ball_loop
+
+; reset ball to the left side
+round_reset_left
+	DRW V6, V7, 1;
 	LD V0, 100;
 	LD DT, V0
 	call delay
 
-	; jump to main loop
-	jp main_loop
-
-ballRightside
-	;delay
-	LD V0, 64;
-	LD DT, V0;
-	call delay
-
-	;reset paddles
-	LD i, paddle
-	drw VB, VC, 6;
-	drw VD, VE, 6;
-	LD VB, 2 ; left x
-	LD VC, 14 ; left y
-	LD VD, 61 ; right x
-	LD VE, 14 ; right y
-	drw VB, VC, 6;
-	drw VD, VE, 6;
-
-	; reset ball dir / pos
-	LD i, ball
-	drw V6, V7, 1;
 	LD V6, 3;
-	LD V7, 16;
-	LD V8, 1;
+	LD V7, 17;
+	LD V8, 2;
 	LD V9, -1;
-	drw V6, V7, 1;
+	DRW V6, V7, 1
 
-	; delay
+	LD i, paddle
+	DRW VB, VC, 6
+	DRW VD, VE, 6
+
+	LD VB, 0; x left
+	LD VC, 14; y left
+	LD VD, 63; x right
+	LD VE, 14; y right
+
+	; draw the paddles
+	DRW VB, VC, 6
+	DRW VD, VE, 6
+
+	jp main_loop
+
+; reset ball to the right side
+round_reset_right
+	DRW V6, V7, 1;
 	LD V0, 100;
 	LD DT, V0
 	call delay
 
-	; jump to main loop
+	LD V6, 62;
+	LD V7, 17;
+	LD V8, -2;
+	LD V9, -1;
+	DRW V6, V7, 1
+
+	LD i, paddle
+	DRW VB, VC, 6
+	DRW VD, VE, 6
+
+	LD VB, 0; x left
+	LD VC, 14; y left
+	LD VD, 63; x right
+	LD VE, 14; y right
+
+	; draw the paddles
+	DRW VB, VC, 6
+	DRW VD, VE, 6
+
 	jp main_loop
 
-
-; if the ball ends up in the paddle, this moves the ball and sets its direction to the appropriate direction based on the collision
-undo_ball_move
-	DRW V6, V7, 1
-	SUB V6, V8
-	SUB V7, V9
-	DRW V6, V7, 1
-	SE V8, 1
-	call leftToRight
-	SE V8, -1
-	call rightToLeft
-	RET
-
-leftToRight
-	LD V8, 1
-	LD V1, 1;
-	RET
-
-rightToLeft
-	SE V1, 1
-	LD V8, -1
-	LD V1, 0
-	RET
-
-getLeftPadUpInput
-	LD V0, 1; put the key value into the register
-	SKP V0; if the key is pressed, move the paddle before returning
-	RET
-	; moveLeftPadUp
-	DRW VB, VC, 6
-	ADD VC, -2
-	DRW VB, VC, 6
-	RET
-
-getLeftPadDownInput
-	LD V0, 4; put the key value into the register
-	SKP V0; if the key is pressed, move the paddle before returning
-	RET
-	; moveLeftPadDown
-	DRW VB, VC, 6
-	ADD VC, 2
-	DRW VB, VC, 6
-	RET
-
-getRightPadUpInput
-	LD V0, 12; put the key value into the register
-	SKP V0; if the key is pressed, move the paddle before returning
-	RET
-	; moveRightPadUp
-	DRW VD, VE, 6
-	ADD VE, -2
-	DRW VD, VE, 6
-	RET
-
-getRightPadDownInput
-	LD V0, 13; put the key value into the register
-	SKP V0; if the key is pressed, move the paddle before returning
-	RET
-	; moveRightPadDown
-	DRW VD, VE, 6
-	ADD VE, 2
-	DRW VD, VE, 6
-	RET
-
-; function to delay the drawing of the ball
+	
 delay
-	LD V0, DT ; get the value for the delay timer
-	SE V0, 0 ; if the value of the "delay timer" is 0, skip the next instruction
-	JP delay; jump to the start of the function, repeating until the delay timer is 0
-	RET
+	LD V0, DT
+	SE V0, 0
+	jp delay
+	ret
+
 
 ball
 	byte 	%10000000

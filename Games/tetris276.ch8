@@ -444,7 +444,7 @@ shapeT3
 shapeT4
 	byte	%00000000
 	byte	%00111000
-	byte	%00010000
+	byte	%00010000 ; this should compile into 10 not 01
 shapeB
 	byte    %00000000
 	byte	%00011000
@@ -452,9 +452,9 @@ shapeB
 shapeS1
 	byte    %00010000
 	byte 	%00011000
-	byte    %00001000
+	byte    %00001000 ; should be 08 not 00
 shapeS2
-	byte	%00001100
+	byte	%00001100 ; this should be 0c not 8c
 	byte	%00011000
 	byte	%00000000
 shapeReverseL1
