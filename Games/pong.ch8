@@ -3,14 +3,14 @@
 ; V0 empty
 ; V1 empty
 ; V2 empty
-; V3 empty
+; V3 left score
 ; V4 x coord of score
 ; V5 y coord of score
 ; V6 x coord of ball
 ; V7 y coord of ball
 ; V8 x dir of ball
 ; V9 y dir of ball
-; VA score
+; VA right score
 ; VB x coord of left paddle
 ; VC y coord of left paddle
 ; VD x Coord of right paddle
@@ -30,6 +30,11 @@ LD VE, 14; y right
 LD i, paddle
 DRW VB, VC, 6
 DRW VD, VE, 6
+
+; initialize score
+LD V3, 0
+LD VA, 0
+call draw_score
 
 ; init ball properties
 LD V6, 3;
@@ -113,6 +118,7 @@ ball_loop
 left_side
 
 	LD V8, 2 ; update x dir
+	LD V3, 1 ; for score
 
 	; check if a paddle was hit
 	DRW V6, V7, 1;
@@ -144,6 +150,7 @@ paddle_col
 ; reset ball to the left side
 round_reset_left
 	DRW V6, V7, 1;
+
 	LD V0, 100;
 	LD DT, V0
 	call delay
@@ -167,11 +174,24 @@ round_reset_left
 	DRW VB, VC, 6
 	DRW VD, VE, 6
 
+	; ERASE the score
+	call draw_score
+
+	ADD V3, 1;
+
+	; draw the score here
+	call draw_score
+
+	LD V0, 100;
+	LD DT, V0;
+	call delay
+
 	jp main_loop
 
-; reset ball to the right side
+; reset ball to the right side (left player just scored)
 round_reset_right
 	DRW V6, V7, 1;
+
 	LD V0, 100;
 	LD DT, V0
 	call delay
@@ -195,8 +215,39 @@ round_reset_right
 	DRW VB, VC, 6
 	DRW VD, VE, 6
 
+	; erase the score here
+	call draw_score
+
+	ADD VA, 1;
+
+	; draw the score here
+	call draw_score
+
+	LD V0, 100
+	LD DT, V0
+	call delay
+
 	jp main_loop
 
+draw_score
+	; point i to the first register
+	LD F, V3
+
+	; set v4 and v5
+	LD V4, 25
+	LD V5, 1
+
+	; draw the first score
+	DRW V4, V5, 5
+
+	; move v4
+	LD V4, 34
+	
+	; point i to the second register
+	LD F, VA
+
+	; draw the second score
+	DRW V4, V5, 5 ; 
 	
 delay
 	LD V0, DT
