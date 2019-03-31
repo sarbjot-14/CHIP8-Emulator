@@ -5,16 +5,16 @@
 ; V2 free
 ; V3 free
 ; V4 
-; V5 
+; V5 used to check collisions 
 ; V6 x coord of shape
 ; V7 y coord of shape
-; V8 dir of shape (1 = left, 2 = right, 3 = down)
-; V9 
-; VA score
+; V8 x dir of shape (1 = left, 2 = right)
+; V9 will be used to see if block should be placed or not (0 = no, 1 = yes)
+; VA used as the max height for which the player can rotate blocks to avoid bugs
 ; VB delay
 ; VC will be used for shape rotations
 ; VD will be used for key inputs
-; VE used to determine current shape (1=T, 2=S, 3=reverseL, 4=L, 5=I, 6=Z)
+; VE used to determine current shape (1=T,2=B, 3=S, 4=reverseL, 5=L, 6=I, 7=Z)
 ; VF collision
 
 ; keyboard stuff for input later
@@ -37,39 +37,17 @@ LD V0, 27; set left border's x value
 LD V1, 39; set right border's x value because this game of tetris played on 10 x 24 between pixels 28 and 38
 LD V2, 0; set y value to 0 top of screen
 LD V3, 31; set y value to 31 bottom of screen
-LD V8, 3;initial direction of block is down
+LD V8, 3 ;initial direction of block is down
+LD V9, 0
+LD VA, 32
+LD VE, 1
 LD VC, 1; init shape rotations
 LD VB, 5 ; load the value to delay by into the empty register (to pass to delay timer)
 LD DT, VB ; pass the above value into the delay timer "register"
 CALL drawVerticalBorder
 CALL drawHorizBorder
-
-; main game loop
-gameLoop
-	
-	SNE VE, 1 ; if the block ID is 1, spawn Z block
-	CALL drawZ
-	SNE VE, 2 ; if block ID is 2, spawn B block 
-	CALL drawB
-	SNE VE, 3 ; if block ID is 3, spawn reverse L block
-	CALL drawReverseL
-	SNE VE, 4 ; if block ID is 4, spawn L block
-	CALL drawL
-	SNE VE, 5 ; if block ID is not 5, spawn S block
-	CALL drawS
-	SNE VE, 6 ; if block ID is 6, spawn T block
-	CALL drawT
-	SNE VE, 7 ; if block ID is 7, spawn I block
-	CALL drawI
-	SNE VE, 8 ; if block ID is 8, loop back around to 1
-	LD VE, 1
-	SNE V7, 0; if the block (y val) is not at the top, dont have to change the block ID, otherwise, keep adding 1
-	ADD VE, 1
-	CALL getInput
-	SNE V7, 0
-	LD VB, 0
-	jp gameLoop
-	RET
+CALL spawnBlock
+jp gameLoop
 
 drawVerticalBorder
 	DRW V1, V2, 1; draw right border
@@ -87,7 +65,35 @@ drawHorizBorder
 	DRW V0, V3, 1; draws last corner pixel
 	RET
 
+; main game loop
+gameLoop
+	SNE V9, 1
+	CALL spawnBlock
+	CALL checkBlock
+	CALL getInput
+	jp gameLoop
+	RET
 
+spawnBlock
+	SNE VE, 8 ; if block ID is 8, loop back around to 1
+	LD VE, 1
+	SNE VE, 1 ; if the block ID is 1, spawn Z block
+	CALL drawZ
+	SNE VE, 2 ; if block ID is 2, spawn B block 
+	CALL drawB
+	SNE VE, 3 ; if block ID is 3, spawn reverse L block
+	CALL drawReverseL
+	SNE VE, 4 ; if block ID is 4, spawn L block
+	CALL drawL
+	SNE VE, 5 ; if block ID is not 5, spawn S block
+	CALL drawS
+	SNE VE, 6 ; if block ID is 6, spawn T block
+	CALL drawT
+	SNE VE, 7 ; if block ID is 7, spawn I block
+	CALL drawI
+	
+	LD V9, 0;switch "block placed" value
+	RET
 
 drawT
 	;LD I, shapeT1; set I to memory address of shape
@@ -99,7 +105,6 @@ drawT
 	LD I, shapeT3
 	SNE VC, 4
 	LD I, shapeT4
-	CALL checkBlock
 	RET
 
 drawS
@@ -108,12 +113,10 @@ drawS
 	LD I, shapeS1
 	SNE VC, 2
 	LD I, shapeS2
-	CALL checkBlock
 	RET
 
 drawB
 	LD I, shapeB
-	CALL checkBlock
 	RET
 
 drawReverseL
@@ -126,7 +129,6 @@ drawReverseL
 	LD I, shapeReverseL3
 	SNE VC, 4
 	LD I, shapeReverseL4
-	CALL checkBlock
 	RET
 
 drawL
@@ -139,7 +141,6 @@ drawL
 	LD I, shapeL3
 	SNE VC, 4
 	LD I, shapeL4
-	CALL checkBlock
 	RET
 
 drawI
@@ -148,17 +149,13 @@ drawI
 	LD I, shapeI1
 	SNE VC, 2
 	LD I, shapeI2
-	CALL checkBlock
-
 	RET
 
 drawZ
-	;LD I, shapeZ1; set I to memory address of shape
 	SNE VC, 1
 	LD I, shapeZ1
 	SNE VC, 2
 	LD I, shapeZ2
-	CALL checkBlock
 	RET
 
 drawShape
@@ -178,58 +175,77 @@ checkBlock
 	
 	SE V8, 3;if block dir is not down, set it to down
  	LD V8, 3
-
-	SNE VF, 1; check the collision
-	RET
-
 	
 	;Delay
 	SE VB, 1
 	CALL initDelay
+	
+	SNE V9, 1; check the collision
+	RET
 
-	; erase the shape, move it, then redraw it at new position
+	; erase the shape
 	CALL drawShape; erase the shape
-	SNE V7, 31
-	LD V7, 0 ;reset y val if it hits the bottom
-	SNE V7, 31
-	LD VC, 1
-
 	ADD V7, 1; add 1  y coord of shape - want to go striaght down
  	RET
+
+resetBlock
+	LD V7, 0;reset y value
+	LD V6, 29;reset x value
+	LD VB, 0;reset delay
+	LD VC, 1;reset block rotation id
+	ADD VE, 1
+	RET
 
 undoDrop
 	CALL drawShape; undo mistake
 	LD V1, 1
 	SUB V7, V1; subtract 1 to go back up one
-	
 	CALL drawShape; draw in right place
-	SNE V8, 3
-	LD V7, 0; set y value to top of screen
-	SNE V8, 3
-	LD V6, 29; set x value to middle
+	LD V9, 1
+	CALL updateHeight
+	CALL resetBlock
 	RET
-	
-undoDropHoriz
-	CALL drawShape; undo mistake
+
+undoDropLeft
+	CALL drawShape
+	ADD V6, 1
 	LD V1, 1
+	SUB V7, V1
+	CALL drawShape
+	RET
+
+undoDropRight
+	CALL drawShape
+	LD V1, 1
+	SUB V6, V1
+	SUB V7, V1
+	CALL drawShape
+	RET
+
+undoDropHoriz
 	SNE V8, 1 ;if the direction of shape is left
-	ADD V6, 1 ;push back to the right
+	CALL undoDropLeft
 	SNE V8, 2 ;if the direction of shape is right
-	SUB V6, V1 ;push back to the left
-	CALL drawShape; draw in right place
+	CALL undoDropRight
 	RET
 
 checkUndo
+	
+	SE V8, 3
 	CALL undoDropHoriz
-	;SNE V8, 3;if dir is down, must have fallen on top of another block
+	SNE V8, 3 ;if dir is down, must have fallen on top of another block
 	CALL undoDrop
-	;SE V8, 3; if dir is left/right, the player is trying to move the current block into another one
-	;CALL undoDropHoriz
+	RET
+
+updateHeight
+	LD V0, V7
+	SUBN V0, VA; temp = temp - current stored height
+	SNE VF, 1; if VA > V0, then VF will be set to 1, and if set to 1, we have to replace VA with new height
+	LD VA, V7
 	RET
 
 ; get inputs from user
 getInput
-
 	LD VD, 4; put the key value into the register
 	SKNP VD; check if the key value in the register was pressed, if not pressed, skip the call
 	CALL moveLeft
@@ -238,20 +254,28 @@ getInput
 	SKNP VD; check if the key value in the register was pressed, if not pressed, skip the call
 	CALL moveRight
 
-	LD VD, 5; rotate the shape
-	SKNP VD
-	CALL rotateShape
+
+	LD V0, V7
+	ADD VA, 3; add a small buffer
+	SUBN V0, VA; once the y val of shape hits a certain height, dont let user rotate (V0 = VA - V0)
+	SNE VF, 1
+	CALL shapeRotationInput
 
 	LD VD, 8
-	SKNP VD
+	SKNP VD; fast forward the drop
 	LD VB, 1
 	RET
 
+shapeRotationInput
+	LD VD, 5; rotate the shape
+	SKNP VD
+	CALL rotateShape
+	RET
 moveLeft
 	LD VD, 4; put the key value into the register
-	LD V1, 1
+	LD V0, 1
 	LD V8, 1; set block direction to left
-	SUB V6, V1; move shape left
+	SUB V6, V0; move shape left
 	RET
 
 moveRight
@@ -275,15 +299,34 @@ rotateShape
 	RET
 
 rotateT
-	DRW V6, V7, 3
-	ADD VC, 1
+	LD V5, V6; set up rotation collision detection
+	LD V0, 24
+	SUBN V0, V5
+	SNE V0, 1; if close to the left edge, don't let it rotate
+	RET
+
+	LD V0, 36
+	SUBN V5, V0
+	SNE V5, 1; if close to the right edge, don't let it rotate
+	RET
+	SNE V5, 2
+	RET
+
+	CALL drawShape; erase the shape
 	SNE VC, 5
 	LD VC, 1
+	ADD VC, 1
 	CALL drawShape
 	CALL drawT
 	RET
 rotateS
-	DRW V6, V7, 3
+	LD V5, V6; set up rotation collision detection
+	LD V0, 35
+	SUB V0, V5
+	SNE V0, 1; if close to the edge, don't let it rotate
+	RET
+
+	CALL drawShape; else, erase shape and rotate
 	ADD VC, 1
 	SNE VC, 3
 	LD VC, 1
@@ -291,15 +334,45 @@ rotateS
 	CALL drawS
 	RET
 rotateReverseL
-	DRW V6, V7, 3
+	LD V5, V6; set up rotation collision detection
+	LD V0, 24
+	SUBN V0, V5
+	SNE V0, 1; if close to the left edge, use a different rotation
+	RET
+	SNE V0, 2
+	RET
+
+	LD V0, 36
+	SUB V0, V5
+	SNE V0, 1; if close to the right edge, don't let it rotate
+	RET
+	SNE V0, 2
+	RET
+
+	CALL drawShape
 	ADD VC, 1
-	SNE VC, 5
+	SNE VC, 5;reset rotation id if counter hits 5
 	LD VC, 1
 	CALL drawShape
 	CALL drawReverseL
 	RET
 rotateL
-	DRW V6, V7, 3
+	LD V5, V6; set up rotation collision detection
+	LD V0, 24
+	SUBN V0, V5
+	SNE V0, 1; if close to the left edge, use a different rotation
+	RET
+	SNE V0, 2
+	RET
+
+	LD V0, 36
+	SUB V0, V5
+	SNE V0, 1; if close to the right edge, don't let it rotate
+	RET
+	SNE V0, 2
+	RET
+
+	CALL drawShape;else, erase the shape and rotate it
 	ADD VC, 1
 	SNE VC, 5
 	LD VC, 1
@@ -307,7 +380,17 @@ rotateL
 	CALL drawL
 	RET
 rotateI
-	DRW V6, V7, 4
+	LD V5, V6; set up rotation collision detection
+	LD V0, 37
+	SUBN V5, V0
+	SNE V5, 1; if close to the edge, don't let it rotate
+	RET
+	SNE V5, 2
+	RET
+	SNE V5, 3
+	RET
+
+	DRW V6, V7, 4; erase the shape
 	ADD VC, 1
 	SNE VC, 3
 	LD VC, 1
@@ -315,14 +398,19 @@ rotateI
 	CALL drawI
 	RET
 rotateZ
-	DRW V6, V7, 3
+	LD V5, V6; set up rotation collision detection
+	LD V0, 24
+	SUB V5, V0
+	SNE V5, 1; if close to the edge, don't let it rotate
+	RET
+	CALL drawShape
 	ADD VC, 1
 	SNE VC, 3
 	LD VC, 1
+	
 	CALL drawShape
 	CALL drawZ
 	RET
-
 initDelay
 	LD V0, 5 ; load the value to delay by into the empty register (to pass to delay timer)
 	LD DT, V0 ; pass the above value into the delay timer "register"
@@ -407,8 +495,8 @@ shapeI1
 	byte	%00100000
 	byte	%00100000
 shapeI2
-	byte	%00000000
 	byte	%00111100
+	byte	%00000000
 	byte	%00000000
 	byte	%00000000
 shapeZ1
