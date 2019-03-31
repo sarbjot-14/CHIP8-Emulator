@@ -19,7 +19,7 @@ class chip8Compiler{
     for(var x=0 ; x< assemblyArray.length ; x++){
       line++
       let command = assemblyArray[x];
-      console.log(command + " and line " +line );
+      console.log(command );
     }
     assemblyArray = this.assemblyToOpcode(assemblyArray);
     assemblyArray = this.compileSpritesBinToHex(assemblyArray);
@@ -34,8 +34,8 @@ class chip8Compiler{
       if(!regEmptyLine.test(command)){ //skip empty lines
         memmoryAddresses += 2;
         //**********UN-COMMENT NEXT LINE FOR DEBUGGING********///////
-        //finalOpcodes += memmoryAddresses.toString(16)+ " " + command + "\n"; //
-        finalOpcodes += command + " ";
+        finalOpcodes += memmoryAddresses.toString(16)+ " " + command + "\n"; //
+        //finalOpcodes += command + " ";
       }
     }
     if(isError){
@@ -352,12 +352,48 @@ class chip8Compiler{
 
           opcode = code.replace(r, "F"+ register + "15");
         }
+        //ALL THESE TOGETHER//////
         //Fx18 - LD ST, Vx
-        //Fx1E - ADD I, Vx
         //Fx29 - LD F, Vx
         //Fx33 - LD B, Vx
         //Fx55 - LD [I], Vx
+      //  ----------------------
         //Fx65 - LD Vx, [I]
+        //Fx1E - ADD I, Vx
+        ///////////
+        r = /^LD\s*(ST|F|B|\[I\]|V)\s*,\s*V[0-9a-f]/im;
+        if(r.test(code)){
+          let register =  code.replace(/^LD\s*(ST|F|B|\[I\]|V)\s*,\s*V/im, "")[0];
+          //Fx18 - LD ST, Vx
+          if(/^LD\s*ST\s*,\s*V[0-9a-f]/im.test(code)){
+            opcode = code.replace(r, "F"+ register + "18");
+          }
+          //Fx29 - LD F, Vx
+          if(/^LD\s*F\s*,\s*V[0-9a-f]/im.test(code)){
+            opcode = code.replace(r, "F"+ register + "29");
+          }
+          //Fx33 - LD B, Vx
+          if(/^LD\s*B\s*,\s*V[0-9a-f]/im.test(code)){
+            opcode = code.replace(r, "F"+ register + "33");
+          }
+          //Fx55 - LD [I], Vx
+          if(/^LD\s*\[I\]\s*,\s*V[0-9a-f]/im.test(code)){
+            opcode = code.replace(r, "F"+ register + "55");
+          }
+        }
+        //Fx65 - LD Vx, [I]
+        r = /^LD\s*V[0-9a-f],\s*\[I\]/im;
+        if(r.test(code)){
+          let register =  code.replace(/^LD\s*V/im, "")[0];
+          opcode = code.replace(r, "F"+ register+ "65");
+        }
+        //Fx1E - ADD I, Vx
+        r = /^add\s*I\s*,\s*v[0-9a-f]/im;
+        if(r.test(code)){
+          let register =  code.replace(/^add\s*I\s*,\s*v/im, "")[0];
+
+          opcode = code.replace(r, "F"+ register + "1E");
+        }
         /*
       3.2 - Super Chip-48 Instructions
         00Cn - SCD nibble
