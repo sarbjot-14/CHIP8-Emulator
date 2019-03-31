@@ -1,4 +1,3 @@
-
 ; Registers
 ; ---------
 ; V0 empty
@@ -33,7 +32,7 @@ DRW VB, VC, 6
 DRW VD, VE, 6
 
 ; init ball properties
-LD V6, 1;
+LD V6, 3;
 LD V7, 17;
 LD V8, 2;
 LD V9, -1;
@@ -84,21 +83,15 @@ main_loop
 
 	; erase the ball
  	DRW V6, V7, 1
-
+	
 	; find the new ball location by adding directions
 	ADD V6, V8
 	ADD V7, V9
 
-	LD V0, 63
-	AND V6, V0
-
-	LD V1, 31
-	AND V7, V1
-
 	; check if the ball is at the left side
 	SNE v6, 0
 	jp left_side
-
+	
 	; check if the ball is at the right side
 	SNE v6, 63
 	jp right_side
@@ -107,54 +100,110 @@ ball_loop
 	; check if the ball is at the bottom
 	SNE V7, 31
 	LD V9, -1
-
+	
 	; check if the ball is at the top
 	SNE V7, 0
 	LD V9, 1
-
+	
 	; draw the ball
 	DRW V6, V7, 1
 
 	jp main_loop
 
 left_side
+
 	LD V8, 2 ; update x dir
 
-	LD V0, V7
-	SUB V0, VC; see if the ball is above the paddle
+	; check if a paddle was hit
+	DRW V6, V7, 1;
+	SE VF, 1;
+	jp round_reset_right
 
-	; if the ball is above the paddle, VC - V0 > 0 >> VC > V0
-	; SUB V0, VC >> V0 = V0 - VC, if V0 > VC, VF = 1
-	; if vf is set to 1, then V0 is greater than VC (ball is below top of paddle)
-	; if vf is set to 0, then V0 is less than VC (ball is above paddle) and the ball is definitely gone, so we should round reset and give points
-
-	jp paddle_col_check
-
+	jp paddle_col
+	
 
 right_side
+
 	LD V8, -2 ; update x dir
-	LD V0, V7 ; load ball y dir in the scratch register
-	SUB V0, VE ; check if the ball is above the paddle (V0 - VE > 0 >>> V0 > VE if ball is below the paddle) (triggers vf)
-	jp paddle_col_check
 
-paddle_col_check
-	; add checking for collisions here
-
-	; HERE WE NEED TO CHECK FOR COLLISIONS or ROUND RESETS without drawing
-	; need to set something for score
-	; check if ball above paddle
-	; check if ball below paddle (paddle y coord -6)
-	; if not one of the above two, the ball should have hit the paddle
-	; if ball doesn't hit paddle, jp to reset (maybe set x coord of ball based on score value)
+	; check if a paddle was hit
+	DRW V6, V7, 1; try and draw to trigger vf
+	SE VF, 1;
+	jp round_reset_left
 
 	jp paddle_col
 
 paddle_col
 	; shift the ball so it will hit the other side properly
+	DRW V6, V7, 1; fix the draw if the paddle collided
 	ADD V6, 1
 	SNE V6, 64
 	ADD V6, -2
 	jp ball_loop
+
+; reset ball to the left side
+round_reset_left
+	DRW V6, V7, 1;
+	LD V0, 100;
+	LD DT, V0
+	call delay
+
+	LD V6, 3;
+	LD V7, 17;
+	LD V8, 2;
+	LD V9, -1;
+	DRW V6, V7, 1
+
+	LD i, paddle
+	DRW VB, VC, 6
+	DRW VD, VE, 6
+
+	LD VB, 0; x left
+	LD VC, 14; y left
+	LD VD, 63; x right
+	LD VE, 14; y right
+
+	; draw the paddles
+	DRW VB, VC, 6
+	DRW VD, VE, 6
+
+	jp main_loop
+
+; reset ball to the right side
+round_reset_right
+	DRW V6, V7, 1;
+	LD V0, 100;
+	LD DT, V0
+	call delay
+
+	LD V6, 62;
+	LD V7, 17;
+	LD V8, -2;
+	LD V9, -1;
+	DRW V6, V7, 1
+
+	LD i, paddle
+	DRW VB, VC, 6
+	DRW VD, VE, 6
+
+	LD VB, 0; x left
+	LD VC, 14; y left
+	LD VD, 63; x right
+	LD VE, 14; y right
+
+	; draw the paddles
+	DRW VB, VC, 6
+	DRW VD, VE, 6
+
+	jp main_loop
+
+	
+delay
+	LD V0, DT
+	SE V0, 0
+	jp delay
+	ret
+
 
 ball
 	byte 	%10000000
