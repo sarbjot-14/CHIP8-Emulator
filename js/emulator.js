@@ -433,10 +433,12 @@ class emulator{
           case "5":// 8XY5 - Set VX = VX - VY, VF = 1 = not borrow
             if(regX > regY){
               this.setVF(1);
+              this.setRegistersV(x, ((regX - regY)).toString(16));
             }else{
               this.setVF(0);
+              this.setRegistersV(x, (((regX - regY)%255)).toString(16));
             }
-            this.setRegistersV(x, ((regX - regY) & 255).toString(16));
+
             /*console.log("regX: " + regX)////****
             console.log("regY: " + regY)////****
             console.log("regX - regY: " + (regX - regY))////****
@@ -463,17 +465,19 @@ class emulator{
 
           case "7":// 8XY7 - Set VX = VY - VX, VF = 1 = not borrow
             if(regY > regX){
+              this.setRegistersV(x, ((regY - regX)).toString(16));
               this.setVF(1);
             }else{
+              this.setRegistersV(x, (((regY - regX)%255)).toString(16));
               this.setVF(0);
             }
-            console.log("\t-ins " + ins)////****
+            /*console.log("\t-ins " + ins)////****
             console.log("\tregX " + regX)////****
             console.log("\tregY " + regY)////****
             console.log("\tregY - regX = " + (regY - regX))////****
-            console.log("\t(regY - regX) & 255 = " + ((regY - regX) & 255))////****
+            console.log("\t(regY - regX) & 255 = " + ((regY - regX) & 255))////*****/
             this.setRegistersV(x, ((regY - regX) & 255).toString(16));
-            console.log("\t\tthis.registersV[x]: " + this.registersV[x])////****
+            //console.log("\t\tthis.registersV[x]: " + this.registersV[x])////****
             break;
 
           case "E":// 8XYe - Set VX = shiftingValue << 1 (shiftingValue = register VY if legacyMode is true, shiftingValue = register VX otherwise)
@@ -500,9 +504,9 @@ class emulator{
         return 1;
 
       case "9":// 9XY0 - Skip next instruction if VX != VY
-        console.log("\t\tx: " + x)////***
+      /*  console.log("\t\tx: " + x)////***
         console.log("\t\tregF: " + regF)////***
-        console.log("\t\tvalue: " + value)////***
+        console.log("\t\tvalue: " + value)////****/
         if((x == 15 && regF == regY) || (regX == regY)){
             this.setProgramCounter((pc + 2).toString(16));
         }
