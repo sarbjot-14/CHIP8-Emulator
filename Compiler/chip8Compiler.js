@@ -34,8 +34,8 @@ class chip8Compiler{
       if(!regEmptyLine.test(command)){ //skip empty lines
         memmoryAddresses += 2;
         //**********UN-COMMENT NEXT LINE FOR DEBUGGING********///////
-        finalOpcodes += memmoryAddresses.toString(16)+ " " + command + "\n"; //
-        //finalOpcodes += command + " ";
+        //finalOpcodes += memmoryAddresses.toString(16)+ " " + command + "\n"; //
+        finalOpcodes += command + " ";
       }
     }
     if(isError){
