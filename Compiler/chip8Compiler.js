@@ -266,8 +266,9 @@ class chip8Compiler{
           let regester2 = code.replace(/^[a-z_]+\s*v[0-9a-f]\s*,\s*v/im,"")[0];
           let number = 0;
 
-          if(/^LD/im.test(code)){
+          if(/^LD\s*V[0-9a-f],\s*v[0-9a-f]/im.test(code)){
             number = 0;
+            opcode = code.replace(r, "8"+ register1+ regester2 +number);
           }
           if(/^OR/im.test(code)){
             number = 1;
