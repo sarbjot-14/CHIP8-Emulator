@@ -37,13 +37,14 @@ LD VA, 0
 call draw_score
 
 ; init ball properties
-LD V6, 3;
-LD V7, 17;
-LD V8, 2;
-LD V9, -1;
+LD V6, 3
+LD V7, 17
+LD V8, 2
+LD V9, -1
 
-LD i, ball; set i to memory address of ball
-DRW V6, V7, 1; draw the ball
+; draw the ball
+LD i, ball
+DRW V6, V7, 1
 
 main_loop
 	; paddle stuff
