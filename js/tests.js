@@ -162,6 +162,7 @@ function updateGenericLabels(){
   regIDec = parseInt(chip.registerI, 16);
   oldRegX = parseInt(oldVal[1].registersV[x], 16);
   oldRegY = parseInt(oldVal[1].registersV[y], 16);
+  oldRegIDec = parseInt(oldVal[1].registerI, 16);
   kk = parseInt(oldVal[0].substring(2, 4), 16);
   nnn = parseInt(oldVal[0].substring(1, 4), 16);
   pc = parseInt(chip.programCounter, 16);
@@ -297,7 +298,7 @@ function test8xy4(){
   if(result > 255){
     realResult = parseInt((result.toString(16)).substring(1, 3), 16)
   }
-  console.log(oldVal[0])
+  /*console.log(oldVal[0])
   printAllVariables();
   console.log("oldRegX: " + oldRegX)
   console.log("oldRegY: " + oldRegY)
@@ -305,7 +306,7 @@ function test8xy4(){
   console.log("result - 256: " + (result - 256))
   console.log("realResult: " + realResult)
   console.log("regX: " + regX)
-  console.log("regF: " + regF)
+  console.log("regF: " + regF)*/
   if(result > 255 && regX == realResult && regF == 1){
     passed = true;
   }else if(result <= 255 && regX == realResult && regF == 0){
@@ -314,36 +315,47 @@ function test8xy4(){
   setInstructionPassed("8XY4", passed);
 }
 function test8xy5(){//////******
-  let result = oldRegX - regY;/*
+  let result = (oldRegX - regY) & 255;
   if(oldRegX < regY && regX == result && regF == 0){
     passed = true;
-  }else if(result < 255 && regX == result && regF == 1){
+  }else if(oldRegX > regY && regX == result && regF == 1){
     passed = true;
-  }*/
+  }
   setInstructionPassed("8XY5", passed);
 }
 function test8xy6(){
   if(chip.legacyMode && regX == regY >> 1){
-    if((regY % 2 != 0 && regF == 1) || (regF == 0)){
+    if((regY % 2 != 0 && regF == 1) || (regY % 2 == 0 && regF == 0)){
       passed = true;
     }
   }else if(!chip.legacyMode && regX == oldRegX >> 1){
-    if((oldRegX % 2 != 0 && regF == 1) || (regF == 0)){
+    if((oldRegX % 2 != 0 && regF == 1) || (oldRegX % 2 == 0 && regF == 0)){
       passed = true;
     }
   }
   setInstructionPassed("8XY6", passed);
 }
 function test8xy7(){////*****
-
+  let result = (regY - oldRegX) & 255;
+  if(regY < oldRegX && regX == result && regF == 0){
+    passed = true;
+  }else if(regY > oldRegX && regX == result && regF == 1){
+    passed = true;
+  }
+  setInstructionPassed("8XY5", passed);
 }
 function test8xye(){
+  console.log(oldVal[0])
   if(chip.legacyMode && regX == regY << 1){
-    if((regY % 2 != 0 && regF == 1) || (regF == 0)){
+    console.log("\tlegacyMode on " + chip.legacyMode)
+    console.log("\tregX: " + regX)
+    console.log("\tregY: " + regY)
+    if((regY >= 128  && regF == 1) || (regY < 128 && regF == 0)){
+      console.log("\t\tregF: " + regF)
       passed = true;
     }
-  }else if(!chip.legacyMode && regY <<  1){
-    if((oldRegX % 2 != 0 && regF == 1) || (regF == 0)){
+  }else if(!chip.legacyMode && regX == oldRegX <<  1){
+    if((oldRegX >= 128 && regF == 1) || (oldRegX < 128 && regF == 0)){
       passed = true;
     }
   }
@@ -392,22 +404,42 @@ function testFX0A(){
 
 }
 function testFX15(){
-
+  if(chip.registerDelay == regX){
+    passed = true;
+  }
+  setInstructionPassed("FX15", passed);
 }
 function testFX18(){
-
+  if(chip.registerSoundtimer == regX){
+    passed = true;
+  }
+  setInstructionPassed("FX15", passed);
 }
 function testFX1E(){
-
+  if(regIDec == oldRegIDec + oldRegX){
+    passed = true;
+  }
+  setInstructionPassed("FX1E", passed);
 }
 function testFX29(){
-
+ if(regIDec == oldRegIDec * 5){
+   passed = true;
+ }
+ setInstructionPassed("FX29", passed);
 }
 function testFX33(){
 
 }
 function testFX55(){
-
+  passed = true;
+  for(let i = 0; i < x; i++){
+    if(chip.memory[regIDec] != chip.registersV[i]){
+      passed = false;
+      break;
+    }
+    regIDec++;
+  }
+  setInstructionPassed("FX55", passed);
 }
 function testFX65(){
 

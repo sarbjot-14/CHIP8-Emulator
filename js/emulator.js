@@ -215,7 +215,6 @@ class emulator{
       }
       return vfFlag;
     }
-
   }
 
   popStack(){
@@ -359,7 +358,11 @@ class emulator{
         return 1;
 
       case "4":// 4XKK - Skip next instruction if VX != KK
-
+        console.log("---------------")////****
+        console.log("x: " + x)////****
+        console.log("regF: " + regF)////****
+        console.log("value: " + value)////****
+        console.log("---------------")////****
         if((x == 15 && regF != value) || (regX != value)){
             this.setProgramCounter((pc + 2).toString(16));
         }
@@ -428,7 +431,6 @@ class emulator{
             console.log("regY: " + regY)////****
             console.log("regX - regY: " + (regX - regY))////****
             console.log("(regX - regY).toString(16): " + (regX - regY).toString(16))////*****/
-            this.setRegistersV(x, (regX - regY).toString(16));
             //console.log("registersV[x]: " + this.registersV[x])////****
             break;
 
@@ -445,7 +447,7 @@ class emulator{
             }else{
               this.setVF(0);
             }
-            shiftingValue = (shiftingValue >> 1).toString(16);
+            shiftingValue = ((shiftingValue >> 1) & 255).toString(16);
             this.setRegistersV(x, shiftingValue);
             break;
 
@@ -455,7 +457,13 @@ class emulator{
             }else{
               this.setVF(0);
             }
-            this.setRegistersV(x, (regX - regY).toString(16));
+            console.log("\t-ins " + ins)////****
+            console.log("\tregX " + regX)////****
+            console.log("\tregY " + regY)////****
+            console.log("\tregY - regX = " + (regY - regX))////****
+            console.log("\t(regY - regX) & 255 = " + ((regY - regX) & 255))////****
+            this.setRegistersV(x, ((regY - regX) & 255).toString(16));
+            console.log("\t\tthis.registersV[x]: " + this.registersV[x])////****
             break;
 
           case "E":// 8XYe - Set VX = shiftingValue << 1 (shiftingValue = register VY if legacyMode is true, shiftingValue = register VX otherwise)
@@ -472,7 +480,7 @@ class emulator{
             }else{
               this.setVF(0);
             }
-            shiftingValue = (shiftingValue << 1).toString(16);
+            shiftingValue = ((shiftingValue << 1) & 255).toString(16);
             this.setRegistersV(x, shiftingValue);
             break;
 
@@ -482,7 +490,6 @@ class emulator{
         return 1;
 
       case "9":// 9XY0 - Skip next instruction if VX != VY
-
         console.log("\t\tx: " + x)////***
         console.log("\t\tregF: " + regF)////***
         console.log("\t\tvalue: " + value)////***
@@ -493,26 +500,22 @@ class emulator{
 
       case "a":
       case "A":// ANNN - Set I = nnn.
-
         this.setRegisterI(addr.toString(16));
         return 1;
 
       case "b":
       case "B":// BNNN - Jump to location nnn + V0.
-
         this.setProgramCounter((addr + parseInt(this.registersV[0], 16) - 2).toString(16)); //Minus to prevent skipping an instruction after jump
         return 1;
 
       case "c":
       case "C":// CXKK - Set VX = random byte AND KK
-
         var randNum = Math.round(Math.random()*255);
         this.setRegistersV(x, (randNum & value).toString(16));
         return 1;
 
       case "d":
       case "D": //DXYN - display n-byte sprite at memory location I at (VX, VY), set VF = collision
-
         let size = parseInt(ins[3], 16);
         this.setVF(0)
         for(let i = 0; i < size; i++){
@@ -528,7 +531,6 @@ class emulator{
         switch(ins.substring(2, 4)){
           case "9E":
           case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
-
             if(this.keyIsDown(x.toString(16))){
                this.setProgramCounter((pc + 2).toString(16));
             }
@@ -536,7 +538,6 @@ class emulator{
 
           case "A1":
           case "a1":// EXA1 - SKNP - Skip next instruction if key with the value VX is not pressed
-
             if(!this.keyIsDown(x.toString(16))){
                this.setProgramCounter((pc + 2).toString(16));
             }
@@ -555,11 +556,16 @@ class emulator{
 
           case "0A":
           case "0a":// FX0A - LD VX, K - Wait for a key to press, store value of key into VX
-            for(let i = 0; i < 16; i++){
-              if(this.keyIsDown(i.toString(16))){
-                this.pushUndo(ins);
-                this.setRegistersV(x, i.toString(16));
-                return 1;
+            let pressed = false;
+            while(!pressed)
+            {
+              for(let i = 0; i < 16; i++){
+                if(this.keyIsDown(i.toString(16))){
+                  this.pushUndo(ins);
+                  this.setRegistersV(x, i.toString(16));
+                  pressed = true;
+                  return 1;
+                }
               }
             }
             return 2;
@@ -581,7 +587,6 @@ class emulator{
             return 1;
 
           case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX ////**** this case isn't finished ****////
-
             this.setRegisterI((x * 5).toString(16))
             return 1;
 
