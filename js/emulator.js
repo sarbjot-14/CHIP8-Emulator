@@ -94,7 +94,7 @@ class emulator{
       let endTime = new Date();
       let insSpeed = (endTime.getTime() - startTime.getTime());
 
-      let desiredHz = 120/this.speed;
+      let desiredHz = 60/this.speed;
       let insDelay = (1000/desiredHz)-insSpeed;
 
       //console.log("Instruction took:  " + insSpeed.toString() + "ms\n to execute" )
@@ -314,6 +314,7 @@ class emulator{
     let pc = parseInt(this.programCounter, 16);
     let regIDec = parseInt(this.registerI, 16);
     this.pushUndoCurrentIns(ins)
+    console.log("regF: " + regF)
     //console.log(ins) //enable this line to get opcode readouts
     switch(ins[0]){
       case "0":
@@ -359,11 +360,18 @@ class emulator{
 
       case "4":// 4XKK - Skip next instruction if VX != KK
         console.log("---------------")////****
+        console.log(ins)
         console.log("x: " + x)////****
         console.log("regF: " + regF)////****
         console.log("value: " + value)////****
         console.log("---------------")////****
-        if((x == 15 && regF != value) || (regX != value)){
+        console.log("branch 1 result: " + (x == 15) + "  " + (regF != value))///***
+        console.log("branch 2 result: " + (regX != value))///***
+        if(x == 15 && regF != value){
+            console.log("\tbranch 1")///***
+            this.setProgramCounter((pc + 2).toString(16));
+        }else if(regX != value){
+          console.log("\tbranch not 2")///***
             this.setProgramCounter((pc + 2).toString(16));
         }
         return 1;
@@ -408,11 +416,12 @@ class emulator{
             break;
 
           case "4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
-          console.log("\tregX " + regX)////****
+        /*  console.log("\tregX " + regX)////****
           console.log("\tregY " + regY)////****
           console.log("\tregX + regY " + (regX + regY))////****
+          */
             if((regX + regY) > 255){
-              console.log("\t(regX + regY).toString(16).substring(1, 4) " + ((regX + regY).toString(16).substring(1, 4)))
+              //console.log("\t(regX + regY).toString(16).substring(1, 4) " + ((regX + regY).toString(16).substring(1, 4)))
               this.setRegistersV(x, (regX + regY).toString(16).substring(1, 4));
               this.setVF(1);
             }else{
@@ -427,6 +436,7 @@ class emulator{
             }else{
               this.setVF(0);
             }
+            this.setRegistersV(x, ((regX - regY) & 255).toString(16));
             /*console.log("regX: " + regX)////****
             console.log("regY: " + regY)////****
             console.log("regX - regY: " + (regX - regY))////****
@@ -531,14 +541,14 @@ class emulator{
         switch(ins.substring(2, 4)){
           case "9E":
           case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
-            if(this.keyIsDown(x.toString(16))){
+            if(this.keyIsDown(regX.toString(16))){
                this.setProgramCounter((pc + 2).toString(16));
             }
             return 1;
 
           case "A1":
           case "a1":// EXA1 - SKNP - Skip next instruction if key with the value VX is not pressed
-            if(!this.keyIsDown(x.toString(16))){
+            if(!this.keyIsDown(regX.toString(16))){
                this.setProgramCounter((pc + 2).toString(16));
             }
             return 1;
@@ -675,6 +685,7 @@ class emulator{
     }
   }
   keyIsDown(key){// recognize if a key is pressed
+    console.log(key)
     return this.keyInput[key];
   }
   setupFont(){// Setup a list of Chip-8 fonts and place them into beginning of the memory

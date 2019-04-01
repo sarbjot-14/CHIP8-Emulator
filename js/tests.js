@@ -389,9 +389,15 @@ function testDXYN(){
   setInstructionPassed("DXYN", passed);
 }
 function testEX9E(){
+  if(keyIsDown(oldregX.toString(16)) && pc - oldPc == 4){
+    passed = true;
+  }else if(pc - oldPc == 2)
   setInstructionPassed("EX9E", passed);
 }
 function testEXA1(){
+  if(!keyIsDown(oldRegX.toString(16)) && pc - oldPc == 4){
+    passed = true;
+  }else if(1)
   setInstructionPassed("EXA1", passed);
 }
 function testFX07(){
