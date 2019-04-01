@@ -5,9 +5,12 @@ let x;
 let y;
 let regX;
 let regY;
+let regF;
+let regIDec;
 let oldRegX;
 let oldRegY;
 let kk;
+let nnn;
 let pc;
 let oldPc;
 //let oldVal = [];
@@ -85,7 +88,7 @@ function giveTestProgram(){
   testProgram += "00E0 00E0 ";
   testProgram += "1214 3401 3400 0000 4401 0000 4400 00EE 2206 ";
   testProgram += "62F0 63FF 5230 720F 5230 0000 ";
-  testProgram += "8030 8121 8312 8342 8323 8343 8333 8324 8334 8434 8355 8345 8245 8245 8336 8446 8346 8447 8327 83E7 8237 844E 845E 6501 845E 843E ";;
+  testProgram += "8030 8121 8312 8342 8323 8343 8333 8324 8334 8434 8355 8345 8245 8245 8336 8446 8346 8447 8327 83E7 8237 844E 845E 6501 845E 843E ";
   //VF doesn't update itself after modifying, since ins 8
   testProgram += "A000 A000 ";
   testProgram += "6002 B25C 6000 B262 ";
@@ -155,9 +158,12 @@ function updateGenericLabels(){
   y = parseInt(oldVal[0][2], 16);
   regX = parseInt(chip.registersV[x], 16);
   regY = parseInt(chip.registersV[y], 16);
-  oldRegX = parseInt(oldVal[1].registersV[x], 16)
-  oldRegY = parseInt(oldVal[1].registersV[y], 16)
+  regF = parseInt(chip.VF, 16);
+  regIDec = parseInt(chip.registerI, 16);
+  oldRegX = parseInt(oldVal[1].registersV[x], 16);
+  oldRegY = parseInt(oldVal[1].registersV[y], 16);
   kk = parseInt(oldVal[0].substring(2, 4), 16);
+  nnn = parseInt(oldVal[0].substring(1, 4), 16);
   pc = parseInt(chip.programCounter, 16);
   oldPc = parseInt(oldVal[1].programCounter, 16);
 }
@@ -195,7 +201,14 @@ function test00e0(){
   setInstructionPassed("00E0", passed);
 }
 function test00ee(){
-
+  let oldStackPointer = oldVal[1].stackPointer;
+  let oldStack = oldVal[1].stack;
+  if(oldStackPointer > 0 && oldStackPointer - chip.stackPointer == 1 && pc - parseInt(oldStack[oldStackPointer], 16) == 2){
+    passed = true;
+  }else if(oldStackPointer == 0 && chip.stackPointer == 0){
+    passed = true;
+  }
+  setInstructionPassed("00EE", passed);
 }
 function test1nnn(){
   if(parseInt(chip.programCounter, 16) == parseInt("214", 16)){
@@ -255,33 +268,148 @@ function test7xkk(){
   setInstructionPassed("7XKK", passed);
 }
 function test8xy0(){
-
+  if(regX == regY){
+    passed = true;
+  }
+  setInstructionPassed("8XY0", passed);
 }
 function test8xy1(){
-
+  if(regX == (oldRegX | oldRegY)){
+    passed = true;
+  }
+  setInstructionPassed("8XY1", passed);
 }
 function test8xy2(){
-
+  if(regX == (oldRegX & oldRegY)){
+    passed = true;
+  }
+  setInstructionPassed("8XY2", passed);
 }
 function test8xy3(){
-
+  if(regX == (oldRegX ^ oldRegY)){
+    passed = true;
+  }
+  setInstructionPassed("8XY3", passed);
 }
 function test8xy4(){
-
+  let result = oldRegX + oldRegY;
+  let realResult = result;
+  if(result > 255){
+    realResult = parseInt((result.toString(16)).substring(1, 3), 16)
+  }
+  console.log(oldVal[0])
+  printAllVariables();
+  console.log("oldRegX: " + oldRegX)
+  console.log("oldRegY: " + oldRegY)
+  console.log("result: " + result)
+  console.log("result - 256: " + (result - 256))
+  console.log("realResult: " + realResult)
+  console.log("regX: " + regX)
+  console.log("regF: " + regF)
+  if(result > 255 && regX == realResult && regF == 1){
+    passed = true;
+  }else if(result <= 255 && regX == realResult && regF == 0){
+    passed = true;
+  }
+  setInstructionPassed("8XY4", passed);
 }
-function test8xy5(){
-
+function test8xy5(){//////******
+  let result = oldRegX - regY;/*
+  if(oldRegX < regY && regX == result && regF == 0){
+    passed = true;
+  }else if(result < 255 && regX == result && regF == 1){
+    passed = true;
+  }*/
+  setInstructionPassed("8XY5", passed);
 }
 function test8xy6(){
-
+  if(chip.legacyMode && regX == regY >> 1){
+    if((regY % 2 != 0 && regF == 1) || (regF == 0)){
+      passed = true;
+    }
+  }else if(!chip.legacyMode && regX == oldRegX >> 1){
+    if((oldRegX % 2 != 0 && regF == 1) || (regF == 0)){
+      passed = true;
+    }
+  }
+  setInstructionPassed("8XY6", passed);
 }
-function test8xy7(){
+function test8xy7(){////*****
 
 }
 function test8xye(){
-
+  if(chip.legacyMode && regX == regY << 1){
+    if((regY % 2 != 0 && regF == 1) || (regF == 0)){
+      passed = true;
+    }
+  }else if(!chip.legacyMode && regY <<  1){
+    if((oldRegX % 2 != 0 && regF == 1) || (regF == 0)){
+      passed = true;
+    }
+  }
+  setInstructionPassed("8XYE", passed);
 }
 function test9xy0(){
+  if(regX != regY && pc - oldPc == 4){
+    passed = true;
+  }else if(pc - oldPc == 2){
+    passed = true;
+  }
+  setInstructionPassed("9XY0", passed);
+}
+function testANNN(){
+  if(regIDec == nnn){
+    passed = true;
+  }
+  setInstructionPassed("ANNN", passed);
+}
+function testBNNN(){
+  let reg0 = parseInt(oldVal[1].registersV[0], 16);
+  if(pc == nnn + reg0){
+    passed = true;
+  }
+  setInstructionPassed("BNNN", passed);
+}
+function testCXKK(){
+  setInstructionPassed("CXKK", true);
+}
+function testDXYN(){
+  setInstructionPassed("DXYN", passed);
+}
+function testEX9E(){
+  setInstructionPassed("EX9E", passed);
+}
+function testEXA1(){
+  setInstructionPassed("EXA1", passed);
+}
+function testFX07(){
+  if(regX == chip.registerDelay){
+    passed = true;
+  }
+  setInstructionPassed("FX07", passed);
+}
+function testFX0A(){
+
+}
+function testFX15(){
+
+}
+function testFX18(){
+
+}
+function testFX1E(){
+
+}
+function testFX29(){
+
+}
+function testFX33(){
+
+}
+function testFX55(){
+
+}
+function testFX65(){
 
 }
 function updatePassingInstruction(ins){
@@ -300,7 +428,6 @@ function updatePassingInstruction(ins){
       break;
     }
     break;
-
     case "1":// 1NNN - JP addr - Jump to location NNN
     test1nnn();
     break;
@@ -361,71 +488,81 @@ function updatePassingInstruction(ins){
       test8xye();
       break;
     }
-
     case "9":// 9XY0 - Skip next instruction if VX != VY
     test9xy0();
     break;
     case "a":
     case "A":// ANNN - Set I = nnn.
+    testANNN();
     break;
     case "b":
     case "B":// BNNN - Jump to location nnn + V0.
+    testBNNN();
     break;
     case "c":
     case "C":// CXKK - Set VX = random byte AND KK
+    testCXKK();
     break;
     case "d":
     case "D": //DXYN - display n-byte sprite at memory location I at (VX, VY), set VF = collision
+    testDXYN();
     break;
-
     case "e":
     case "E":
     switch(ins.substring(2, 4)){
       case "9E":
       case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
+      testEX9E();
       break;
 
       case "A1":
       case "a1":// EXA1 - SKNP - Skip next instruction if key with the value VX is not pressed
-
+      testEXA1();
       break;
     }
     break;
-
     case "f":
     case "F": ////**** missing pushUndo ****////
     switch(ins.substring(2,4)){
       case "07":// FX07 - LD VX, DT - Set VX = delay timer value
+      testFX07();
       break;
 
       case "0A":
       case "0a":// FX0A - LD VX, K - Wait for a key to press, store value of key into VX
+      testFX0A();
       break;
 
       case "15":// FX15 - LD DT, VX - Set delay timer = VX
+      testFX15();
       break;
 
       case "18":// FX18 - LD ST, VX - Set sound timer = VX
+      testFX18();
       break;
 
       case "1E":
       case "1e":// FX1E - ADD I, VX - Set I = I + VX
+      testFX1E();
       break;
 
-      case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX ////**** this case isn't finished ****////
+      case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX
+      testFX29();
       break;
 
       case "33":// FX33 - Store Binary Coded Decimal VX in memory location I, I+1, I+2
+      testFX33();
       break;
 
       case "55":// FX55 - LD [I], VX - Store registers V0 through VX in memory starting at location I
+      testFX55();
       break;
 
       case "65":// FX65 - LD VX, [I] - Read registers V0 through VX from memory starting at location I
+      testFX65();
       break;
     }
     break;
-
   }
 }
 

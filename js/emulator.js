@@ -4,7 +4,7 @@ class emulator{
     this.vis = new visualizer(this);
     this.undoStack = []; //stack used for undoing instructions. each value is in the form [instruction, {data}]
 
-    this.registersV = new Array(15); //16 1byte registers Vx, each is from 00-FF
+    this.registersV = new Array(15); //15 1byte registers Vx, each is from 00-FF
     this.registerI; //16bit register that holds addresses (0000-FFFF)
     this.registerDelay; //8bit register. Decrements at a rate of 60Hz if non-zero
     this.registerSoundTimer; //8bit register. Decrements at a rate of 60Hz if non-zero
@@ -221,7 +221,7 @@ class emulator{
   popStack(){
     if(this.stackPointer > 0){
       let result = this.stack[this.stackPointer];
-      this.setStackPointer(this.stackPointer-1);
+      this.setStackPointer(this.stackPointer - 1);
       this.vis.updateStack();
       return result;
     }
@@ -314,13 +314,14 @@ class emulator{
     let addr = parseInt(nnn, 16);
     let pc = parseInt(this.programCounter, 16);
     let regIDec = parseInt(this.registerI, 16);
+    this.pushUndoCurrentIns(ins)
     //console.log(ins) //enable this line to get opcode readouts
     switch(ins[0]){
       case "0":
         switch(ins.substring(1, 4)){
           case "0E0":// 00E0 - CLS - Clear the display
           case "0e0":
-            this.pushUndo(ins);
+
             this.updateScreen(new Array(64*32), 0, {fill: true});
             return 1;
 
@@ -329,7 +330,6 @@ class emulator{
           case "0Ee":
           case "0eE":
             if(this.stackPointer > 0){
-              this.pushUndo(ins);
               this.setProgramCounter(this.popStack());
             }
             return 1;
@@ -341,49 +341,52 @@ class emulator{
         break;
 
       case "1":// 1NNN - JP addr - Jump to location NNN
-        this.pushUndo(ins);
+
         this.setProgramCounter((addr - 2).toString(16)); //minus two so it doesnt skip first instruction
         return 1;
 
       case "2":// 2NNN - CALL addr - Call subroutine at NNN
-        this.pushUndo(ins); ////****not sure if this is correct ****////
+         ////****not sure if this is correct ****////
         this.pushStack(this.programCounter.slice(0));
         this.setProgramCounter((addr - 2).toString(16)); //minus two so it doesnt skip first instruction
         return 1;
 
       case "3":// 3XKK - SE Vx, byte - Skip next instruction if VX = KK
-        this.pushUndo(ins);
+
         if((x == 15 && regF == value) || (regX == value)){
             this.setProgramCounter((pc + 2).toString(16));
         }
         return 1;
 
       case "4":// 4XKK - Skip next instruction if VX != KK
-        this.pushUndo(ins);
+
         if((x == 15 && regF != value) || (regX != value)){
             this.setProgramCounter((pc + 2).toString(16));
         }
         return 1;
 
       case "5":// 5XY0 - Skip next instruction if VX = VY
-        this.pushUndo(ins);
+
+        /*console.log("\t\tx: " + x)////***
+        console.log("\t\tregF: " + regF)////***
+        console.log("\t\tvalue: " + value)////****/
         if((x == 15 && regF == regY) || (regX == regY)){
           this.setProgramCounter((pc + 2).toString(16));
         }
         return 1;
 
       case "6":// 6XKK - Set VX == KK
-        this.pushUndo(ins); ////**** not sure if this is correct****////
+         ////**** not sure if this is correct****////
         this.setRegistersV(x, kk);
         return 1;
 
       case "7":// 7XKK - Set VX = VX + KK
-        this.pushUndo(ins); ////**** not sure if this is correct****////
+         ////**** not sure if this is correct****////
         this.setRegistersV(x, (regX + value).toString(16));
         return 1;
 
       case "8":
-        this.pushUndo(ins);// push to undo stacks: VX, VY, VF(carry flag)
+        // push to undo stacks: VX, VY, VF(carry flag)
         switch(ins[3]){
           case "0":// 8XY0 - Set VX = VY
             this.setRegistersV(x, this.registersV[y]);
@@ -401,15 +404,18 @@ class emulator{
             this.setRegistersV(x, (regX ^ regY).toString(16));
             break;
 
-          case "4":// 8XY4 - Set VX = VX + VY, VF = 1 =
-            if((regX + regY) > parseInt("FF", 16)){
+          case "4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
+          console.log("\tregX " + regX)////****
+          console.log("\tregY " + regY)////****
+          console.log("\tregX + regY " + (regX + regY))////****
+            if((regX + regY) > 255){
+              console.log("\t(regX + regY).toString(16).substring(1, 4) " + ((regX + regY).toString(16).substring(1, 4)))
               this.setRegistersV(x, (regX + regY).toString(16).substring(1, 4));
               this.setVF(1);
             }else{
               this.setRegistersV(x, (regX + regY).toString(16));
               this.setVF(0);
             }
-
             break;
 
           case "5":// 8XY5 - Set VX = VX - VY, VF = 1 = not borrow
@@ -418,8 +424,12 @@ class emulator{
             }else{
               this.setVF(0);
             }
-
+            /*console.log("regX: " + regX)////****
+            console.log("regY: " + regY)////****
+            console.log("regX - regY: " + (regX - regY))////****
+            console.log("(regX - regY).toString(16): " + (regX - regY).toString(16))////*****/
             this.setRegistersV(x, (regX - regY).toString(16));
+            //console.log("registersV[x]: " + this.registersV[x])////****
             break;
 
           case "6":// 8XY6 - Set VX = shiftingValue >> 1 (shiftingValue = register VY if legacyMode is true, shiftingValue = register VX otherwise)
@@ -430,13 +440,12 @@ class emulator{
               shiftingValue = regX;
             }
 
-            if(( shiftingValue  % 2) != 0){
+            if((shiftingValue  % 2) != 0){
               this.setVF(1);
             }else{
               this.setVF(0);
             }
-
-            shiftingValue = (Math.floor(shiftingValue / 2)).toString(16);
+            shiftingValue = (shiftingValue >> 1).toString(16);
             this.setRegistersV(x, shiftingValue);
             break;
 
@@ -446,7 +455,6 @@ class emulator{
             }else{
               this.setVF(0);
             }
-
             this.setRegistersV(x, (regX - regY).toString(16));
             break;
 
@@ -464,8 +472,7 @@ class emulator{
             }else{
               this.setVF(0);
             }
-
-            shiftingValue = (Math.floor(shiftingValue * 2)).toString(16);
+            shiftingValue = (shiftingValue << 1).toString(16);
             this.setRegistersV(x, shiftingValue);
             break;
 
@@ -475,7 +482,10 @@ class emulator{
         return 1;
 
       case "9":// 9XY0 - Skip next instruction if VX != VY
-        this.pushUndo(ins);
+
+        console.log("\t\tx: " + x)////***
+        console.log("\t\tregF: " + regF)////***
+        console.log("\t\tvalue: " + value)////***
         if((x == 15 && regF == regY) || (regX == regY)){
             this.setProgramCounter((pc + 2).toString(16));
         }
@@ -483,26 +493,26 @@ class emulator{
 
       case "a":
       case "A":// ANNN - Set I = nnn.
-        this.pushUndo(ins);
+
         this.setRegisterI(addr.toString(16));
         return 1;
 
       case "b":
       case "B":// BNNN - Jump to location nnn + V0.
-        this.pushUndo(ins);
+
         this.setProgramCounter((addr + parseInt(this.registersV[0], 16) - 2).toString(16)); //Minus to prevent skipping an instruction after jump
         return 1;
 
       case "c":
       case "C":// CXKK - Set VX = random byte AND KK
-        this.pushUndo(ins);
+
         var randNum = Math.round(Math.random()*255);
         this.setRegistersV(x, (randNum & value).toString(16));
         return 1;
 
       case "d":
       case "D": //DXYN - display n-byte sprite at memory location I at (VX, VY), set VF = collision
-        this.pushUndo(ins);
+
         let size = parseInt(ins[3], 16);
         this.setVF(0)
         for(let i = 0; i < size; i++){
@@ -518,7 +528,7 @@ class emulator{
         switch(ins.substring(2, 4)){
           case "9E":
           case "9e":// EX9E - SKP VX - Skip next instruction if key with the value of VX is pressed
-            this.pushUndo(ins);
+
             if(this.keyIsDown(x.toString(16))){
                this.setProgramCounter((pc + 2).toString(16));
             }
@@ -526,7 +536,7 @@ class emulator{
 
           case "A1":
           case "a1":// EXA1 - SKNP - Skip next instruction if key with the value VX is not pressed
-            this.pushUndo(ins);
+
             if(!this.keyIsDown(x.toString(16))){
                this.setProgramCounter((pc + 2).toString(16));
             }
@@ -535,17 +545,17 @@ class emulator{
         break;
 
       case "f":
-      case "F": ////**** missing pushUndo ****////
+      case "F":
         //console.log("x: " + x)////****
         switch(ins.substring(2,4)){
           case "07":// FX07 - LD VX, DT - Set VX = delay timer value
-            this.pushUndo(ins);
+
             this.setRegistersV(x, this.registerDelay);
             return 1;
 
           case "0A":
           case "0a":// FX0A - LD VX, K - Wait for a key to press, store value of key into VX
-            for(let i=0; i< 16; i++){
+            for(let i = 0; i < 16; i++){
               if(this.keyIsDown(i.toString(16))){
                 this.pushUndo(ins);
                 this.setRegistersV(x, i.toString(16));
@@ -555,28 +565,28 @@ class emulator{
             return 2;
 
           case "15":// FX15 - LD DT, VX - Set delay timer = VX
-            this.pushUndo(ins);
+
             this.setRegisterDelay(this.registersV[x]);
             return 1;
 
           case "18":// FX18 - LD ST, VX - Set sound timer = VX
-            this.pushUndo(ins);
+
             this.setRegisterSoundTimer(this.registersV[x]);
             return 1;
 
           case "1E":
           case "1e":// FX1E - ADD I, VX - Set I = I + VX
-            this.pushUndo(ins);
+
             this.setRegisterI((regIDec + regX).toString(16));
             return 1;
 
           case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX ////**** this case isn't finished ****////
-            this.pushUndo(ins);
+
             this.setRegisterI((x * 5).toString(16))
             return 1;
 
           case "33":// FX33 - Store Binary Coded Decimal VX in memory location I, I+1, I+2
-            this.pushUndo(ins);
+
             //let regXDec = regX.toString(10);///////******
             let hunDigit = Math.floor(regX / 100);
             let tenDigit = Math.floor((regX % 100) / 10);
@@ -593,7 +603,7 @@ class emulator{
             return 1;
 
           case "55":// FX55 - LD [I], VX - Store registers V0 through VX in memory starting at location I
-              this.pushUndo(ins);
+
               //console.log("regIDec: " + regIDec)///****
               for(let i = 0; i <= x; i++){
                 //console.log("this.registersV[" + i + "]: " + this.registersV[i])////****
@@ -614,7 +624,7 @@ class emulator{
               return 1;
 
           case "65":// FX65 - LD VX, [I] - Read registers V0 through VX from memory starting at location I
-            this.pushUndo(ins);
+
             for(let i = 0; i <= x; i++){
               this.setRegistersV(i, this.memory[regIDec]);
               //console.log("this.registersV[" + i + "]: " + this.registersV[i])////****
@@ -623,7 +633,6 @@ class emulator{
             return 1;
         }
         break;
-
     }
     return 0;
   }//end of executeInstruction()
@@ -654,6 +663,11 @@ class emulator{
       result.push(parseInt(pixString[i],2));
     }
     return result;
+  }
+  pushUndoCurrentIns(ins){
+    if(ins.substring(2, 4) != "0a" && ins.substring(2, 4) != "0A"){
+      this.pushUndo(ins);
+    }
   }
   keyIsDown(key){// recognize if a key is pressed
     return this.keyInput[key];
