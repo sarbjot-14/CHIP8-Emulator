@@ -4,7 +4,7 @@
 ; V1 free
 ; V2 free
 ; V3 free
-; V4 
+; V4 used for score
 ; V5 used to check collisions 
 ; V6 x coord of shape
 ; V7 y coord of shape
@@ -39,13 +39,16 @@ LD V2, 0; set y value to 0 top of screen
 LD V3, 31; set y value to 31 bottom of screen
 LD V8, 3 ;initial direction of block is down
 LD V9, 0
-LD VA, 32
-LD VE, 1
+LD VA, 32; init max height
+LD VE, 1; init shape id
+LD V4, 0; init score
 LD VC, 1; init shape rotations
 LD VB, 5 ; load the value to delay by into the empty register (to pass to delay timer)
 LD DT, VB ; pass the above value into the delay timer "register"
 CALL drawVerticalBorder
 CALL drawHorizBorder
+CALL drawInit
+CALL drawScore
 CALL spawnBlock
 jp gameLoop
 
@@ -63,6 +66,30 @@ drawHorizBorder
 	SE V0, V1
 	jp drawHorizBorder
 	DRW V0, V3, 1; draws last corner pixel
+	RET
+
+drawInit
+	LD V0, 5; x value of num
+	LD V1, 12; y value of num
+	LD V2, 2
+	LD F, V2
+	DRW V0, V1, 5
+	LD V0, 10; move x value of num
+	LD V2, 7
+	LD F, V2
+	DRW V0, V1, 5
+	LD V0, 15; move x value of num
+	LD V2, 6
+	LD F, V2
+	DRW V0, V1, 5
+
+	RET
+
+drawScore
+	LD V0, 50; x value of score
+	LD V1, 12; y value of score
+	LD F, V4
+	DRW V0, V1, 5
 	RET
 
 ; main game loop
