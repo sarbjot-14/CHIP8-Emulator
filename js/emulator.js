@@ -314,7 +314,7 @@ class emulator{
     let pc = parseInt(this.programCounter, 16);
     let regIDec = parseInt(this.registerI, 16);
     this.pushUndoCurrentIns(ins)
-    console.log("regF: " + regF)
+  //  console.log("regF: " + regF)
     //console.log(ins) //enable this line to get opcode readouts
     switch(ins[0]){
       case "0":
@@ -359,19 +359,19 @@ class emulator{
         return 1;
 
       case "4":// 4XKK - Skip next instruction if VX != KK
-        console.log("---------------")////****
+      /*  console.log("---------------")////****
         console.log(ins)
         console.log("x: " + x)////****
         console.log("regF: " + regF)////****
         console.log("value: " + value)////****
         console.log("---------------")////****
         console.log("branch 1 result: " + (x == 15) + "  " + (regF != value))///***
-        console.log("branch 2 result: " + (regX != value))///***
+        console.log("branch 2 result: " + (regX != value))///****/
         if(x == 15 && regF != value){
-            console.log("\tbranch 1")///***
+            //console.log("\tbranch 1")///***
             this.setProgramCounter((pc + 2).toString(16));
         }else if(regX != value){
-          console.log("\tbranch not 2")///***
+          //console.log("\tbranch not 2")///***
             this.setProgramCounter((pc + 2).toString(16));
         }
         return 1;
@@ -571,16 +571,12 @@ class emulator{
           case "0A":
           case "0a":// FX0A - LD VX, K - Wait for a key to press, store value of key into VX
             let pressed = false;
-            while(!pressed)
-            {
               for(let i = 0; i < 16; i++){
                 if(this.keyIsDown(i.toString(16))){
                   this.pushUndo(ins);
                   this.setRegistersV(x, i.toString(16));
-                  pressed = true;
                   return 1;
                 }
-              }
             }
             return 2;
 
@@ -601,7 +597,7 @@ class emulator{
             return 1;
 
           case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX ////**** this case isn't finished ****////
-            this.setRegisterI((x * 5).toString(16))
+            this.setRegisterI((regX * 5).toString(16))
             return 1;
 
           case "33":// FX33 - Store Binary Coded Decimal VX in memory location I, I+1, I+2
@@ -689,7 +685,6 @@ class emulator{
     }
   }
   keyIsDown(key){// recognize if a key is pressed
-    console.log(key)
     return this.keyInput[key];
   }
   setupFont(){// Setup a list of Chip-8 fonts and place them into beginning of the memory
