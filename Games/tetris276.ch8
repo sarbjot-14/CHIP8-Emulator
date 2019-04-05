@@ -5,7 +5,7 @@
 ; V2 will be used for line clears (0 = no full line, 1 = there is a full line)
 ; V3 free
 ; V4 used for score
-; V5 used to check collisions 
+; V5 used to check collisions
 ; V6 x coord of shape
 ; V7 y coord of shape
 ; V8 x dir of shape (1 = left, 2 = right)
@@ -31,7 +31,7 @@
 ;THE ACTUAL GAME IS BELOW HERE
 CLS
 LD I, border; set i to memory address of shape
-LD V6, 29; set all shapes' initial x value to the middle (29) 
+LD V6, 29; set all shapes' initial x value to the middle (29)
 LD V7, 0; set all shapes' initial y value to top (0)
 LD V0, 27; set left border's x value
 LD V1, 39; set right border's x value because this game of tetris played on 10 x 24 between pixels 28 and 38
@@ -108,7 +108,7 @@ spawnBlock
 	LD VE, 1
 	SNE VE, 1 ; if the block ID is 1, spawn Z block
 	CALL drawZ
-	SNE VE, 2 ; if block ID is 2, spawn B block 
+	SNE VE, 2 ; if block ID is 2, spawn B block
 	CALL drawB
 	SNE VE, 3 ; if block ID is 3, spawn reverse L block
 	CALL drawReverseL
@@ -120,7 +120,7 @@ spawnBlock
 	CALL drawT
 	SNE VE, 7 ; if block ID is 7, spawn I block
 	CALL drawI
-	
+
 	LD V9, 0;switch "block placed" value
 	RET
 
@@ -201,14 +201,14 @@ checkBlock
 
 	SNE VF, 1; check if there is a collision with another block or with the border
 	CALL checkUndo ; if shape landed on something undo the collision and redraw on top
-	
+
 	SE V8, 3;if block dir is not down, set it to down
  	LD V8, 3
-	
+
 	;Delay
 	SE VB, 1
 	CALL initDelay
-	
+
 	SNE V9, 1; check the collision
 	RET
 
@@ -438,7 +438,7 @@ rotateZ
 	ADD VC, 1
 	SNE VC, 3
 	LD VC, 1
-	
+
 	CALL drawShape
 	CALL drawZ
 	RET
