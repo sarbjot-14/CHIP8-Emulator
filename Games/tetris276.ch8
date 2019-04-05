@@ -40,7 +40,7 @@ LD V3, 31; set y value to 31 bottom of screen
 LD V8, 3 ;initial direction of block is down
 LD V9, 0
 LD VA, 32; init max height
-LD VE, 7; init shape id
+LD VE, 1; init shape id
 LD V4, 0; init score
 LD VC, 1; init shape rotations
 LD VB, 5 ; load the value to delay by into the empty register (to pass to delay timer)
@@ -222,7 +222,7 @@ resetBlock
 	LD V6, 29;reset x value
 	LD VB, 0;reset delay
 	LD VC, 1;reset block rotation id
-	;ADD VE, 1
+	ADD VE, 1
 	RET
 
 undoDrop
@@ -476,9 +476,10 @@ checkLineLoopH
 	SNE VF, 1;return if there is no collision
 	RET
 	ADD V0, 1
-	SNE V0, 39; clear line if V2 = 1
+	SNE V0, 38; clear line if V2 = 1
 	CALL clearLine
-	SE V0, 39
+	CALL updateScreen
+	SE V0, 38
 	jp checkLineLoopH
 	RET
 
@@ -515,6 +516,10 @@ updateScore
 	ADD V4, 1;add 1 to score to prep for the drawing of current score
 	LD F, V4
 	DRW V0, V2, 5;draw current score
+	RET
+
+updateScreen
+
 	RET
 
 ;sprite data
