@@ -1,8 +1,8 @@
 ; Registers
 ; ---------
-; V0 
+; V0 used to load delay
 ; V1 free
-; V2 free
+; V2 will be used for line clears (0 = no full line, 1 = there is a full line)
 ; V3 free
 ; V4 used for score
 ; V5 used to check collisions 
@@ -14,7 +14,7 @@
 ; VB delay
 ; VC will be used for shape rotations
 ; VD will be used for key inputs
-; VE used to determine current shape (1=T,2=B, 3=S, 4=reverseL, 5=L, 6=I, 7=Z)
+; VE used to determine current shape (1=Z,2=B, 3=reverseL, 4=L, 5=S, 6=T, 7=I)
 ; VF collision
 
 ; keyboard stuff for input later
@@ -98,6 +98,8 @@ gameLoop
 	CALL spawnBlock
 	CALL checkBlock
 	CALL getInput
+	SNE V9, 1
+	CALL checkLine
 	jp gameLoop
 	RET
 
@@ -257,7 +259,6 @@ undoDropHoriz
 	RET
 
 checkUndo
-	
 	SE V8, 3
 	CALL undoDropHoriz
 	SNE V8, 3 ;if dir is down, must have fallen on top of another block
@@ -266,9 +267,12 @@ checkUndo
 
 updateHeight
 	LD V0, V7
-	SUBN V0, VA; temp = temp - current stored height
-	SNE VF, 1; if VA > V0, then VF will be set to 1, and if set to 1, we have to replace VA with new height
+	LD V1, VA
+	SUBN V0, V1; VA = stored max height - current height (V0 = V1 - V0)
+	SNE VF, 1; if V1 > V0, then VF will be set to 1, we have to replace VA with new height V7 ()
 	LD VA, V7
+	LD V3, 1
+	SUB VA, V3
 	RET
 
 ; get inputs from user
@@ -283,7 +287,7 @@ getInput
 
 
 	LD V0, V7
-	ADD VA, 3; add a small buffer
+	;ADD VA, 3; add a small buffer
 	SUBN V0, VA; once the y val of shape hits a certain height, dont let user rotate (V0 = VA - V0)
 	SNE VF, 1
 	CALL shapeRotationInput
@@ -439,8 +443,8 @@ rotateZ
 	CALL drawZ
 	RET
 initDelay
-	LD V0, 5 ; load the value to delay by into the empty register (to pass to delay timer)
-	LD DT, V0 ; pass the above value into the delay timer "register"
+	LD VB, 5 ; load the value to delay by into the empty register (to pass to delay timer)
+	LD DT, VB ; pass the above value into the delay timer "register"
 	CALL delay ; loops until delay timer is 0
 	RET
 
@@ -450,6 +454,68 @@ delay
 	SE VB, 0 ; if the value of the "delay timer" is 0, skip the next instruction
 	JP delay; jump to the start of the function, repeating until the delay timer is 0
 	LD VB, 0
+	RET
+
+checkLine
+	LD I, border
+	LD V0, 28; set x value
+	LD V1, 30;set y value
+	LD V3, 1;set up register for subtraction
+	LD V2, 1
+	CALL checkLineLoopV
+	SNE V2, 1
+	RET
+
+checkLineLoopH
+	DRW V0, V1, 1
+	SNE VF, 1; if there is a collision, toggle V2 to 1
+	LD V2, 1
+	SE VF, 1; if there is no collision, toggle V2 to 0
+	LD V2, 0
+	DRW V0, V1, 1
+	SNE VF, 1;return if there is no collision
+	RET
+	ADD V0, 1
+	SNE V0, 38; clear line if V2 = 1
+	CALL clearLine
+	;CALL updateScreen
+	SE V0, 38
+	jp checkLineLoopH
+	RET
+
+checkLineLoopV
+	CALL checkLineLoopH
+	LD V0, 28
+	SUB V1, V3
+	SE V1, VA
+	jp checkLineLoopV
+	RET
+
+clearLine
+	ADD V4, 1
+	LD V3, 28
+	CALL resetLine
+	CALL updateScore
+	LD V2, 0
+	RET
+
+resetLine
+	DRW V3, V1, 1
+	ADD V3, 1
+	SE V3, 39
+	jp resetLine
+	RET
+
+updateScore
+	LD V0, 50; x value of score
+	LD V2, 12; y value of score
+	LD V3, 1
+	SUB V4, V3;subtract 1 from score to erase it
+	LD F, V4
+	DRW V0, V2, 5;erase old score
+	ADD V4, 1;add 1 to score to prep for the drawing of current score
+	LD F, V4
+	DRW V0, V2, 5;draw current score
 	RET
 
 ;sprite data
@@ -471,7 +537,7 @@ shapeT3
 shapeT4
 	byte	%00000000
 	byte	%00111000
-	byte	%00010000 ; this should compile into 10 not 01
+	byte	%00010000
 shapeB
 	byte    %00000000
 	byte	%00011000
@@ -479,9 +545,9 @@ shapeB
 shapeS1
 	byte    %00010000
 	byte 	%00011000
-	byte    %00001000 ; should be 08 not 00
+	byte    %00001000
 shapeS2
-	byte	%00001100 ; this should be 0c not 8c
+	byte	%00001100
 	byte	%00011000
 	byte	%00000000
 shapeReverseL1
