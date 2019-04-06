@@ -40,7 +40,7 @@ LD V3, 31; set y value to 31 bottom of screen
 LD V8, 3 ;initial direction of block is down
 LD V9, 0
 LD VA, 32; init max height
-LD VE, 1; init shape id
+LD VE, 7; init shape id
 LD V4, 0; init score
 LD VC, 1; init shape rotations
 LD VB, 5 ; load the value to delay by into the empty register (to pass to delay timer)
@@ -222,7 +222,7 @@ resetBlock
 	LD V6, 29;reset x value
 	LD VB, 0;reset delay
 	LD VC, 1;reset block rotation id
-	ADD VE, 1
+	;ADD VE, 1
 	RET
 
 undoDrop
@@ -468,6 +468,8 @@ checkLine
 
 checkLineLoopH
 	DRW V0, V1, 1
+	SNE VA, #FF; if height is 0, game over
+	CALL gameOver
 	SNE VF, 1; if there is a collision, toggle V2 to 1
 	LD V2, 1
 	SE VF, 1; if there is no collision, toggle V2 to 0
@@ -478,7 +480,6 @@ checkLineLoopH
 	ADD V0, 1
 	SNE V0, 38; clear line if V2 = 1
 	CALL clearLine
-	;CALL updateScreen
 	SE V0, 38
 	jp checkLineLoopH
 	RET
@@ -493,16 +494,22 @@ checkLineLoopV
 
 clearLine
 	ADD V4, 1
-	LD V3, 28
+	LD V2, 28
 	CALL resetLine
+	LD V3, 1
 	CALL updateScore
 	LD V2, 0
 	RET
 
 resetLine
-	DRW V3, V1, 1
-	ADD V3, 1
-	SE V3, 39
+	DRW V2, V1, 1
+	
+	LD V0, V1
+	CALL loopUp
+	
+
+	ADD V2, 1; go to next block
+	SE V2, 39
 	jp resetLine
 	RET
 
@@ -516,6 +523,29 @@ updateScore
 	ADD V4, 1;add 1 to score to prep for the drawing of current score
 	LD F, V4
 	DRW V0, V2, 5;draw current score
+	RET
+
+gameOver
+	LD V0, 29;set up registers to draw a 0 to indicate game is over
+	LD V1, 16
+	LD V2, 0
+	LD F, V2
+	CLS
+	DRW V0, V1, 5;jump to blank screen displaying 0
+	jp gameOver
+	RET
+
+loopUp
+	
+	SUB V0, V3; go up one line
+	DRW V2, V0, 1; check if there is a block above
+	SNE VF, 1
+	ADD V0, 1; go back down to the initial line
+	DRW V2, V0, 1; draw the block
+
+
+	SE V0, VA
+	jp loopUp
 	RET
 
 ;sprite data
