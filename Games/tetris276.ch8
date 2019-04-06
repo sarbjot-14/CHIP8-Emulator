@@ -468,7 +468,7 @@ checkLine
 
 checkLineLoopH
 	DRW V0, V1, 1
-	SNE VA, #FF; if height is 0, game over
+	SNE VA, 255; if height is negative (or in this case below hex value FF), game over
 	CALL gameOver
 	SNE VF, 1; if there is a collision, toggle V2 to 1
 	LD V2, 1
