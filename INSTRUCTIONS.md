@@ -15,28 +15,17 @@ Instructions
 ## Using Sprite Editor Tool
 1. Open tool.html located in Tool folder.
 2. Draw sprite of choice by clickin on boxes in grid.
-3. Click Finish Translating button get the binary and hexidecimal conversion of sprite.
-4. Click Pixels if you wish to restart the.
+3. Click "Finish Translating" button get the binary and hexidecimal conversion of sprite.
+4. Click "Reset Pixels" if you wish to restart it.
 
 ## Running the CHIP8 Compiler
-
-_Currently compiler only works with Compiler/testGames/primitivePong.chip8. We are working on debugging for other games_
+_The compiler is built into the emulator, however, if you wish to see the opcodes separately, follow these steps._
 1. Open Compiler/index.html in web browser.
-2. Click import and open primitivePong.chip8 found in Compiler/testGames/primitivePong.chip8.
-3. Copy paste the opcodes into the emulator using the index.html file found at the root of the folder.
-4. Click load then the play button.
+2. Click import and open pong.ch8 or tetris276.ch8 found in games folder.
 
-
-## Running basic pong sample code
-_For instructions with pictures, see the PongInstructions document, located in the Games folder_
-1. Open index.html located in the main directory of the project.
-2. Delete the default opcodes (the sample Chip8 title page opcodes) from the Emulator's text field in the center of the screen.
-3. In the space where the default opcodes were deleted, copy and paste the following opcodes:  
-00e0 A22A 6620 6710 6801 6901 6102 D672  
-D672 4700 8914 471E 8915 463F 8815 4600  
-8814 8684 8794 D672 1210 0080  
-4. Press the "Load Program" button.
-5. Press the "Play" button.
+## Running the games in our emulator
+_For instructions with pictures, see the GameInstructions document, located in the Games folder_
+Note: Currently there are problems running Tetris in our emulator, however, it runs fine in the external emulator.
 
 ## Running the assembly files for the Tetris and Pong games using an external emulator
 _For instructions with pictures, see the ExternalEmulatorInstructions document, located in Games folder_
