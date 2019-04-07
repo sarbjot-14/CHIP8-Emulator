@@ -24,11 +24,11 @@ _The compiler is built into the emulator, however, if you wish to see the opcode
 2. Click import and open pong.ch8 or tetris276.ch8 found in games folder.
 
 ## Running the games in our emulator
-_For instructions with pictures, see the GameInstructions document, located in the Games folder_
+_For instructions with pictures, see the GameInstructions document, located in the Games folder._
 Note: Currently there are problems running Tetris in our emulator, however, it runs fine in the external emulator.
 
 ## Running the assembly files for the Tetris and Pong games using an external emulator
-_For instructions with pictures, see the ExternalEmulatorInstructions document, located in Games folder_
+_For instructions with pictures, see the ExternalEmulatorInstructions document, located in Games folder._
 
 ## Automated Testing
 _To run automated testing, turn on console and use function testInstructions() for instructions, use function testFonts() to display CHIP-8 default fonts. The test will automatically output all the instructions that are loaded into the memory. The test displays all the variables after each instruction is executed. To look at the program loaded, scroll to the top of the console._
