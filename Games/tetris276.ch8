@@ -27,30 +27,33 @@
 ; (0,0)		(63,0)
 ; (0,31) 	(63,31)
 
+CALL Init
 
 ;THE ACTUAL GAME IS BELOW HERE
-CLS
-LD I, border; set i to memory address of shape
-LD V6, 29; set all shapes' initial x value to the middle (29) 
-LD V7, 0; set all shapes' initial y value to top (0)
-LD V0, 27; set left border's x value
-LD V1, 39; set right border's x value because this game of tetris played on 10 x 24 between pixels 28 and 38
-LD V2, 0; set y value to 0 top of screen
-LD V3, 31; set y value to 31 bottom of screen
-LD V8, 3 ;initial direction of block is down
-LD V9, 0
-LD VA, 32; init max height
-LD VE, 1; init shape id
-LD V4, 0; init score
-LD VC, 1; init shape rotations
-LD VB, 5 ; load the value to delay by into the empty register (to pass to delay timer)
-LD DT, VB ; pass the above value into the delay timer "register"
-CALL drawVerticalBorder
-CALL drawHorizBorder
-CALL drawInit
-CALL drawScore
-CALL spawnBlock
-jp gameLoop
+Init
+	CLS
+	LD I, border; set i to memory address of shape
+	LD V6, 29; set all shapes' initial x value to the middle (29) 
+	LD V7, 0; set all shapes' initial y value to top (0)
+	LD V0, 27; set left border's x value
+	LD V1, 39; set right border's x value because this game of tetris played on 10 x 24 between pixels 28 and 38
+	LD V2, 0; set y value to 0 top of screen
+	LD V3, 31; set y value to 31 bottom of screen
+	LD V8, 3 ;initial direction of block is down
+	LD V9, 0
+	LD VA, 32; init max height
+	LD VE, 1; init shape id
+	LD V4, 0; init score
+	LD VC, 1; init shape rotations
+	LD VB, 5 ; load the value to delay by into the empty register (to pass to delay timer)
+	LD DT, VB ; pass the above value into the delay timer "register"
+	CALL drawVerticalBorder
+	CALL drawHorizBorder
+	CALL drawInit
+	CALL drawScore
+	CALL spawnBlock
+	jp gameLoop
+	RET
 
 drawVerticalBorder
 	DRW V1, V2, 1; draw right border
