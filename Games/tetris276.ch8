@@ -5,7 +5,7 @@
 ; V2 will be used for line clears (0 = no full line, 1 = there is a full line)
 ; V3 free
 ; V4 used for score
-; V5 used to check collisions
+; V5 used to check collisions 
 ; V6 x coord of shape
 ; V7 y coord of shape
 ; V8 x dir of shape (1 = left, 2 = right)
@@ -27,30 +27,33 @@
 ; (0,0)		(63,0)
 ; (0,31) 	(63,31)
 
+CALL Init
 
 ;THE ACTUAL GAME IS BELOW HERE
-CLS
-LD I, border; set i to memory address of shape
-LD V6, 29; set all shapes' initial x value to the middle (29)
-LD V7, 0; set all shapes' initial y value to top (0)
-LD V0, 27; set left border's x value
-LD V1, 39; set right border's x value because this game of tetris played on 10 x 24 between pixels 28 and 38
-LD V2, 0; set y value to 0 top of screen
-LD V3, 31; set y value to 31 bottom of screen
-LD V8, 3 ;initial direction of block is down
-LD V9, 0
-LD VA, 32; init max height
-LD VE, 1; init shape id
-LD V4, 0; init score
-LD VC, 1; init shape rotations
-LD VB, 5 ; load the value to delay by into the empty register (to pass to delay timer)
-LD DT, VB ; pass the above value into the delay timer "register"
-CALL drawVerticalBorder
-CALL drawHorizBorder
-CALL drawInit
-CALL drawScore
-CALL spawnBlock
-jp gameLoop
+Init
+	CLS
+	LD I, border; set i to memory address of shape
+	LD V6, 29; set all shapes' initial x value to the middle (29) 
+	LD V7, 0; set all shapes' initial y value to top (0)
+	LD V0, 27; set left border's x value
+	LD V1, 39; set right border's x value because this game of tetris played on 10 x 24 between pixels 28 and 38
+	LD V2, 0; set y value to 0 top of screen
+	LD V3, 31; set y value to 31 bottom of screen
+	LD V8, 3 ;initial direction of block is down
+	LD V9, 0
+	LD VA, 32; init max height
+	LD VE, 1; init shape id
+	LD V4, 0; init score
+	LD VC, 1; init shape rotations
+	LD VB, 5 ; load the value to delay by into the empty register (to pass to delay timer)
+	LD DT, VB ; pass the above value into the delay timer "register"
+	CALL drawVerticalBorder
+	CALL drawHorizBorder
+	CALL drawInit
+	CALL drawScore
+	CALL spawnBlock
+	jp gameLoop
+	RET
 
 drawVerticalBorder
 	DRW V1, V2, 1; draw right border
@@ -108,7 +111,7 @@ spawnBlock
 	LD VE, 1
 	SNE VE, 1 ; if the block ID is 1, spawn Z block
 	CALL drawZ
-	SNE VE, 2 ; if block ID is 2, spawn B block
+	SNE VE, 2 ; if block ID is 2, spawn B block 
 	CALL drawB
 	SNE VE, 3 ; if block ID is 3, spawn reverse L block
 	CALL drawReverseL
@@ -120,7 +123,7 @@ spawnBlock
 	CALL drawT
 	SNE VE, 7 ; if block ID is 7, spawn I block
 	CALL drawI
-
+	
 	LD V9, 0;switch "block placed" value
 	RET
 
@@ -201,14 +204,14 @@ checkBlock
 
 	SNE VF, 1; check if there is a collision with another block or with the border
 	CALL checkUndo ; if shape landed on something undo the collision and redraw on top
-
+	
 	SE V8, 3;if block dir is not down, set it to down
  	LD V8, 3
-
+	
 	;Delay
 	SE VB, 1
 	CALL initDelay
-
+	
 	SNE V9, 1; check the collision
 	RET
 
@@ -438,7 +441,7 @@ rotateZ
 	ADD VC, 1
 	SNE VC, 3
 	LD VC, 1
-
+	
 	CALL drawShape
 	CALL drawZ
 	RET
@@ -468,6 +471,8 @@ checkLine
 
 checkLineLoopH
 	DRW V0, V1, 1
+	SNE VA, 255; if height is negative (or in this case below hex value FF), game over
+	CALL gameOver
 	SNE VF, 1; if there is a collision, toggle V2 to 1
 	LD V2, 1
 	SE VF, 1; if there is no collision, toggle V2 to 0
@@ -476,10 +481,9 @@ checkLineLoopH
 	SNE VF, 1;return if there is no collision
 	RET
 	ADD V0, 1
-	SNE V0, 38; clear line if V2 = 1
+	SNE V0, 39; clear line if V2 = 1
 	CALL clearLine
-	;CALL updateScreen
-	SE V0, 38
+	SE V0, 39
 	jp checkLineLoopH
 	RET
 
@@ -493,16 +497,19 @@ checkLineLoopV
 
 clearLine
 	ADD V4, 1
-	LD V3, 28
+	LD V2, 28
 	CALL resetLine
+	LD V3, 1
 	CALL updateScore
 	LD V2, 0
 	RET
 
 resetLine
-	DRW V3, V1, 1
-	ADD V3, 1
-	SE V3, 39
+	DRW V2, V1, 1;erase the block
+	LD V0, V1; set up register to move the other blocks down
+	CALL loopUp
+	ADD V2, 1; go to next block
+	SE V2, 39
 	jp resetLine
 	RET
 
@@ -516,6 +523,27 @@ updateScore
 	ADD V4, 1;add 1 to score to prep for the drawing of current score
 	LD F, V4
 	DRW V0, V2, 5;draw current score
+	RET
+
+gameOver
+	LD V0, 29;set up registers to draw a 0 to indicate game is over
+	LD V1, 16
+	LD V2, 0
+	LD F, V2
+	CLS
+	DRW V0, V1, 5;jump to blank screen displaying 0
+	jp gameOver
+	RET
+
+loopUp
+	
+	SUB V0, V3; go up one line
+	DRW V2, V0, 1; check if there is a block above
+	SNE VF, 1
+	ADD V0, 1; go back down to the initial line
+	DRW V2, V0, 1; draw the block
+	SE V0, VA
+	jp loopUp
 	RET
 
 ;sprite data
@@ -593,10 +621,10 @@ shapeI2
 	byte	%00000000
 	byte	%00000000
 shapeZ1
-	byte    %00001000
+	byte  %00001000
 	byte 	%00011000
-	byte    %00010000
+	byte  %00010000
 shapeZ2
-	byte    %00110000
+	byte  %00110000
 	byte 	%00011000
-	byte    %00000000
+	byte  %00000000

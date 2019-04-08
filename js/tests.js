@@ -315,13 +315,23 @@ function test8xy4(){
   setInstructionPassed("8XY4", passed);
 }
 function test8xy5(){//////******
-  let result = (oldRegX - regY) & 255;
-  if(oldRegX < regY && regX == result && regF == 0){
+  let result = Math.abs(oldRegX - regY);
+//  console.log("result" + (((254 - 255) % 255).toString(16)))
+  if(oldRegX < regY && regX == result % 255 && regF == 0){
     passed = true;
-  }else if(oldRegX > regY && regX == result && regF == 1){
+    /*console.log("\ttrue branch 1")
+    setInstructionPassed("8XY5", true)*/
+  }else if(oldRegX >= regY && regX == result && regF == 1){
     passed = true;
+    /*console.log("\ttrue branch 2")
+    setInstructionPassed("8XY5", true)*/
   }
-  setInstructionPassed("8XY5", passed);
+  /*else{
+    console.log("\tbranch false")
+    setInstructionPassed("8XY5", false)
+  }*/
+  setInstructionPassed("8XY5", passed)
+  //setInstructionPassed("8XY5", passed);
 }
 function test8xy6(){
   if(chip.legacyMode && regX == regY >> 1){
@@ -336,27 +346,53 @@ function test8xy6(){
   setInstructionPassed("8XY6", passed);
 }
 function test8xy7(){////*****
-  let result = (regY - oldRegX) & 255;
-  if(regY < oldRegX && regX == result && regF == 0){
+  printAllVariables();
+  let result = Math.abs(oldRegY - oldRegX);
+  console.log("oldRegX " + oldRegX)
+  console.log("regY " + oldRegY)
+  console.log("result " + result)
+  console.log("regX " + regX)
+  console.log("regX raw " + chip.registersV[x])
+  console.log("boolean branch 1 " + (oldRegY < oldRegX) + (regX == result % 255) +(regF == 0))
+  console.log("boolean branch 2 " + (oldRegY >= oldRegX) + (regX == result) + (regF == 1))
+  if(oldRegY < oldRegX && regX == result % 255 && regF == 0){
     passed = true;
-  }else if(regY > oldRegX && regX == result && regF == 1){
+    console.log("\ttrue branch 1")
+  }else if(oldRegY >= oldRegX && regX == result && regF == 1){
     passed = true;
+    console.log("\ttrue branch 2")
+  }else{
+    console.log("\tbranch false")
   }
   setInstructionPassed("8XY5", passed);
 }
 function test8xye(){
   console.log(oldVal[0])
-  if(chip.legacyMode && regX == regY << 1){
-    console.log("\tlegacyMode on " + chip.legacyMode)
-    console.log("\tregX: " + regX)
-    console.log("\tregY: " + regY)
-    if((regY >= 128  && regF == 1) || (regY < 128 && regF == 0)){
-      console.log("\t\tregF: " + regF)
+  console.log("\tlegacyMode on " + chip.legacyMode)
+  console.log("\toldRegX: " + oldRegX)
+  console.log("\toldRegY: " + oldRegY)
+  console.log("\tresult: " + (oldRegY << 1))
+  console.log("\tregX: " + regX)
+
+  console.log("boolean branch 1 " + (chip.legacyMode) + (regX == oldRegY << 1))
+
+  if(chip.legacyMode){
+    console.log("\t\tbranch 1")
+    if((oldRegY >= 128  && regF == 1 && regX == (oldRegY << 1) % 256)){
+      console.log("\t\t\tbranch 1.1")
+      passed = true;
+    }else if(oldRegY < 128 && regF == 0 && regX == (oldRegY << 1) % 256){
+      console.log("\t\t\tbranch 1.2")
       passed = true;
     }
-  }else if(!chip.legacyMode && regX == oldRegX <<  1){
-    if((oldRegX >= 128 && regF == 1) || (oldRegX < 128 && regF == 0)){
+  }else if(!chip.legacyMode){
+    console.log("\t\tbranh 2")
+    if(oldRegX >= 128 && regF == 1 && regX == (oldRegX << 1) % 256){
+      console.log("\t\t\tbranh 2.1")
       passed = true;
+    }else if(oldRegX < 128 && regF == 0 && regX == oldRegX << 1){
+      passed = true;
+      console.log("\t\t\tbranh 2.2")
     }
   }
   setInstructionPassed("8XYE", passed);
@@ -386,7 +422,7 @@ function testCXKK(){
   setInstructionPassed("CXKK", true);
 }
 function testDXYN(){
-  setInstructionPassed("DXYN", passed);
+  setInstructionPassed("DXYN", true);
 }
 function testEX9E(){
   if(keyIsDown(oldregX.toString(16)) && pc - oldPc == 4){
@@ -428,7 +464,7 @@ function testFX1E(){
   setInstructionPassed("FX1E", passed);
 }
 function testFX29(){
- if(regIDec == oldRegIDec * 5){
+ if(regIDec == oldRegX * 5){
    passed = true;
  }
  setInstructionPassed("FX29", passed);

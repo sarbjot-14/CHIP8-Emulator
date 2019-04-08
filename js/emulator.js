@@ -431,12 +431,12 @@ class emulator{
             break;
 
           case "5":// 8XY5 - Set VX = VX - VY, VF = 1 = not borrow
-            if(regX > regY){
+            if(regX >= regY){
               this.setVF(1);
               this.setRegistersV(x, ((regX - regY)).toString(16));
             }else{
               this.setVF(0);
-              this.setRegistersV(x, (((regX - regY)%255)).toString(16));
+              this.setRegistersV(x, (((regX - regY) % 255)).toString(16));
             }
 
             /*console.log("regX: " + regX)////****
@@ -459,24 +459,28 @@ class emulator{
             }else{
               this.setVF(0);
             }
-            shiftingValue = ((shiftingValue >> 1) & 255).toString(16);
+            shiftingValue = ((shiftingValue >> 1)).toString(16);
             this.setRegistersV(x, shiftingValue);
             break;
 
           case "7":// 8XY7 - Set VX = VY - VX, VF = 1 = not borrow
-            if(regY > regX){
-              this.setRegistersV(x, ((regY - regX)).toString(16));
+            console.log("regX " + regX)
+            console.log("regY " + regY)
+            if(regY >= regX){
               this.setVF(1);
+              this.setRegistersV(x, ((regY - regX)).toString(16));
+              console.log("\tregY >= regX ")
             }else{
-              this.setRegistersV(x, (((regY - regX)%255)).toString(16));
               this.setVF(0);
+              this.setRegistersV(x, (((regY - regX) % 255)).toString(16));
+              console.log("\telse")
             }
             /*console.log("\t-ins " + ins)////****
             console.log("\tregX " + regX)////****
             console.log("\tregY " + regY)////****
             console.log("\tregY - regX = " + (regY - regX))////****
             console.log("\t(regY - regX) & 255 = " + ((regY - regX) & 255))////*****/
-            this.setRegistersV(x, ((regY - regX) & 255).toString(16));
+            //this.setRegistersV(x, ((regY - regX) & 255).toString(16));
             //console.log("\t\tthis.registersV[x]: " + this.registersV[x])////****
             break;
 
@@ -491,10 +495,11 @@ class emulator{
 
             if(shiftingValue >= 128){
               this.setVF(1);
+              shiftingValue = ((shiftingValue << 1) % 256).toString(16);
             }else{
               this.setVF(0);
+              shiftingValue = ((shiftingValue << 1)).toString(16);
             }
-            shiftingValue = ((shiftingValue << 1) & 255).toString(16);
             this.setRegistersV(x, shiftingValue);
             break;
 
@@ -597,7 +602,7 @@ class emulator{
             return 1;
 
           case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX ////**** this case isn't finished ****////
-            this.setRegisterI((regX * 5).toString(16))
+            this.setRegisterI(((regX % 16) * 5).toString(16))
             return 1;
 
           case "33":// FX33 - Store Binary Coded Decimal VX in memory location I, I+1, I+2
