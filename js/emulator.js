@@ -40,6 +40,7 @@ class emulator{
 
   start(){
     this.vis.init();
+    testInstructions();
     this.initializeData();
     this.updateScreen();
   }
@@ -93,20 +94,13 @@ class emulator{
     if(!this.paused){
       let endTime = new Date();
       let insSpeed = (endTime.getTime() - startTime.getTime());
-
       let desiredHz = 60/this.speed;
       let insDelay = (1000/desiredHz)-insSpeed;
 
-      //console.log("Instruction took:  " + insSpeed.toString() + "ms\n to execute" )
-      //console.log(insDelay)
       if(insDelay < 0){
         insDelay = 0;
       }
       setTimeout( () => {this.emulationLoop();}, Math.floor(insDelay));
-
-      //setTimeout( () => {this.emulationLoop();}, (1/100000)*this.speed);
-
-      //setTimeout(function(){chip.emulationLoop()},(50/3)*this.speed); //old method
     }
 
     this.vis.updateHistory();
@@ -305,7 +299,6 @@ class emulator{
     let y = parseInt(ins[2], 16);
     let kk = ins.substring(2, 4);
     let nnn = ins.substring(1, 4);
-
     let regX = parseInt(this.registersV[x], 16);
     let regY = parseInt(this.registersV[y], 16);
     let regF = parseInt(this.VF, 16);
@@ -314,8 +307,7 @@ class emulator{
     let pc = parseInt(this.programCounter, 16);
     let regIDec = parseInt(this.registerI, 16);
     this.pushUndoCurrentIns(ins)
-  //  console.log("regF: " + regF)
-    //console.log(ins) //enable this line to get opcode readouts
+
     switch(ins[0]){
       case "0":
         switch(ins.substring(1, 4)){
@@ -341,58 +333,39 @@ class emulator{
         break;
 
       case "1":// 1NNN - JP addr - Jump to location NNN
-
         this.setProgramCounter((addr - 2).toString(16)); //minus two so it doesnt skip first instruction
         return 1;
 
       case "2":// 2NNN - CALL addr - Call subroutine at NNN
-         ////****not sure if this is correct ****////
         this.pushStack(this.programCounter.slice(0));
         this.setProgramCounter((addr - 2).toString(16)); //minus two so it doesnt skip first instruction
         return 1;
 
       case "3":// 3XKK - SE Vx, byte - Skip next instruction if VX = KK
-
         if((x == 15 && regF == value) || (regX == value)){
             this.setProgramCounter((pc + 2).toString(16));
         }
         return 1;
 
       case "4":// 4XKK - Skip next instruction if VX != KK
-      /*  console.log("---------------")////****
-        console.log(ins)
-        console.log("x: " + x)////****
-        console.log("regF: " + regF)////****
-        console.log("value: " + value)////****
-        console.log("---------------")////****
-        console.log("branch 1 result: " + (x == 15) + "  " + (regF != value))///***
-        console.log("branch 2 result: " + (regX != value))///****/
         if(x == 15 && regF != value){
-            //console.log("\tbranch 1")///***
             this.setProgramCounter((pc + 2).toString(16));
         }else if(regX != value){
-          //console.log("\tbranch not 2")///***
             this.setProgramCounter((pc + 2).toString(16));
         }
         return 1;
 
       case "5":// 5XY0 - Skip next instruction if VX = VY
-
-        /*console.log("\t\tx: " + x)////***
-        console.log("\t\tregF: " + regF)////***
-        console.log("\t\tvalue: " + value)////****/
         if((x == 15 && regF == regY) || (regX == regY)){
           this.setProgramCounter((pc + 2).toString(16));
         }
         return 1;
 
       case "6":// 6XKK - Set VX == KK
-         ////**** not sure if this is correct****////
         this.setRegistersV(x, kk);
         return 1;
 
       case "7":// 7XKK - Set VX = VX + KK
-         ////**** not sure if this is correct****////
         this.setRegistersV(x, (regX + value).toString(16));
         return 1;
 
@@ -416,12 +389,7 @@ class emulator{
             break;
 
           case "4":// 8XY4 - Set VX = VX + VY, VF = 1 = carry
-        /*  console.log("\tregX " + regX)////****
-          console.log("\tregY " + regY)////****
-          console.log("\tregX + regY " + (regX + regY))////****
-          */
             if((regX + regY) > 255){
-              //console.log("\t(regX + regY).toString(16).substring(1, 4) " + ((regX + regY).toString(16).substring(1, 4)))
               this.setRegistersV(x, (regX + regY).toString(16).substring(1, 4));
               this.setVF(1);
             }else{
@@ -438,12 +406,6 @@ class emulator{
               this.setVF(0);
               this.setRegistersV(x, (((regX - regY) % 255)).toString(16));
             }
-
-            /*console.log("regX: " + regX)////****
-            console.log("regY: " + regY)////****
-            console.log("regX - regY: " + (regX - regY))////****
-            console.log("(regX - regY).toString(16): " + (regX - regY).toString(16))////*****/
-            //console.log("registersV[x]: " + this.registersV[x])////****
             break;
 
           case "6":// 8XY6 - Set VX = shiftingValue >> 1 (shiftingValue = register VY if legacyMode is true, shiftingValue = register VX otherwise)
@@ -464,24 +426,13 @@ class emulator{
             break;
 
           case "7":// 8XY7 - Set VX = VY - VX, VF = 1 = not borrow
-            console.log("regX " + regX)
-            console.log("regY " + regY)
             if(regY >= regX){
               this.setVF(1);
               this.setRegistersV(x, ((regY - regX)).toString(16));
-              console.log("\tregY >= regX ")
             }else{
               this.setVF(0);
               this.setRegistersV(x, (((regY - regX) % 255)).toString(16));
-              console.log("\telse")
             }
-            /*console.log("\t-ins " + ins)////****
-            console.log("\tregX " + regX)////****
-            console.log("\tregY " + regY)////****
-            console.log("\tregY - regX = " + (regY - regX))////****
-            console.log("\t(regY - regX) & 255 = " + ((regY - regX) & 255))////*****/
-            //this.setRegistersV(x, ((regY - regX) & 255).toString(16));
-            //console.log("\t\tthis.registersV[x]: " + this.registersV[x])////****
             break;
 
           case "E":// 8XYe - Set VX = shiftingValue << 1 (shiftingValue = register VY if legacyMode is true, shiftingValue = register VX otherwise)
@@ -509,9 +460,6 @@ class emulator{
         return 1;
 
       case "9":// 9XY0 - Skip next instruction if VX != VY
-      /*  console.log("\t\tx: " + x)////***
-        console.log("\t\tregF: " + regF)////***
-        console.log("\t\tvalue: " + value)////****/
         if((x == 15 && regF == regY) || (regX == regY)){
             this.setProgramCounter((pc + 2).toString(16));
         }
@@ -566,10 +514,8 @@ class emulator{
 
       case "f":
       case "F":
-        //console.log("x: " + x)////****
         switch(ins.substring(2,4)){
           case "07":// FX07 - LD VX, DT - Set VX = delay timer value
-
             this.setRegistersV(x, this.registerDelay);
             return 1;
 
@@ -586,68 +532,41 @@ class emulator{
             return 2;
 
           case "15":// FX15 - LD DT, VX - Set delay timer = VX
-
             this.setRegisterDelay(this.registersV[x]);
             return 1;
 
           case "18":// FX18 - LD ST, VX - Set sound timer = VX
-
             this.setRegisterSoundTimer(this.registersV[x]);
             return 1;
 
           case "1E":
           case "1e":// FX1E - ADD I, VX - Set I = I + VX
-
             this.setRegisterI((regIDec + regX).toString(16));
             return 1;
 
-          case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX ////**** this case isn't finished ****////
+          case "29":// FX29 - LD F, VX - Set I = location of sprite for digit VX
             this.setRegisterI(((regX % 16) * 5).toString(16))
             return 1;
 
           case "33":// FX33 - Store Binary Coded Decimal VX in memory location I, I+1, I+2
-
-            //let regXDec = regX.toString(10);///////******
             let hunDigit = Math.floor(regX / 100);
             let tenDigit = Math.floor((regX % 100) / 10);
             let oneDigit = Math.floor(regX % 10);
             this.setMemory(regIDec, hunDigit.toString(16));
             this.setMemory(regIDec + 1, tenDigit.toString(16));
             this.setMemory(regIDec + 2, oneDigit.toString(16));
-
-            /*console.log("regX: " + regX);
-            console.log("hunDigit: " + hunDigit);
-            console.log("tenDigit: " + tenDigit);
-            console.log("oneDigit: " + oneDigit);
-            console.log("regIDec: " + regIDec);*/
             return 1;
 
           case "55":// FX55 - LD [I], VX - Store registers V0 through VX in memory starting at location I
-
-              //console.log("regIDec: " + regIDec)///****
               for(let i = 0; i <= x; i++){
-                //console.log("this.registersV[" + i + "]: " + this.registersV[i])////****
                 this.setMemory(regIDec, this.registersV[i]);
                 regIDec += 1;
               }
-
-              /*
-              for(let tempI = start; tempI < size; tempI++)
-              console.log(tempI + ". " + this.memory[tempI])
-
-              console.log();
-              console.log("x: " + x)
-              console.log();
-              for(let tempI = start; tempI < size; tempI++)
-                console.log(tempI + ". " + this.memory[tempI])
-                */
               return 1;
 
           case "65":// FX65 - LD VX, [I] - Read registers V0 through VX from memory starting at location I
-
             for(let i = 0; i <= x; i++){
               this.setRegistersV(i, this.memory[regIDec]);
-              //console.log("this.registersV[" + i + "]: " + this.registersV[i])////****
               regIDec += 1;
             }
             return 1;

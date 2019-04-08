@@ -13,29 +13,6 @@ let kk;
 let nnn;
 let pc;
 let oldPc;
-//let oldVal = [];
-/*
-function drawTesting(){
-  chip.setRegistersV(0,"03");
-  chip.setRegistersV(1,"01");
-  chip.setRegisterI("00");
-  chip.setMemory(0,"93");
-  chip.setMemory(1,"6D");
-  chip.setMemory(2,"65");
-}
-function retTest(){
-  chip.setStack(0,"001");
-  chip.setStack(1,"01F");
-  chip.setStack(2,"1FE");
-  chip.setStack(3,"FED");
-  chip.setStack(4,"EDC");
-
-  chip.setStackPointer(4);
-
-  chip.setProgramCounter("DCB");
-
-}
-*/
 
 function printAllRegistersV(){
   let regList = "\t"
@@ -54,8 +31,6 @@ function printAllVariables(){
   console.log("\tStackPointer: " + chip.stackPointer)
   console.log("\tVF: " + chip.VF)
 }
-
-
 function giveTestFonts(){
   let testProgram = "";
   testProgram += "00E0";
@@ -100,12 +75,12 @@ function giveTestProgram(){
   testProgram += "F01E F21E ";
   testProgram += "AA00 F033 F133 ";
   testProgram += "AB00 F055 FE55 ";
-  //reset registers 0-E
   //testProgram += giveResetRegistersV();
-  testProgram += "AC00 FE65 AB00 FE65 ";
+  testProgram += "AC00 FE65 AB00 FE65 FE29";
+  //test KeyInput
+  testProgram += "ED9E EDA1 0000"
   return testProgram;
 }
-//////////
 
 function initializeInstructionList(){
   instructionList = [];
@@ -132,7 +107,6 @@ function initializeInstructionList(){
   instructionList.push(["ANNN", false]);
   instructionList.push(["BNNN", false]);
   instructionList.push(["CXKK", false]);
-  instructionList.push(["DXYN", false]);
   instructionList.push(["EX9E", false]);
   instructionList.push(["EXA1", false]);
   instructionList.push(["FX07", false]);
@@ -149,7 +123,6 @@ function initializeInstructionList(){
 function updateOldVal(){
   if(chip.undoStack.length > 0){
     oldVal = chip.undoStack[chip.undoStack.length - 1];
-    //oldvalue == start of emulator
   }
 }
 function updateGenericLabels(){
@@ -168,7 +141,7 @@ function updateGenericLabels(){
   pc = parseInt(chip.programCounter, 16);
   oldPc = parseInt(oldVal[1].programCounter, 16);
 }
-function printInstruction(){////****
+function printInstruction(){
   console.log(instructionList);
 }
 function findInstructionIndex(name){
@@ -183,14 +156,6 @@ function setInstructionPassed(name, passed){
   let index = findInstructionIndex(name);
   instructionList[index][1] = passed;
 }
-/*function ss(){
-  chip.vis.init();
-  console.log("\t\t" + program)///****
-  chip.loadProgram(program);
-  chip.paused = false;
-  testEmulationLoop();
-}
-*/
 function test00e0(){
   passed = true;
   for(let i = 0; i < chip.pixels.length; i++){
@@ -216,13 +181,6 @@ function test1nnn(){
     passed = true;
   }
   setInstructionPassed("1NNN", passed);
-/*
-
-
-  console.log(parseInt("214", 16))
-  console.log(parseInt(chip.programCounter, 16))
-  console.log(program)
-  console.log(chip.programCounter)*/
 }
 function test2nnn(){
   if(chip.stackPointer == (oldVal[1].stackPointer + 1)
@@ -298,15 +256,6 @@ function test8xy4(){
   if(result > 255){
     realResult = parseInt((result.toString(16)).substring(1, 3), 16)
   }
-  /*console.log(oldVal[0])
-  printAllVariables();
-  console.log("oldRegX: " + oldRegX)
-  console.log("oldRegY: " + oldRegY)
-  console.log("result: " + result)
-  console.log("result - 256: " + (result - 256))
-  console.log("realResult: " + realResult)
-  console.log("regX: " + regX)
-  console.log("regF: " + regF)*/
   if(result > 255 && regX == realResult && regF == 1){
     passed = true;
   }else if(result <= 255 && regX == realResult && regF == 0){
@@ -314,24 +263,14 @@ function test8xy4(){
   }
   setInstructionPassed("8XY4", passed);
 }
-function test8xy5(){//////******
+function test8xy5(){
   let result = Math.abs(oldRegX - regY);
-//  console.log("result" + (((254 - 255) % 255).toString(16)))
   if(oldRegX < regY && regX == result % 255 && regF == 0){
     passed = true;
-    /*console.log("\ttrue branch 1")
-    setInstructionPassed("8XY5", true)*/
   }else if(oldRegX >= regY && regX == result && regF == 1){
     passed = true;
-    /*console.log("\ttrue branch 2")
-    setInstructionPassed("8XY5", true)*/
   }
-  /*else{
-    console.log("\tbranch false")
-    setInstructionPassed("8XY5", false)
-  }*/
   setInstructionPassed("8XY5", passed)
-  //setInstructionPassed("8XY5", passed);
 }
 function test8xy6(){
   if(chip.legacyMode && regX == regY >> 1){
@@ -345,54 +284,27 @@ function test8xy6(){
   }
   setInstructionPassed("8XY6", passed);
 }
-function test8xy7(){////*****
-  printAllVariables();
+function test8xy7(){
   let result = Math.abs(oldRegY - oldRegX);
-  console.log("oldRegX " + oldRegX)
-  console.log("regY " + oldRegY)
-  console.log("result " + result)
-  console.log("regX " + regX)
-  console.log("regX raw " + chip.registersV[x])
-  console.log("boolean branch 1 " + (oldRegY < oldRegX) + (regX == result % 255) +(regF == 0))
-  console.log("boolean branch 2 " + (oldRegY >= oldRegX) + (regX == result) + (regF == 1))
   if(oldRegY < oldRegX && regX == result % 255 && regF == 0){
     passed = true;
-    console.log("\ttrue branch 1")
   }else if(oldRegY >= oldRegX && regX == result && regF == 1){
     passed = true;
-    console.log("\ttrue branch 2")
-  }else{
-    console.log("\tbranch false")
   }
-  setInstructionPassed("8XY5", passed);
+  setInstructionPassed("8XY7", passed);
 }
 function test8xye(){
-  console.log(oldVal[0])
-  console.log("\tlegacyMode on " + chip.legacyMode)
-  console.log("\toldRegX: " + oldRegX)
-  console.log("\toldRegY: " + oldRegY)
-  console.log("\tresult: " + (oldRegY << 1))
-  console.log("\tregX: " + regX)
-
-  console.log("boolean branch 1 " + (chip.legacyMode) + (regX == oldRegY << 1))
-
   if(chip.legacyMode){
-    console.log("\t\tbranch 1")
     if((oldRegY >= 128  && regF == 1 && regX == (oldRegY << 1) % 256)){
-      console.log("\t\t\tbranch 1.1")
       passed = true;
     }else if(oldRegY < 128 && regF == 0 && regX == (oldRegY << 1) % 256){
-      console.log("\t\t\tbranch 1.2")
       passed = true;
     }
   }else if(!chip.legacyMode){
-    console.log("\t\tbranh 2")
     if(oldRegX >= 128 && regF == 1 && regX == (oldRegX << 1) % 256){
-      console.log("\t\t\tbranh 2.1")
       passed = true;
     }else if(oldRegX < 128 && regF == 0 && regX == oldRegX << 1){
       passed = true;
-      console.log("\t\t\tbranh 2.2")
     }
   }
   setInstructionPassed("8XYE", passed);
@@ -421,19 +333,20 @@ function testBNNN(){
 function testCXKK(){
   setInstructionPassed("CXKK", true);
 }
-function testDXYN(){
-  setInstructionPassed("DXYN", true);
-}
 function testEX9E(){
-  if(keyIsDown(oldregX.toString(16)) && pc - oldPc == 4){
+  if(chip.keyIsDown(oldRegX.toString(16)) && pc - oldPc == 4){
     passed = true;
-  }else if(pc - oldPc == 2)
+  }else if(pc - oldPc == 2){
+    passed = true;
+  }
   setInstructionPassed("EX9E", passed);
 }
 function testEXA1(){
-  if(!keyIsDown(oldRegX.toString(16)) && pc - oldPc == 4){
+  if(!chip.keyIsDown(oldRegX.toString(16)) && pc - oldPc == 4){
     passed = true;
-  }else if(1)
+  }else if(pc - oldPc == 2){
+    passed = true;
+  }
   setInstructionPassed("EXA1", passed);
 }
 function testFX07(){
@@ -443,19 +356,27 @@ function testFX07(){
   setInstructionPassed("FX07", passed);
 }
 function testFX0A(){
-
+  setInstructionPassed("FX0A", true);
 }
 function testFX15(){
-  if(chip.registerDelay == regX){
+  if(parseInt(chip.registerDelay, 16) == 0
+  && parseInt(chip.registerDelay, 16) == regX){
+    passed = true;
+  }else if(parseInt(chip.registerDelay, 16) > 0
+  && parseInt(chip.registerDelay, 16) == regX - 1){
     passed = true;
   }
   setInstructionPassed("FX15", passed);
 }
 function testFX18(){
-  if(chip.registerSoundtimer == regX){
+  if(parseInt(chip.registerSoundTimer, 16) == 0
+  && parseInt(chip.registerSoundTimer, 16) == regX){
+    passed = true;
+  }else if(parseInt(chip.registerSoundTimer, 16) > 0
+  && parseInt(chip.registerSoundTimer, 16) == regX - 1){
     passed = true;
   }
-  setInstructionPassed("FX15", passed);
+  setInstructionPassed("FX18", passed);
 }
 function testFX1E(){
   if(regIDec == oldRegIDec + oldRegX){
@@ -464,13 +385,22 @@ function testFX1E(){
   setInstructionPassed("FX1E", passed);
 }
 function testFX29(){
- if(regIDec == oldRegX * 5){
-   passed = true;
- }
- setInstructionPassed("FX29", passed);
+  if(regIDec == (oldRegX % 16) * 5){
+    passed = true;
+  }
+  setInstructionPassed("FX29", passed);
 }
 function testFX33(){
+  let hunDigit = Math.floor(oldRegX / 100);
+  let tenDigit = Math.floor((oldRegX % 100) / 10);
+  let oneDigit = Math.floor(oldRegX % 10);
 
+  if(parseInt(chip.memory[regIDec], 10) == hunDigit
+  && parseInt(chip.memory[regIDec + 1], 10) == tenDigit
+  && parseInt(chip.memory[regIDec + 2], 10) == oneDigit){
+    passed = true;
+  }
+  setInstructionPassed("FX33", passed);
 }
 function testFX55(){
   passed = true;
@@ -484,7 +414,15 @@ function testFX55(){
   setInstructionPassed("FX55", passed);
 }
 function testFX65(){
-
+  passed = true;
+  for(let i = 0; i < x; i++){
+    if(chip.memory[regIDec] != chip.registersV[i]){
+      passed = false;
+      break;
+    }
+    regIDec++;
+  }
+  setInstructionPassed("FX65", passed);
 }
 function updatePassingInstruction(ins){
   switch(ins[0]){
@@ -577,10 +515,6 @@ function updatePassingInstruction(ins){
     case "C":// CXKK - Set VX = random byte AND KK
     testCXKK();
     break;
-    case "d":
-    case "D": //DXYN - display n-byte sprite at memory location I at (VX, VY), set VF = collision
-    testDXYN();
-    break;
     case "e":
     case "E":
     switch(ins.substring(2, 4)){
@@ -645,9 +579,7 @@ function testEmulationLoop(){
   let insResult = chip.executeInstruction(ins);
   if(insResult == 1){
     chip.setProgramCounter( (parseInt(chip.programCounter, 16) + 2).toString(16) );
-    //console.log("\t\tPC should inc")///****
   }else if(insResult == 2){
-    console.log("\t\tdo nothing")
     //do nothing
   }else if(!parseInt(chip.registerSoundTimer, 16) && !parseInt(chip.registerDelay, 16)){
     console.log("TogglePause should happen")
@@ -668,7 +600,7 @@ function testEmulationLoop(){
   let nextIns = chip.memory[parseInt(chip.programCounter, 16)] + chip.memory[parseInt(chip.programCounter, 16) + 1];
 
   if(nextIns != "0000")
-  this.testEmulationLoop();//////****
+  this.testEmulationLoop();
   chip.vis.updateHistory();
 }
 function printTestResult(){
@@ -683,31 +615,14 @@ function printTestResult(){
     console.log(name + result)
   }
 }
+
 function testInstructions(){
   initializeInstructionList();
-  test00e0();
-  test1nnn();
-
-  //test6xkk();
-  printTestResult();
-
-  /*testInstructionsOld();
-  testInstructionsOld();*/
-
-}
-function testInstructionsOld(){
-  initializeInstructionList();
   program = giveTestProgram();
-  //program = "00e0 66FF 60ff 00e0"
   chip.vis.init();
   chip.loadProgram(program);
   chip.paused = false;
-/*  console.log("Program:\n" + program);
-  console.log("Starting data: ");
-  printAllVariables();*/
   testEmulationLoop();
-  /*console.log("End testing")
-  printAllVariables();*/
   printTestResult();
 }
 function testFonts(){
