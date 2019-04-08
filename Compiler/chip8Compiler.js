@@ -2,26 +2,17 @@ var errorString = "" ;
 var isError = false;
 class chip8Compiler{
 
-
-  constructor(){
-
-  }
+//Class takes in chip 8 assembly and outputs opcodes
   compileMneonicToOpcodes(code){
-
-
-
-    let assemblyArray = code.split("\n"); //split the commands into array
-    assemblyArray = this.removeComments(assemblyArray); //including spaces in front and end of line
-
+    //split the commands into array
+    let assemblyArray = code.split("\n");
+    //remove comments including spaces in front and end of line
+    assemblyArray = this.removeComments(assemblyArray);
+    //compile opcodes which include addresses
     assemblyArray = this.compileSYS_JP_CALL_LDI(assemblyArray);
-    console.log("WORKING WITH THIS:" );
-    let line = 0;
-    for(var x=0 ; x< assemblyArray.length ; x++){
-      line++
-      let command = assemblyArray[x];
-      console.log(command );
-    }
+    //compiling main opcodes
     assemblyArray = this.assemblyToOpcode(assemblyArray);
+    //compiling sprites
     assemblyArray = this.compileSpritesBinToHex(assemblyArray);
 
     //final opcodes is the good version of the opcodes
@@ -81,14 +72,13 @@ class chip8Compiler{
       if(!regEmptyLine.test(code)){ //skip empty lines
 
         if(regJP.test(code)){//1nnn - JP addr
-          //console.log("found the jp lo000000op "+ code);
           let nameLocation = code.match(/[a-z1-9_]+\s*$/im)[0]; //name of location where to jump to
           let addressOfJump = this.findNameLocation(nameLocation, assemblyArray);
           addrNameArray.push(nameLocation);
           addressOfJump = parseInt(addressOfJump);
           let addressOfJumpInHex = addressOfJump.toString(16); //convert to hexidecimal
           //1nnn - JP addr
-          //console.log("replacing "+assemblyArray[x]+" with " +"1" + addressOfJumpInHex)
+
           assemblyArray[x] = "1" + addressOfJumpInHex; //replace with opcode
         }
         else if(regCALL.test(code)){
@@ -106,8 +96,7 @@ class chip8Compiler{
             let nameLocation = code.match(/[a-z1-9_]+$/im)[0]; //name of location where to sprite is declared
             addrNameArray.push(nameLocation);
             let addressOfCall = this.findNameLocation(nameLocation, assemblyArray);
-            //console.log("name of sprite iss " + nameLocation);
-            //console.log("nameLocation is " + nameLocation+ "and addressOfCall is " + addressOfCall.toString(16));
+
             addressOfCall = parseInt(addressOfCall);
             let addressOfCallInHex = addressOfCall.toString(16); //convert to hexidecimal
             //1nnn - JP addr
@@ -122,13 +111,8 @@ class chip8Compiler{
     //removing all the places we jumped to
     for(var m=0 ; m< addrNameArray.length ; m++){
       for(var n=0 ; n< assemblyArray.length ; n++){
-        //console.log("tryying to remove "+ addrNameArray[m]);
         reg = new RegExp("^"+addrNameArray[m]+ " *","im");
-        //console.log("testing for " +addrNameArray[m]);
         if( reg.test(assemblyArray[n]) ){
-        //if(assemblyArray[n].includes(addrNameArray[m])){
-          //console.log("spliceing " + assemblyArray[n]);
-          //assemblyArray.splice(n,1); //removing
           assemblyArray[n] = " " ;
         }
       }
@@ -150,18 +134,13 @@ class chip8Compiler{
       if(!regEmptyLine.test(code)){ //skip empty lines
 
         let inHex = addressOfMemory.toString(16);
-        //console.log("looking for: "+ nameLocation);
-        //console.log(inHex+ " " + code); //FOR DEBUGGING
         if(!this.isChip8Instruction(code)){ //  if not assembly then increase addressOfMemory
 
           if(r.test(code)){       //if the address of the name is found then return
-            //console.log("\nbreak returning memory address "+ addressOfMemory);
-
             return addressOfMemory;
           }
         }
         else{
-          //console.log(nameLocation+" not a intruction: " +assemblyArray);
           addressOfMemory= addressOfMemory+2;
           let byteReg = /^byte\s*%/im
           if(byteReg.test(code)){
@@ -445,34 +424,23 @@ class chip8Compiler{
         aCode = assemblyArray[m];
       }
       code2 = assemblyArray[m];
-      //console.log("this is code" + code + " and this is code2 " + code2);
       if(!regEmptyLine.test(code)){ //skip empty lines
-        //console.log(code);
         if(r.test(code)){
-          //console.log("turning "+ code+" into ......");
           let regBin = /[10]{8}$/im;
 
           let spriteBin = code.match(regBin)[0];
           let spriteHex = parseInt(spriteBin, 2).toString(16);
-          //console.log("turning spriteBin to spriteHex " + spriteBin+ " " + spriteHex);
           if(spriteHex.length ==1){
-            //console.log("length of spriteHex is " + spriteHex.length);
+
             spriteHex = "0" + spriteHex;
           }
-          //console.log("is sprite")
-
-          //console.log("this is code " + code + " and this is code2 " + code2);
-          //console.log("why wont it pass the next one "+ x+1 + " "  +code2+" "+  r.test(code2))
           if(r.test(code2)){
             let spriteBin = code2.match(regBin)[0];
             let spriteHex2 = parseInt(spriteBin, 2).toString(16);
-            //console.log("turning again spriteBin to spriteHex " + spriteBin+ " " + spriteHex2);
             if(spriteHex2.length ==1){
               spriteHex2 = "0" + spriteHex2;
             }
-            //console.log("hex1 and 2 " + spriteHex+ " " + spriteHex2);
             let combinedHex = spriteHex + spriteHex2;
-            //console.log("combined is " + combinedHex);
             assemblyArray[x] = combinedHex;
             assemblyArray[m] = " ";
             x++;
@@ -488,7 +456,6 @@ class chip8Compiler{
         }
 
       }
-      //console.log(assemblyArray);
     }
     return assemblyArray;
   }
@@ -496,7 +463,6 @@ class chip8Compiler{
   isChip8Instruction(code){
     let r = /\b(?:CLS|BYTE|RET|SYS|JP|LD|SE|CALL|SNE|ADD|OR|AND|XOR|SUB|SHR|SUBN|SHL|RND|DRW|SKP|SKNP|SCD|SCR|SCL|EXIT|LOW|HIGH)\b/i;
     if(r.test(code)){
-      //console.log("this is a intruction: "+ code);
       return true;
     }
     else{
@@ -507,13 +473,12 @@ class chip8Compiler{
         return true;
       }
       else{
-        //console.log("this is not an instruction "+ code);
         return false;
       }
 
     }
   }
-  //https://stackoverflow.com/questions/42450510/invert-unsigned-arbitrary-binary-bits-in-javascript
+  //helper
   decToHexWithTwoComp(byte){ //using twos compliment
 
     var flipbits = function flipbits(str) {
@@ -521,28 +486,23 @@ class chip8Compiler{
         return (1 - b).toString();
       }).join('');
     };
-    //byte = "-4";
-    //console.log("byte is "+ byte);
+
     byte = Math.abs(parseInt(byte));
     byte = byte.toString(2);
     byte = this.pad(byte,8);
-    //console.log(byte + " after absolute and to binary");
     byte = byte.toString();
     byte = flipbits(byte);
-    //console.log("flipped the bytes " +byte);
-
     byte = parseInt(byte,2);
     byte = 1+byte;
     //turn the decimal back to binary
     byte = byte.toString(2);
-    //console.log("answer in biary " +byte);
     byte = parseInt(byte);
     byte =  parseInt(byte, 2).toString(16).toUpperCase()
-    //console.log("answer in hex " +byte);
+  
     return byte;
 
   }
-  //https://stackoverflow.com/questions/10073699/pad-a-number-with-leading-zeros-in-javascript
+  //helper
   pad(n, width, z) {
     z = z || '0';
     n = n + '';
