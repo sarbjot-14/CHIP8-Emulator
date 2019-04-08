@@ -478,7 +478,7 @@ checkLineLoopH
 	ADD V0, 1
 	SNE V0, 38; clear line if V2 = 1
 	CALL clearLine
-	CALL updateScreen
+	;CALL updateScreen
 	SE V0, 38
 	jp checkLineLoopH
 	RET
@@ -518,14 +518,8 @@ updateScore
 	DRW V0, V2, 5;draw current score
 	RET
 
-updateScreen
-
-	RET
-
 ;sprite data
 
-line
-	byte    %11111111
 border
 	byte	%10000000
 shapeT1
