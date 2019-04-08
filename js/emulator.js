@@ -40,7 +40,6 @@ class emulator{
 
   start(){
     this.vis.init();
-    testInstructions();
     this.initializeData();
     this.updateScreen();
   }
@@ -289,7 +288,6 @@ class emulator{
     }
     this.vis.updateHistory();
   }
-
 
   //returns 0 on invalid instruction, 1 on executed instructions with undo stack push, and 2 if program counter shouldn't increment (for instructions that wait)
   //returns 1 if instruction was valid (ie pushUndo() was called) and 0 otherwise
@@ -652,5 +650,4 @@ class emulator{
       }
     }
   }
-
 }

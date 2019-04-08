@@ -26,7 +26,10 @@ class visualizer{
         this.em.legacyMode = false;
       }
     }
-
+    document.getElementById("testing").onclick = () => {
+      chip.initializeData();
+      testInstructions();
+    }
     document.getElementById("loadBtn").onclick = () => {
       this.em.loadProgram(document.getElementById('code').value);
       this.updatePaused(1);
