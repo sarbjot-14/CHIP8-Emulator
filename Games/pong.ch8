@@ -18,6 +18,8 @@
 ; VF collision
 
 ; initialize
+
+; clear the screen
 CLS
 
 ; init paddle locations
@@ -31,7 +33,7 @@ LD i, paddle
 DRW VB, VC, 6
 DRW VD, VE, 6
 
-; initialize score
+; initialize score registers
 LD V3, 0
 LD VA, 0
 call draw_score
@@ -47,7 +49,7 @@ LD i, ball
 DRW V6, V7, 1
 
 main_loop
-	; paddle stuff
+	; Paddle Operations
 	LD i, paddle
 	DRW VB, VC, 6;
 	DRW VD, VE, 6;
@@ -84,7 +86,7 @@ main_loop
 	AND VE, V0
 	DRW VD, VE, 6
 
-	; ball stuff
+	; Ball Operations
 	LD i, ball
 
 	; erase the ball
@@ -119,10 +121,11 @@ ball_loop
 left_side
 
 	LD V8, 2 ; update x dir
-	LD V3, 1 ; for score
 
 	; check if a paddle was hit
 	DRW V6, V7, 1;
+
+	; skip reset if the ball hit the paddle
 	SE VF, 1;
 	jp round_reset_right
 
@@ -134,15 +137,17 @@ right_side
 	LD V8, -2 ; update x dir
 
 	; check if a paddle was hit
-	DRW V6, V7, 1; try and draw to trigger vf
+	DRW V6, V7, 1;
+
+	; skip reset if the ball hit the paddle
 	SE VF, 1;
 	jp round_reset_left
 
 	jp paddle_col
 
 paddle_col
-	; shift the ball so it will hit the other side properly
 	DRW V6, V7, 1; fix the draw if the paddle collided
+	; shift the ball so it will hit the other side properly
 	ADD V6, 1
 	SNE V6, 64
 	ADD V6, -2
@@ -231,32 +236,33 @@ round_reset_right
 	jp main_loop
 
 draw_score
-	; point i to the first register
+	; point i to the first score register
 	LD F, V3
 
-	; set v4 and v5
+	; set v4 and v5 (position of first score)
 	LD V4, 25
 	LD V5, 1
 
 	; draw the first score
 	DRW V4, V5, 5
 
-	; move v4
+	; move v4 (position of second score)
 	LD V4, 34
 	
-	; point i to the second register
+	; point i to the second score register
 	LD F, VA
 
 	; draw the second score
 	DRW V4, V5, 5 ; 
 	
+; stay in this function until delay timer equals zero
 delay
 	LD V0, DT
 	SE V0, 0
 	jp delay
 	ret
 
-
+; sprite data
 ball
 	byte 	%10000000
 
