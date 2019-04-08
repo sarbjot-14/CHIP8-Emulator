@@ -25,13 +25,13 @@ _The compiler is built into the emulator, however, if you wish to see the opcode
 
 ## Running the games in our emulator
 _For instructions with pictures, see the GameInstructions document, located in the Games folder._
-Note: Currently there are problems running Tetris in our emulator, however, it runs fine in the external emulator.
+Note: Currently there are problems running Tetris in our emulator, however, it runs fine in the external emulator. The emulator works best with Chrome.
 
 ## Running the assembly files for the Tetris and Pong games using an external emulator
 _For instructions with pictures, see the ExternalEmulatorInstructions document, located in Games folder._
 
 ## Automated Testing
-_To run automated testing, turn on console and use function testInstructions() for instructions, use function testFonts() to display CHIP-8 default fonts. The test will automatically output all the instructions that are loaded into the memory. The test displays all the variables after each instruction is executed. To look at the program loaded, scroll to the top of the console._
+_Turn on the console to see the test results, the test is automatically run after turning on the page. To see if the fonts are working, use testFonts(). The test will automatically output the results of all the instructions that are loaded into the memory. The result displays PASSED if that instruction is working correctly, FAILED otherwise_
 
 ## Chip-8 testing
 _For testing, opcodes(instruction) can be entered into the "Text field" that is below the "Display screen". After entering the opcodes, the user then has to press the "Load program" button in order for the emulator to initialize the data. Then the user proceed to press the "Play"/"Pause" button to run the program. The program can be stopped, or resumed, when pressing the "Play"/"Pause" button. The user can slow down or speed up the execution of the opcodes by sliding the "Speed slider" bar. The user can use backward or forward button to move to the closest instruction in the stack. Lastly, below the "Text field" displays all the registers and values of them after in the current state. Each opcode includes of 4 hexadecimal characters, separating opcodes can be recognize by the emulator through a space or a new line. For reference, a list of opcodes can be looked up into Wikipedia, Cowgod's Chip-8 specification that was cited in this project_
