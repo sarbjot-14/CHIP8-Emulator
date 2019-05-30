@@ -10,7 +10,7 @@ Adam Zubek-Nizol,
 Brandon Ong
 
 
-https://adamnizol.github.io/CHIP-8-Emulator/
+https://sarbjot-14.github.io/CHIP8-Emulator/
 
 See INSTRUCTIONS.md for how to run tests and emulator.
 
